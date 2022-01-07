@@ -1,11 +1,29 @@
 {
-  "name": "telly-bot",
-  "version": "0.0.1",
-  "description": "A Telegram bot based on Koa.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "LolipopJ",
-  "license": "ISC"
+    "name": "telly-bot",
+    "version": "0.0.1",
+    "description": "A Telegram bot based on Koa.",
+    "scripts": {
+        "start": "nodemon bin/www",
+        "pm2": "pm2 start bin/www",
+        "lint": "eslint --ignore-path .gitignore --ext .ts,.js,.vue .",
+        "lint:fix": "yarn lint --fix",
+        "lint:prettier": "prettier --ignore-path .gitignore --write **/* --ignore-unknown"
+    },
+    "author": "LolipopJ",
+    "license": "MIT",
+    "dependencies": {
+        "debug": "^4.3.3",
+        "koa": "^2.13.4",
+        "koa-bodyparser": "^4.3.0",
+        "koa-router": "^10.1.1",
+        "node-telegram-bot-api": "^0.56.0",
+        "pm2": "^5.1.2"
+    },
+    "devDependencies": {
+        "eslint": "^8.6.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-prettier": "^4.0.0",
+        "nodemon": "^2.0.15",
+        "prettier": "^2.5.1"
+    }
 }
