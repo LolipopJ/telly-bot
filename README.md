@@ -12,7 +12,7 @@ Create `.env` file in the project root directory and fill in the project configu
 
 ```plaintext
 # .env
-TELEGRAM_BOT_TOKEN = Your Telegram Bot Token
+TELEGRAM_BOT_TOKEN=Your Telegram Bot Token
 ```
 
 ## Development
