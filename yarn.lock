@@ -1417,6 +1417,15 @@ internal-slot@^1.0.3:
     has "^1.0.3"
     side-channel "^1.0.4"
 
+ip-address@~6.1.0:
+  version "6.1.0"
+  resolved "https://registry.nlark.com/ip-address/download/ip-address-6.1.0.tgz#3c3335bc90f22b3545a6eca5bffefabeb2ea6fd2"
+  integrity sha1-PDM1vJDyKzVFpuylv/76vrLqb9I=
+  dependencies:
+    jsbn "1.1.0"
+    lodash "^4.17.15"
+    sprintf-js "1.1.2"
+
 ip@^1.1.5:
   version "1.1.5"
   resolved "https://registry.nlark.com/ip/download/ip-1.1.5.tgz?cache=0&sync_timestamp=1624607989560&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fip%2Fdownload%2Fip-1.1.5.tgz#bdded70114290828c0a039e72ef25f5aaec4354a"
@@ -1615,6 +1624,11 @@ js-yaml@^4.1.0:
   dependencies:
     argparse "^2.0.1"
 
+jsbn@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.nlark.com/jsbn/download/jsbn-1.1.0.tgz#b01307cb29b618a1ed26ec79e911f803c4da0040"
+  integrity sha1-sBMHyym2GKHtJux56RH4A8TaAEA=
+
 jsbn@~0.1.0:
   version "0.1.1"
   resolved "https://registry.nlark.com/jsbn/download/jsbn-0.1.1.tgz#a5e654c2e5a2deb5f201d96cefbca80c0ef2f513"
@@ -1770,7 +1784,7 @@ lodash.merge@^4.6.2:
   resolved "https://registry.npmmirror.com/lodash.merge/download/lodash.merge-4.6.2.tgz#558aa53b43b661e1925a0afdfa36a9a1085fe57a"
   integrity sha1-VYqlO0O2YeGSWgr9+japoQhf5Xo=
 
-lodash@^4.17.14, lodash@^4.17.19:
+lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash/download/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -2587,6 +2601,20 @@ socks-proxy-agent@5, socks-proxy-agent@^5.0.0:
     agent-base "^6.0.2"
     debug "4"
     socks "^2.3.3"
+
+socks5-client@~1.2.3:
+  version "1.2.8"
+  resolved "https://registry.nlark.com/socks5-client/download/socks5-client-1.2.8.tgz#6470e4d781de254ee9f3b5ec9760a44c5df898da"
+  integrity sha1-ZHDk14HeJU7p87Xsl2CkTF34mNo=
+  dependencies:
+    ip-address "~6.1.0"
+
+socks5-https-client@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.nlark.com/socks5-https-client/download/socks5-https-client-1.2.1.tgz#c8d4a000e39cdc1651d90245af04a735d75d8b09"
+  integrity sha1-yNSgAOOc3BZR2QJFrwSnNdddiwk=
+  dependencies:
+    socks5-client "~1.2.3"
 
 socks@^2.3.3:
   version "2.6.1"

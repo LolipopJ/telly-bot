@@ -18,7 +18,8 @@
         "koa-bodyparser": "^4.3.0",
         "koa-router": "^10.1.1",
         "node-telegram-bot-api": "^0.56.0",
-        "pm2": "^5.1.2"
+        "pm2": "^5.1.2",
+        "socks5-https-client": "^1.2.1"
     },
     "devDependencies": {
         "eslint": "^8.6.0",

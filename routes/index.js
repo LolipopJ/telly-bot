@@ -1,8 +1,8 @@
 const router = require('koa-router')()
-const bot = require('../bot')
 
 router.get('/', async function (ctx) {
-    ctx.body = 'Hello World'
+    const getMeRes = await globalThis.bot.getMe()
+    ctx.body = getMeRes
 })
 
 module.exports = router
