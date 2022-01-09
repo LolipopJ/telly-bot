@@ -16,6 +16,7 @@ TELEGRAM_BOT_TOKEN=Your Telegram Bot Token
 WEBHOOK_HOST=Your server's public address
 
 # Optional settings
+PORT=Server listenning port
 PROXY_SOCKS5_HOST=Your socks5 host if needed
 PROXY_SOCKS5_PORT=Your socks5 port if needed
 PROXY_SOCKS5_USERNAME= Your socks5 username if nedded

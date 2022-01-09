@@ -2,12 +2,9 @@ const Koa = require('koa')
 const app = new Koa()
 const bodyParser = require('koa-bodyparser')()
 const router = require('koa-router')()
+
 const bot = require('./bot')
-
 const indexRoutes = require('./routes/index')
-
-// bot
-globalThis.bot = bot
 
 // middlewares
 app.use(bodyParser)
@@ -27,13 +24,16 @@ app.use(async (ctx, next) => {
     ctx.set('X-Response-Time', `${ms}ms`)
 })
 
-// router
-router.use('/', indexRoutes.routes(), indexRoutes.allowedMethods())
-app.use(router.routes(), router.allowedMethods())
-
 // error handler
 app.on('error', function (err, ctx) {
     console.error('server error', err, ctx)
 })
+
+// router
+router.use('/', indexRoutes.routes(), indexRoutes.allowedMethods())
+app.use(router.routes(), router.allowedMethods())
+
+// bot
+globalThis.bot = bot()
 
 module.exports = app
