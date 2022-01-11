@@ -24,9 +24,9 @@ PROXY_SOCKS5_PASSWORD= Your socks5 username if nedded
 PROXY_HTTP=Your http proxy address if needed. PROXY_SOCKS5 will override this configuration
 ```
 
-Modify the config file `config.js` as prompted to connect to the PostgreSQL database:
+Rename `config.template.js` to `config.js`. Modify the config file `config.js` as prompted to connect to the PostgreSQL database:
 
-``` js
+```js
 database: {
     postgresql: {
         host: 'localhost',
