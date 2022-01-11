@@ -3,7 +3,8 @@ const app = new Koa()
 const bodyParser = require('koa-bodyparser')()
 const router = require('koa-router')()
 
-const bot = require('./bot')
+const service = require('./service/index')
+
 const indexRoutes = require('./routes/index')
 
 // middlewares
@@ -31,9 +32,10 @@ app.on('error', function (err, ctx) {
 
 // router
 router.use('/', indexRoutes.routes(), indexRoutes.allowedMethods())
+
 app.use(router.routes(), router.allowedMethods())
 
-// bot
-globalThis.bot = bot()
+// Init service
+service()
 
 module.exports = app

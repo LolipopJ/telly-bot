@@ -1,6 +1,6 @@
 {
     "name": "telly-bot",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "A Telegram bot based on Koa.",
     "scripts": {
         "start": "nodemon bin/www",
@@ -12,14 +12,19 @@
     "author": "LolipopJ",
     "license": "MIT",
     "dependencies": {
+        "@octokit/core": "^3.5.1",
         "debug": "^4.3.3",
         "dotenv": "^10.0.0",
         "koa": "^2.13.4",
         "koa-bodyparser": "^4.3.0",
         "koa-router": "^10.1.1",
         "node-telegram-bot-api": "^0.56.0",
+        "pg": "^8.7.1",
+        "pg-hstore": "^2.3.4",
         "pm2": "^5.1.2",
-        "socks5-https-client": "^1.2.1"
+        "sequelize": "^6.12.5",
+        "socks5-https-client": "^1.2.1",
+        "toad-scheduler": "^1.6.0"
     },
     "devDependencies": {
         "eslint": "^8.6.0",
