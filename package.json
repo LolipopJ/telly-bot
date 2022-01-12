@@ -4,7 +4,7 @@
     "description": "A Telegram bot based on Koa.",
     "scripts": {
         "start": "nodemon bin/www",
-        "pm2": "pm2 start bin/www",
+        "pm2": "pm2 start process.json",
         "lint": "eslint --ignore-path .gitignore --ext .ts,.js,.vue .",
         "lint:fix": "yarn lint --fix",
         "lint:prettier": "prettier --ignore-path .gitignore --write **/* --ignore-unknown"

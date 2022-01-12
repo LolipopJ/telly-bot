@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "name": "telly-bot",
+            "script": "bin/www",
+            "log_date_format": "YYYY-MM-DD HH:mm Z"
+        }
+    ]
+}
