@@ -1,6 +1,6 @@
 {
     "name": "telly-bot",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A Telegram bot based on Koa.",
     "scripts": {
         "start": "nodemon bin/www",

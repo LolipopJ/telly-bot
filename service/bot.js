@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api')
 
+const generateQrcode = require('./botApi/generateQrcode')
 const todayOfHistory = require('./botApi/todayOfHistory')
 
 const token = process.env.TELEGRAM_BOT_TOKEN
@@ -68,6 +69,16 @@ const connectTelegramBot = async () => {
                 msg.chat.id,
                 'Get today of history failed. You may try to call it again later!'
             )
+        }
+    })
+
+    bot.onText(/\/qrcode/, (msg) => {
+        const text = msg.text
+        const res = generateQrcode({ text })
+        if (res.ok === true) {
+            bot.sendPhoto(msg.chat.id, res.data)
+        } else {
+            bot.sendMessage(msg.chat.id, res.error)
         }
     })
 
