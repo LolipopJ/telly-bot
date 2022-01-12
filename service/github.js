@@ -16,7 +16,7 @@ const octokit = new Octokit(octokitOptions)
 // Forward Github issue comment service
 const forwardGithubIssueComment = async function () {
     const serviceName = 'Forward Github Issue Comment'
-    const issues = config.issueComment
+    const issues = config.forwardIssueComment.task
     if (!Array.isArray(issues) || issues.length === 0) {
         console.log(
             `Service info: ${serviceName}\n`,
@@ -62,24 +62,32 @@ const forwardGithubIssueComment = async function () {
         let page = 0
 
         // Get initial query comment update since time
-        let since = new Date().toISOString()
+        let since
         const issueServiceInfo = await ServiceGithubIssueComment.findOne({
             where: queryConfig,
         })
         if (issueServiceInfo) {
-            const issueServiceData = issueServiceInfo.dataValues
-            if (issueServiceData.lastUpdateCommentAt) {
-                since = issueServiceData.lastUpdateCommentAt
+            // The service record exists
+            const lastUpdateCommentDate =
+                issueServiceInfo.dataValues.lastUpdateCommentAt
+            if (lastUpdateCommentDate) {
+                // Use comment last update date added by 1 ms as since
+                since = new Date(
+                    new Date(lastUpdateCommentDate).getTime() + 1
+                ).toISOString()
             } else {
                 console.error(
                     `Service error: ${serviceName}\n`,
                     `Can\'t get the last update date of issue ${issueUrl} in database\n`,
                     'To fix this, you need to delete the data record of this service, and then set a new start date (since) in config.js if you have already forward messages.'
                 )
+                // Use current date as since
+                since = new Date().toISOString()
             }
         } else {
-            // The record does not exist in the database, create a new one
+            // The service record does not exist in the database, create a new one
             await ServiceGithubIssueComment.create(queryConfig)
+            // Use configuration date as since
             if (issue.since) since = new Date(issue.since).toISOString()
         }
 
@@ -115,7 +123,7 @@ const forwardGithubIssueComment = async function () {
 
         // Forward the comment to the specified Telegram channel
         if (issueComments.length > 0) {
-            let lastUpdateCommentAt = since
+            let lastUpdateCommentAt = new Date(0).toISOString()
             for (const issueComment of issueComments) {
                 const sourceDate = `${new Date(
                     issueComment.updated_at
@@ -159,7 +167,7 @@ const forwardGithubIssueComment = async function () {
             // Update database records
             await ServiceGithubIssueComment.update(
                 {
-                    lastUpdateCommentAt: lastUpdateCommentAt,
+                    lastUpdateCommentAt,
                     lastExecServiceAt: new Date().toISOString(),
                 },
                 {

@@ -7,12 +7,14 @@ const {
 const bot = require('./bot')
 const sequelize = require('../db/index')
 
-const initService = async function () {
-    // Connect bot
-    globalThis.bot = await bot()
+const config = require('../config')
 
+const initService = async function () {
     // Init databse
     globalThis.sequelize = await sequelize()
+
+    // Connect bot
+    globalThis.bot = await bot()
 
     // Run services
     const githubService = require('./github')
@@ -28,7 +30,10 @@ const initService = async function () {
         }
     )
     const jobForwardGithubIssueComment = new SimpleIntervalJob(
-        { hours: 1, runImmediately: true },
+        {
+            seconds: config.github.forwardIssueComment.duration,
+            runImmediately: true,
+        },
         taskForwardGithubIssueComment
     )
 

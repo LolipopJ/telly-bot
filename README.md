@@ -45,24 +45,27 @@ You can enable Github issue comment forwarding service by configuring `config.js
 
 ```js
 github: {
-    issueComment: [
-        {
-            owner: 'github_repo_owner',
-            repo: 'github_repo_name',
-            issueNumber: 1,
-            // Only forward the comments of these users, empty means forward all
-            issueUserId: undefined,
-            // The ID of the channel to which the comment was forwarded. Example: @lolipop_thoughts
-            forwardChannelId: '@telegram_channel_id',
-            // Forward comments from this date
-            since: '2022-01-01T00:00:00.000Z',
-        },
-        {
-            // Other forward service configuration
-        },
-    ],
+    forwardIssueComment: {
+        // Interval time(s) between execution of the next service
+        duration: 3600,
+        task: [
+            {
+                owner: 'github_repo_owner',
+                repo: 'github_repo_name',
+                issueNumber: 1,
+                // Only forward the comments of these users, empty means forward all
+                issueUserId: undefined,
+                // The ID of the channel to which the comment was forwarded. Example: @lolipop_thoughts
+                forwardChannelId: '@telegram_channel_id',
+                // Forward comments from this date
+                since: '2022-01-01T00:00:00.000Z',
+            },
+        ],
+    },
 },
 ```
+
+This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is 3600 seconds.
 
 ## Development
 
