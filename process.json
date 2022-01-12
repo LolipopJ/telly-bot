@@ -3,7 +3,9 @@
         {
             "name": "telly-bot",
             "script": "bin/www",
-            "log_date_format": "YYYY-MM-DD HH:mm Z"
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "error_file": "./logs/telly_bot_err.log",
+            "out_file": "./logs/telly_bot_out.log"
         }
     ]
 }
