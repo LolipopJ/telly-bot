@@ -6,9 +6,9 @@ const getTodayOfHistory = async function () {
         const todayOfHistory = JSON.parse(
             res.data.replace(/(\r\n\t|\n|\r\t)/gm, '')
         )
-        let reply = `Today is ${todayOfHistory.day}`
+        let reply = `Today is ${todayOfHistory.day}\n`
         for (const item of todayOfHistory.result) {
-            reply += `\n[${item.date}]\t${item.title}`
+            reply += `\n[${item.date}]\n${item.title}`
         }
         return {
             ok: true,

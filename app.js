@@ -1,5 +1,4 @@
 const Koa = require('koa')
-const app = new Koa()
 const bodyParser = require('koa-bodyparser')()
 const router = require('koa-router')()
 
@@ -7,6 +6,7 @@ const service = require('./service/index')
 
 const indexRoutes = require('./routes/index')
 
+const app = new Koa()
 // middlewares
 app.use(bodyParser)
 

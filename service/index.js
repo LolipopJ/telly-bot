@@ -4,26 +4,17 @@ const {
     AsyncTask,
 } = require('toad-scheduler')
 
-const bot = require('./bot')
-const sequelize = require('../db/index')
+const githubTask = require('./task/github')
+const pixivTask = require('./task/pixiv')
 
 const config = require('../config')
 
 const initService = async function () {
-    // Init databse
-    globalThis.sequelize = await sequelize()
-
-    // Connect bot
-    globalThis.bot = await bot()
-
-    // Run services
-    const githubService = require('./github')
-
-    const scheduler = new ToadScheduler()
+    // Init scheduler tasks
     const taskForwardGithubIssueComment = new AsyncTask(
         'Forward Github Issue Comment',
         async () => {
-            await githubService.forwardGithubIssueComment()
+            await githubTask.forwardGithubIssueComment()
         },
         (error) => {
             console.error(error)
@@ -37,7 +28,27 @@ const initService = async function () {
         taskForwardGithubIssueComment
     )
 
+    const taskGenerateCollectionIndex = new AsyncTask(
+        'Generate Pixiv Collection Index',
+        async () => {
+            await pixivTask.generateCollectionIndex()
+        },
+        (error) => {
+            console.error(error)
+        }
+    )
+    const jobGenerateCollectionIndex = new SimpleIntervalJob(
+        {
+            seconds: config.pixiv.randomGetFromCollection.duration,
+            runImmediately: true,
+        },
+        taskGenerateCollectionIndex
+    )
+
+    // Run services
+    const scheduler = new ToadScheduler()
     scheduler.addSimpleIntervalJob(jobForwardGithubIssueComment)
+    scheduler.addSimpleIntervalJob(jobGenerateCollectionIndex)
 }
 
 module.exports = initService

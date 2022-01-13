@@ -24,6 +24,12 @@ const config = {
             ],
         },
     },
+    pixiv: {
+        randomGetCollection: {
+            duration: 3600,
+            path: ['pixiv_collection_path'],
+        },
+    },
 }
 
 module.exports = config

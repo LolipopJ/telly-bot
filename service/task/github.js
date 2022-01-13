@@ -1,9 +1,9 @@
 const { Octokit } = require('@octokit/core')
 
-const config = require('../config').github
+const Bot = require('../bot')
+const Sequelize = require('../../db/index')
 
-const bot = globalThis.bot
-const sequelize = globalThis.sequelize
+const config = require('../../config').github
 
 // Init API requester
 const octokitOptions = {}
@@ -24,6 +24,9 @@ const forwardGithubIssueComment = async function () {
         )
         return
     }
+
+    const bot = await Bot()
+    const sequelize = await Sequelize()
 
     const ServiceGithubIssueComment = sequelize.models.ServiceGithubIssueComment
 
@@ -51,6 +54,10 @@ const forwardGithubIssueComment = async function () {
         if (issueUserId !== undefined && !Array.isArray(issueUserId)) {
             issueUserId = [issueUserId]
         }
+        issueUserId.filter((id) => {
+            if (id) return true
+            else return false
+        })
 
         const queryConfig = {
             issueUrl,
@@ -110,7 +117,7 @@ const forwardGithubIssueComment = async function () {
         }
 
         // Only keep comments for the specified userId
-        if (Array.isArray(issueUserId) && issueUserId.length > 0) {
+        if (issueUserId.length > 0) {
             issueComments = issueComments.filter((comment) => {
                 const commentUserId = comment.user.id
                 if (issueUserId.includes(commentUserId)) {
@@ -183,6 +190,8 @@ const forwardGithubIssueComment = async function () {
 
     const execEndTime = new Date().getTime()
     console.log(
+        `Service info: ${serviceName}\n`,
+        `Execute service successfully!\n`,
         `Completed service execution ${serviceName} in ${
             execEndTime - execStartTime
         } ms.`
