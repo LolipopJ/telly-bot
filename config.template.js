@@ -25,7 +25,7 @@ const config = {
         },
     },
     pixiv: {
-        randomGetCollection: {
+        generateCollectionIndex: {
             duration: 3600,
             path: ['pixiv_collection_path'],
         },

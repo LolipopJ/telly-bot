@@ -18,6 +18,9 @@ module.exports = {
     serviceConfig: {
         type: DataTypes.TEXT,
     },
+    serviceSharedData: {
+        type: DataTypes.TEXT,
+    },
     lastExecAt: {
         type: DataTypes.DATE,
     },

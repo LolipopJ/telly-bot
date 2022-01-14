@@ -1,6 +1,9 @@
 const TelegramBot = require('node-telegram-bot-api')
 
+const Sequelize = require('../db/index')
+
 const generateQrcode = require('./botApi/generateQrcode')
+const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
 
 const token = process.env.TELEGRAM_BOT_TOKEN
@@ -65,26 +68,103 @@ const connectTelegramBot = async () => {
             bot.sendMessage(msg.chat.id, 'Hi, this is Telly Bot!')
         })
 
-        bot.onText(/\/today_of_history/, async (msg) => {
-            const res = await todayOfHistory()
+        bot.onText(/\/qrcode/, (msg) => {
+            const text = msg.text
+            const chatId = msg.chat.id
+
+            const res = generateQrcode({ text })
             if (res.ok === true) {
-                bot.sendMessage(msg.chat.id, res.data)
+                bot.sendPhoto(chatId, res.data)
             } else {
-                console.error(res.err)
+                bot.sendMessage(chatId, res.error)
+            }
+        })
+
+        bot.onText(/\/random_pixiv/, async (msg) => {
+            const apiName = 'Random Get Pixiv Collection'
+            const res = await randomGetPixivCollection()
+            const chatId = msg.chat.id
+            if (res.ok === true) {
+                const data = res.data
+                console.log(
+                    `Bot API: ${apiName}\n`,
+                    `Sending Pixiv artwork name: ${data.picName}`
+                )
+
+                const caption = `Pixiv Artwork: ${data.picNameMD}\n[source](${data.picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
+
+                if (data.picSize >= 5) {
+                    // Artwork size is not smaller than 5 MB, send caption message
+                    bot.sendMessage(chatId, caption, {
+                        parse_mode: 'MarkdownV2',
+                        disable_web_page_preview: false,
+                    })
+                } else {
+                    // Artwork size is smaller than 5 MB, send photo message
+                    const sendPhotoOptions = {
+                        caption,
+                        parse_mode: 'MarkdownV2',
+                        disable_web_page_preview: true,
+                    }
+                    try {
+                        await bot.sendPhoto(
+                            chatId,
+                            data.picProxyUrl,
+                            sendPhotoOptions
+                        )
+                    } catch (err) {
+                        console.error(err)
+
+                        // const sequelize = Sequelize()
+                        // const ServicePixivCollection =
+                        //     sequelize.models.ServicePixivCollection
+
+                        try {
+                            // Comic mode artwork with index=0 may send failed
+                            // Use comic mode url instead
+                            const picProxyUrl = `https://pixiv.cat/${data.picId}-1.${data.picType}`
+                            await bot.sendPhoto(
+                                chatId,
+                                picProxyUrl,
+                                sendPhotoOptions
+                            )
+
+                            // Set this artwork with comic mode
+                            // ServicePixivCollection.update(
+                            //     { comicMode: true },
+                            //     { where: { id: data.id } }
+                            // )
+                        } catch (err) {
+                            console.error(err)
+
+                            // If failed again, send caption message
+                            await bot.sendMessage(chatId, caption, {
+                                parse_mode: 'MarkdownV2',
+                                disable_web_page_preview: false,
+                            })
+                        }
+                    }
+                }
+            } else {
+                console.error(res.error)
                 bot.sendMessage(
-                    msg.chat.id,
-                    'Get today of history failed. You may try to call it again later!'
+                    chatId,
+                    'Get random pixiv artwork failed. You may try to call it again later!'
                 )
             }
         })
 
-        bot.onText(/\/qrcode/, (msg) => {
-            const text = msg.text
-            const res = generateQrcode({ text })
+        bot.onText(/\/today_of_history/, async (msg) => {
+            const res = await todayOfHistory()
+            const chatId = msg.chat.id
             if (res.ok === true) {
-                bot.sendPhoto(msg.chat.id, res.data)
+                bot.sendMessage(chatId, res.data)
             } else {
-                bot.sendMessage(msg.chat.id, res.error)
+                console.error(res.error)
+                bot.sendMessage(
+                    chatId,
+                    'Get today of history failed. You may try to call it again later!'
+                )
             }
         })
 

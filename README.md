@@ -65,7 +65,24 @@ github: {
 },
 ```
 
-This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is 3600 seconds.
+This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is `3600` seconds.
+
+### Generate Pivix collection index and random send to Telegram chat
+
+You can enable Github issue comment forwarding service by configuring `config.js`:
+
+```js
+github: {
+    pixiv: {
+        generateCollectionIndex: {
+            duration: 3600,
+            path: ['pixiv_collection_path'],
+        },
+    },
+},
+```
+
+This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` path every `3600` seconds. In that case, your can send message `/random_pixiv` to the bot and get a random collection each time.
 
 ## Development
 

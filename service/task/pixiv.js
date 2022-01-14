@@ -17,7 +17,7 @@ const generateCollectionIndex = async function () {
     const ServicePixivCollection = sequelize.models.ServicePixivCollection
     const ServiceProcess = sequelize.models.ServiceProcess
 
-    let collectionPaths = config.randomGetFromCollection.path
+    let collectionPaths = config.generateCollectionIndex.path
     if (!collectionPaths) {
         console.error(
             `Service error: ${serviceName}\n`,
@@ -66,6 +66,8 @@ const generateCollectionIndex = async function () {
                 ) / fileSizeReservedDecimalNum // MB
             const picCreatedAt = picStat.mtimeMs // ms
 
+            const comicMode = picIndex > 0 ? true : false
+
             files[i] = {
                 picName: filename,
                 picId,
@@ -73,6 +75,7 @@ const generateCollectionIndex = async function () {
                 picType,
                 picSize,
                 picCreatedAt,
+                comicMode,
             }
         }
 
@@ -87,9 +90,8 @@ const generateCollectionIndex = async function () {
     })
     let haveExecTime
     if (serviceProcess) {
-        let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
-
         // Only update or create Pixiv artwork that saved after last time this service is done
+        let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
         if (lastUpdateIndexTime) {
             lastUpdateIndexTime = new Date(lastUpdateIndexTime).getTime()
             allFiles = allFiles.filter((pic) => {

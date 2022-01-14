@@ -39,7 +39,7 @@ const initService = async function () {
     )
     const jobGenerateCollectionIndex = new SimpleIntervalJob(
         {
-            seconds: config.pixiv.randomGetFromCollection.duration,
+            seconds: config.pixiv.generateCollectionIndex.duration,
             runImmediately: true,
         },
         taskGenerateCollectionIndex

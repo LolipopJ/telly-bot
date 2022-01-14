@@ -15,11 +15,11 @@ const getTodayOfHistory = async function () {
             data: reply,
             error: undefined,
         }
-    } catch (err) {
+    } catch (error) {
         return {
             ok: false,
             data: undefined,
-            error: err,
+            error,
         }
     }
 }

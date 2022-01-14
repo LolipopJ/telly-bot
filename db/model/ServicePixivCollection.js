@@ -40,7 +40,12 @@ module.exports = {
     sourceUrl: {
         type: DataTypes.TEXT,
     },
-    // Is artwork safe for work?
+    // Is artwork includes mutiple images?
+    comicMode: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
+    // Is artwork not safe for work?
     r18: {
         type: DataTypes.BOOLEAN,
     },
