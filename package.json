@@ -23,7 +23,7 @@
         "pg": "^8.7.1",
         "pg-hstore": "^2.3.4",
         "pm2": "^5.1.2",
-        "sequelize": "^6.12.5",
+        "sequelize": "^6.13.0",
         "socks5-https-client": "^1.2.1",
         "toad-scheduler": "^1.6.0"
     },

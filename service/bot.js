@@ -29,8 +29,16 @@ const connectTelegramBot = async () => {
             process.env.PROXY_HTTP_HOST &&
             process.env.PROXY_HTTP_PORT
         ) {
+            const proxyUsername = process.env.PROXY_HTTP_USERNAME
+            const proxyPassword = process.env.PROXY_HTTP_PASSWORD
+            const proxyUser =
+                proxyUsername && proxyPassword
+                    ? `${proxyUsername}:${proxyPassword}@`
+                    : ''
             requestOptions = {
-                proxy: `${process.env.PROXY_HTTP_PROTOCOL}://${process.env.PROXY_HTTP_HOST}:${process.env.PROXY_HTTP_PORT}`,
+                proxy: `${process.env.PROXY_HTTP_PROTOCOL}://${proxyUser}${
+                    process.env.PROXY_HTTP_HOST
+                }:${parseInt(process.env.PROXY_HTTP_PORT)}`,
             }
         }
 

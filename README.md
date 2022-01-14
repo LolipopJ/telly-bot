@@ -17,11 +17,20 @@ WEBHOOK_HOST=Your server's public address. Requires HTTPS protocol
 
 # Optional settings
 PORT=Server listenning port. 4000 by default
-PROXY_SOCKS5_HOST=Your socks5 host if needed
-PROXY_SOCKS5_PORT=Your socks5 port if needed
-PROXY_SOCKS5_USERNAME= Your socks5 username if nedded
-PROXY_SOCKS5_PASSWORD= Your socks5 username if nedded
-PROXY_HTTP=Your http proxy address if needed. PROXY_SOCKS5 will override this configuration
+
+GITHUB_PERSONAL_ACCESS_TOKEN=Your Github account personal access token
+
+PROXY_SOCKS5_HOST=Your SOCKS5 host
+PROXY_SOCKS5_PORT=Your SOCKS5 port
+PROXY_SOCKS5_USERNAME= Your SOCKS5 username
+PROXY_SOCKS5_PASSWORD= Your SOCKS5 username
+
+# HTTP proxy settings, PROXY_SOCKS5 settings will override these settings.
+PROXY_HTTP_PROTOCOL=Your HTTP proxy protocol
+PROXY_HTTP_HOST=Your HTTP proxy host
+PROXY_HTTP_PORT=Your HTTP proxy port
+PROXY_HTTP_USERNAME=Your HTTP proxy username
+PROXY_HTTP_PASSWORD=Your HTTP proxy password
 ```
 
 Rename `config.template.js` to `config.js`. Modify the config file `config.js` as prompted to connect to the PostgreSQL database:
