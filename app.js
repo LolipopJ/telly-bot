@@ -5,6 +5,7 @@ const router = require('koa-router')()
 const service = require('./service/index')
 
 const indexRoutes = require('./routes/index')
+const pixivRoutes = require('./routes/pixiv')
 
 const app = new Koa()
 // middlewares
@@ -32,6 +33,7 @@ app.on('error', function (err, ctx) {
 
 // router
 router.use('/', indexRoutes.routes(), indexRoutes.allowedMethods())
+router.use('/pixiv', pixivRoutes.routes(), pixivRoutes.allowedMethods())
 
 app.use(router.routes(), router.allowedMethods())
 

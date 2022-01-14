@@ -1,7 +1,5 @@
 const TelegramBot = require('node-telegram-bot-api')
 
-const Sequelize = require('../db/index')
-
 const generateQrcode = require('./botApi/generateQrcode')
 const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
