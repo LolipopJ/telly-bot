@@ -4,6 +4,8 @@ const generateQrcode = require('./botApi/generateQrcode')
 const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
 
+const { randomKaomoji } = require('../assets/index')
+
 const token = process.env.TELEGRAM_BOT_TOKEN
 
 let instance
@@ -87,10 +89,17 @@ const connectTelegramBot = async () => {
         })
 
         bot.onText(/\/random_pixiv/, async (msg) => {
-            const apiName = 'Random Get Pixiv Collection'
-            const res = await randomGetPixivCollection()
             const chatId = msg.chat.id
+            const apiName = 'Random Get Pixiv Collection'
+
+            const res = await randomGetPixivCollection()
             if (res.ok === true) {
+                // Send placeholder message
+                const placeholderMessage = await bot.sendMessage(
+                    chatId,
+                    `${randomKaomoji()} Geeeeting a random Pixiv artwork ...`
+                )
+
                 const data = res.data
                 console.log(
                     `Bot API: ${apiName}\n`,
@@ -101,7 +110,7 @@ const connectTelegramBot = async () => {
 
                 if (data.picSize >= 5) {
                     // Artwork size is not smaller than 5 MB, send caption message
-                    bot.sendMessage(chatId, caption, {
+                    await bot.sendMessage(chatId, caption, {
                         parse_mode: 'MarkdownV2',
                         disable_web_page_preview: false,
                     })
@@ -119,7 +128,7 @@ const connectTelegramBot = async () => {
                             sendPhotoOptions
                         )
                     } catch (err) {
-                        console.error(err)
+                        console.error(err.response.body)
 
                         // const sequelize = Sequelize()
                         // const ServicePixivCollection =
@@ -141,7 +150,7 @@ const connectTelegramBot = async () => {
                             //     { where: { id: data.id } }
                             // )
                         } catch (err) {
-                            console.error(err)
+                            console.error(err.response.body)
 
                             // If failed again, send caption message
                             await bot.sendMessage(chatId, caption, {
@@ -151,6 +160,9 @@ const connectTelegramBot = async () => {
                         }
                     }
                 }
+
+                // Remove placeholder message
+                bot.deleteMessage(chatId, placeholderMessage.message_id)
             } else {
                 console.error(res.error)
                 bot.sendMessage(

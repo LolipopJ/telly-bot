@@ -34,12 +34,18 @@ const connectDababase = async () => {
             throw error
         }
 
-        sequelize.define(
+        const ServiceGithubIssueComment = sequelize.define(
             'ServiceGithubIssueComment',
             serviceGithubIssueCommentModel
         )
-        sequelize.define('ServicePixivCollection', servicePixivCollectionModel)
-        sequelize.define('ServiceProcess', serviceProcessModel)
+        const ServicePixivCollection = sequelize.define(
+            'ServicePixivCollection',
+            servicePixivCollectionModel
+        )
+        const ServiceProcess = sequelize.define(
+            'ServiceProcess',
+            serviceProcessModel
+        )
 
         try {
             await sequelize.sync({ alter: true })

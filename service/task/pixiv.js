@@ -79,34 +79,30 @@ const generateCollectionIndex = async function () {
             }
         }
 
+        // Only keep files that recently saved
+        const serviceProcess = await ServiceProcess.findOne({
+            where: { serviceName, serviceConfig: collectionPath },
+        })
+        if (serviceProcess) {
+            // Only update or create Pixiv artwork that saved after last time this service is done
+            let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
+            if (lastUpdateIndexTime) {
+                lastUpdateIndexTime = new Date(lastUpdateIndexTime).getTime()
+                files = files.filter((pic) => {
+                    return pic.picCreatedAt > lastUpdateIndexTime
+                })
+            }
+        } else {
+            await ServiceProcess.create({
+                serviceName,
+                serviceConfig: collectionPath,
+            })
+        }
+
         allFiles = allFiles.concat(files)
     }
 
     const updateIndexAt = new Date().toISOString()
-
-    // Only keep files that recently saved
-    const serviceProcess = await ServiceProcess.findOne({
-        where: { serviceName },
-    })
-    let haveExecTime
-    if (serviceProcess) {
-        // Only update or create Pixiv artwork that saved after last time this service is done
-        let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
-        if (lastUpdateIndexTime) {
-            lastUpdateIndexTime = new Date(lastUpdateIndexTime).getTime()
-            allFiles = allFiles.filter((pic) => {
-                return pic.picCreatedAt > lastUpdateIndexTime
-            })
-        }
-
-        haveExecTime = serviceProcess.dataValues.haveExecTime || 0
-    } else {
-        await ServiceProcess.create({
-            serviceName,
-        })
-
-        haveExecTime = 0
-    }
 
     // Update or create pic index
     for (const picFile of allFiles) {
@@ -124,19 +120,19 @@ const generateCollectionIndex = async function () {
     }
 
     // Update service process record
-    await ServiceProcess.update(
+    ServiceProcess.update(
         {
             lastExecAt: updateIndexAt,
-            haveExecTime: ++haveExecTime,
         },
         {
             where: { serviceName },
         }
     )
+    ServiceProcess.increment('haveExecTime', { where: { serviceName } })
 
     console.log(
         `Service info: ${serviceName}\n`,
-        `Execute service successfully! ${allFiles.length} new artworks have been saved in database!`
+        `Execute service successfully! ${allFiles.length} artworks have been saved or updated in database!`
     )
 }
 
