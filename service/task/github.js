@@ -31,7 +31,7 @@ const forwardGithubIssueComment = async function () {
     const ServiceGithubIssueComment = sequelize.models.ServiceGithubIssueComment
 
     const execStartTime = new Date().getTime()
-    console.log(`Start execute service: ${serviceName}`)
+    console.log(`Service info: ${serviceName}\n`, `Start execute service.`)
 
     for (const issue of issues) {
         const owner = issue.owner
@@ -48,7 +48,10 @@ const forwardGithubIssueComment = async function () {
         }
 
         const issueUrl = `${owner}/${repo}/issues/${issueNumber}`
-        console.log(`Start to resolve issue: ${issueUrl}`)
+        console.log(
+            `Service info: ${serviceName}\n`,
+            `Start to resolve issue: ${issueUrl}`
+        )
 
         let issueUserId = issue.issueUserId
         if (issueUserId !== undefined && !Array.isArray(issueUserId)) {
@@ -146,11 +149,12 @@ const forwardGithubIssueComment = async function () {
                         }
                     )
                     console.log(
+                        `Service info: ${serviceName}\n`,
                         `Send message successfully:\n${issueComment.body}`
                     )
                 } catch (error) {
                     // console.log(error)
-                    console.error(
+                    console.warn(
                         `Service warning: ${serviceName}\n---\nParse message failed:\n${issueComment.body}`
                     )
                     const sourceCaption = `\n\n${sourceDate}`
@@ -161,7 +165,10 @@ const forwardGithubIssueComment = async function () {
                             disable_web_page_preview: true,
                         }
                     )
-                    console.log('Message url link has been sended!\n---')
+                    console.log(
+                        `Service info: ${serviceName}\n`,
+                        'Message url link has been sended!\n---'
+                    )
                 }
 
                 // Get the last update date of comments
@@ -184,6 +191,7 @@ const forwardGithubIssueComment = async function () {
         }
 
         console.log(
+            `Service info: ${serviceName}\n`,
             `Resolve issue ${issueUrl} successfully! Bot has forwarded ${issueComments.length} new comments.`
         )
     }

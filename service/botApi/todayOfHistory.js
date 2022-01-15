@@ -1,15 +1,32 @@
 const axios = require('axios')
 
+const todayOfHistoryRecord = {}
+
 const getTodayOfHistory = async function () {
+    const apiName = 'Get Today of History'
+    const today = new Date().toLocaleDateString()
+
     try {
-        const res = await axios.get('https://api.oick.cn/lishi/api.php')
-        const todayOfHistory = JSON.parse(
-            res.data.replace(/(\r\n\t|\n|\r\t)/gm, '')
-        )
-        let reply = `Today is ${todayOfHistory.day}\n`
-        for (const item of todayOfHistory.result) {
-            reply += `\n[${item.date}]\n${item.title}`
+        let reply
+        if (todayOfHistoryRecord[today]) {
+            console.log(
+                `Bot API info: ${apiName}\n`,
+                `Get ${today} from temp record.`
+            )
+            reply = todayOfHistoryRecord[today]
+        } else {
+            const res = await axios.get('https://api.oick.cn/lishi/api.php')
+            const todayOfHistory = res.data
+            // const todayOfHistory = JSON.parse(
+            //     res.data.replace(/(\r\n\t|\n|\r\t)/gm, '')
+            // )
+            reply = `Today is ${todayOfHistory.day}\n`
+            for (const item of todayOfHistory.result) {
+                reply += `\n[${item.date}]\n${item.title}`
+            }
+            todayOfHistoryRecord[today] = reply
         }
+
         return {
             ok: true,
             data: reply,

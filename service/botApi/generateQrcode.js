@@ -1,4 +1,6 @@
 const generateQrcode = function ({ text, size = 600 }) {
+    const apiName = 'Generate QRcode'
+
     const qrcodeText = String(text).slice(7).trim()
 
     if (qrcodeText.length === 0) {
@@ -12,7 +14,10 @@ const generateQrcode = function ({ text, size = 600 }) {
         }
     }
 
-    console.log(`Generating qrcode text: ${qrcodeText}`)
+    console.log(
+        `Bot API info: ${apiName}\n`,
+        `Generating qrcode text: ${qrcodeText}`
+    )
 
     return {
         ok: true,

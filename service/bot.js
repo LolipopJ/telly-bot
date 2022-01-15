@@ -1,5 +1,7 @@
 const TelegramBot = require('node-telegram-bot-api')
 
+const Sequelize = require('../db/index')
+
 const generateQrcode = require('./botApi/generateQrcode')
 const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
@@ -101,70 +103,97 @@ const connectTelegramBot = async () => {
                 )
 
                 const data = res.data
+                const {
+                    id,
+                    picName,
+                    picNameMD,
+                    picUrl,
+                    picSize,
+                    picProxyUrl,
+                    picId,
+                    picIndex,
+                    picType,
+                } = data
+
                 console.log(
-                    `Bot API: ${apiName}\n`,
-                    `Sending Pixiv artwork name: ${data.picName}`
+                    `Bot API info: ${apiName}\n`,
+                    `Sending Pixiv artwork name: ${picName}`
                 )
 
-                const caption = `Pixiv Artwork: ${data.picNameMD}\n[source](${data.picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
+                const caption = `Pixiv Artwork: ${picNameMD}\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
 
-                if (data.picSize >= 5) {
-                    // Artwork size is not smaller than 5 MB, send caption message
-                    await bot.sendMessage(chatId, caption, {
-                        parse_mode: 'MarkdownV2',
-                        disable_web_page_preview: false,
-                    })
-                } else {
+                let msgReplied = false
+
+                if (picSize < 5) {
                     // Artwork size is smaller than 5 MB, send photo message
                     const sendPhotoOptions = {
                         caption,
                         parse_mode: 'MarkdownV2',
                         disable_web_page_preview: true,
                     }
+
                     try {
                         await bot.sendPhoto(
                             chatId,
-                            data.picProxyUrl,
+                            picProxyUrl,
                             sendPhotoOptions
                         )
+
+                        msgReplied = true
                     } catch (err) {
-                        console.error(err.response.body)
+                        console.error(
+                            `Bot API error: ${apiName}\n`,
+                            err.response.body
+                        )
 
-                        // const sequelize = Sequelize()
-                        // const ServicePixivCollection =
-                        //     sequelize.models.ServicePixivCollection
+                        if (picIndex == 0) {
+                            try {
+                                // Comic mode artwork with index=0 may send failed
+                                // Use comic mode url instead
+                                const picProxyUrl = `https://pixiv.cat/${picId}-1.${picType}`
+                                await bot.sendPhoto(
+                                    chatId,
+                                    picProxyUrl,
+                                    sendPhotoOptions
+                                )
 
-                        try {
-                            // Comic mode artwork with index=0 may send failed
-                            // Use comic mode url instead
-                            const picProxyUrl = `https://pixiv.cat/${data.picId}-1.${data.picType}`
-                            await bot.sendPhoto(
-                                chatId,
-                                picProxyUrl,
-                                sendPhotoOptions
-                            )
+                                msgReplied = true
 
-                            // Set this artwork with comic mode
-                            // ServicePixivCollection.update(
-                            //     { comicMode: true },
-                            //     { where: { id: data.id } }
-                            // )
-                        } catch (err) {
-                            console.error(err.response.body)
+                                // Send successfully, set this artwork with comic mode
+                                const sequelize = await Sequelize()
+                                const ServicePixivCollection =
+                                    sequelize.models.ServicePixivCollection
 
-                            // If failed again, send caption message
-                            await bot.sendMessage(chatId, caption, {
-                                parse_mode: 'MarkdownV2',
-                                disable_web_page_preview: false,
-                            })
+                                ServicePixivCollection.update(
+                                    { comicMode: true },
+                                    { where: { id: id } }
+                                )
+
+                                return true
+                            } catch (err) {
+                                console.error(
+                                    `Bot API error: ${apiName}\n`,
+                                    err.response.body
+                                )
+                            }
                         }
                     }
+                }
+
+                // Artwork size is not smaller than 5 MB or send failed again,
+                // send caption message
+                if (!msgReplied) {
+                    await bot.sendMessage(chatId, caption, {
+                        parse_mode: 'MarkdownV2',
+                        disable_web_page_preview: false,
+                    })
                 }
 
                 // Remove placeholder message
                 bot.deleteMessage(chatId, placeholderMessage.message_id)
             } else {
-                console.error(res.error)
+                console.error(`Bot API error: ${apiName}\n`, res.error)
+
                 bot.sendMessage(
                     chatId,
                     'Get random pixiv artwork failed. You may try to call it again later!'
@@ -173,12 +202,15 @@ const connectTelegramBot = async () => {
         })
 
         bot.onText(/\/today_of_history/, async (msg) => {
-            const res = await todayOfHistory()
+            const apiName = 'Get Today of History'
             const chatId = msg.chat.id
+
+            const res = await todayOfHistory()
             if (res.ok === true) {
                 bot.sendMessage(chatId, res.data)
             } else {
-                console.error(res.error)
+                console.error(`Bot API error: ${apiName}\n`, res.error)
+
                 bot.sendMessage(
                     chatId,
                     'Get today of history failed. You may try to call it again later!'

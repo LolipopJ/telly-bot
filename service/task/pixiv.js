@@ -36,7 +36,7 @@ const generateCollectionIndex = async function () {
         try {
             files = files.concat(await readdir(collectionPath))
         } catch (err) {
-            console.err(err)
+            console.err(`Service error: ${serviceName}\n`, err)
             throw err
         }
 
@@ -115,6 +115,7 @@ const generateCollectionIndex = async function () {
             picFile
         )
         console.log(
+            `Service info: ${serviceName}\n`,
             `New Pixiv artwork index has been updated or created: ${picFile.picName}`
         )
     }
@@ -130,9 +131,11 @@ const generateCollectionIndex = async function () {
     )
     ServiceProcess.increment('haveExecTime', { where: { serviceName } })
 
+    const artworksCount = await ServicePixivCollection.count()
     console.log(
         `Service info: ${serviceName}\n`,
-        `Execute service successfully! ${allFiles.length} artworks have been saved or updated in database!`
+        `Execute service successfully! ${allFiles.length} artworks have been saved or updated in database!\n`,
+        `There are ${artworksCount} artworks available in database now!`
     )
 }
 
