@@ -8,6 +8,8 @@ const todayOfHistory = require('./botApi/todayOfHistory')
 
 const { randomKaomoji } = require('../assets/index')
 
+const config = require('../config')
+
 const token = process.env.TELEGRAM_BOT_TOKEN
 
 let instance
@@ -74,11 +76,11 @@ const connectTelegramBot = async () => {
             )
         })
 
-        bot.onText(/\/start/, (msg) => {
+        bot.onText(/^\/start$/, (msg) => {
             bot.sendMessage(msg.chat.id, 'Hi, this is Telly Bot!')
         })
 
-        bot.onText(/\/qrcode/, (msg) => {
+        bot.onText(/^\/qrcode/, (msg) => {
             const text = msg.text
             const chatId = msg.chat.id
 
@@ -90,7 +92,9 @@ const connectTelegramBot = async () => {
             }
         })
 
-        bot.onText(/\/random_pixiv/, async (msg) => {
+        bot.onText(/^\/random_pixiv$/, async (msg) => {
+            if (!config.pixiv.generateCollectionIndex.enable) return
+
             const chatId = msg.chat.id
             const apiName = 'Random Get Pixiv Collection'
 
@@ -199,7 +203,7 @@ const connectTelegramBot = async () => {
             }
         })
 
-        bot.onText(/\/today_of_history/, async (msg) => {
+        bot.onText(/^\/today_of_history$/, async (msg) => {
             const apiName = 'Get Today of History'
             const chatId = msg.chat.id
 

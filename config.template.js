@@ -11,6 +11,7 @@ const config = {
     },
     github: {
         forwardIssueComment: {
+            enable: false,
             duration: 3600,
             task: [
                 {
@@ -26,6 +27,7 @@ const config = {
     },
     pixiv: {
         generateCollectionIndex: {
+            enable: false,
             duration: 3600,
             path: ['pixiv_collection_path'],
         },

@@ -47,8 +47,12 @@ const initService = async function () {
 
     // Run services
     const scheduler = new ToadScheduler()
-    scheduler.addSimpleIntervalJob(jobForwardGithubIssueComment)
-    scheduler.addSimpleIntervalJob(jobGenerateCollectionIndex)
+    if (config.github.forwardIssueComment.enable) {
+        scheduler.addSimpleIntervalJob(jobForwardGithubIssueComment)
+    }
+    if (config.pixiv.generateCollectionIndex.enable) {
+        scheduler.addSimpleIntervalJob(jobGenerateCollectionIndex)
+    }
 }
 
 module.exports = initService

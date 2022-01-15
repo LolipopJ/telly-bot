@@ -55,6 +55,7 @@ You can enable Github issue comment forwarding service by configuring `config.js
 ```js
 github: {
     forwardIssueComment: {
+        enable: true,
         // Interval time(s) between execution of the next service
         duration: 3600,
         task: [
@@ -81,12 +82,11 @@ This configuration means: the bot will automatically forward the comments of all
 You can enable Github issue comment forwarding service by configuring `config.js`:
 
 ```js
-github: {
-    pixiv: {
-        generateCollectionIndex: {
-            duration: 3600,
-            path: ['pixiv_collection_path'],
-        },
+pixiv: {
+    generateCollectionIndex: {
+        enable: true,
+        duration: 3600,
+        path: ['pixiv_collection_path'],
     },
 },
 ```
