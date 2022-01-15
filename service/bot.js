@@ -168,8 +168,6 @@ const connectTelegramBot = async () => {
                                     { comicMode: true },
                                     { where: { id: id } }
                                 )
-
-                                return true
                             } catch (err) {
                                 console.error(
                                     `Bot API error: ${apiName}\n`,
