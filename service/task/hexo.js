@@ -102,7 +102,8 @@ const forwardHexoBlog = async function () {
         const resolveBlogFilesAt = new Date().toISOString()
 
         // Forward unresolved blog info to the specified Telegram channel
-        if (unresolvedBlogFiles.length > 0) {
+        const unresolvedBlogFilesLength = unresolvedBlogFiles.length
+        if (unresolvedBlogFilesLength > 0) {
             for (const unresolvedBlogFile of unresolvedBlogFiles) {
                 const blogRealCreatedDate = new Date(unresolvedBlogFile.date)
 
@@ -126,6 +127,11 @@ const forwardHexoBlog = async function () {
                     blogTags[i] = `\\#${blogTags[i]}`
                 }
 
+                const blogAbstract =
+                    unresolvedBlogFile.abstract ||
+                    unresolvedBlogFile.summary ||
+                    unresolvedBlogFile.description
+
                 const messageCaption = `\n\n[source](${blogUrl}) \\| powered by [Hexo](https://hexo.io/)`
                 const messageOptions = {
                     parse_mode: 'MarkdownV2',
@@ -134,13 +140,17 @@ const forwardHexoBlog = async function () {
 
                 let message
                 if (unresolvedBlogFile.isCreated) {
-                    const messageBody = `\n\n「${
+                    let messageBody = `\n\n「${
                         unresolvedBlogFile.title
                     }」\nCategories: ${blogCategories.join(
                         ' / '
                     )}\nTags: ${blogTags.join(
                         ' '
                     )}\nCreated at: ${blogRealCreatedDate.toISOString()}`
+
+                    if (blogAbstract) {
+                        messageBody += `\nAbstract: ${blogAbstract}`
+                    }
 
                     message =
                         'Published a new blog:' +
@@ -188,14 +198,16 @@ const forwardHexoBlog = async function () {
         }
 
         // Update database record
-        ServiceProcess.update(
-            {
-                lastExecAt: resolveBlogFilesAt,
-            },
-            {
-                where: databaseWhere,
-            }
-        )
+        if (unresolvedBlogFilesLength > 0) {
+            ServiceProcess.update(
+                {
+                    lastExecAt: resolveBlogFilesAt,
+                },
+                {
+                    where: databaseWhere,
+                }
+            )
+        }
         ServiceProcess.increment('haveExecTime', { where: databaseWhere })
 
         console.log(
@@ -209,7 +221,8 @@ const getHexoBlogFrontMatter = function (content) {
     let result = {}
 
     const contentArray = content.split(/---+\r?\n/g)
-    if (contentArray.length >= 3) {
+    const contentArrayLeng = contentArray.length
+    if (contentArrayLeng >= 3) {
         const contentInfo = contentArray[1]
         result = yaml.load(contentInfo)
     }

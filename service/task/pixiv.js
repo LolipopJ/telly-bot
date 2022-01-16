@@ -125,20 +125,23 @@ const generateCollectionIndex = async function () {
     }
 
     // Update service process record
-    ServiceProcess.update(
-        {
-            lastExecAt: updateIndexAt,
-        },
-        {
-            where: { serviceName },
-        }
-    )
+    const allFilesLength = allFiles.length
+    if (allFilesLength > 0) {
+        ServiceProcess.update(
+            {
+                lastExecAt: updateIndexAt,
+            },
+            {
+                where: { serviceName },
+            }
+        )
+    }
     ServiceProcess.increment('haveExecTime', { where: { serviceName } })
 
     const artworksCount = await ServicePixivCollection.count()
     console.log(
         `Service info: ${serviceName}\n`,
-        `Execute service successfully! ${allFiles.length} artworks have been saved or updated in database!\n`,
+        `Execute service successfully! ${allFilesLength} artworks have been saved or updated in database!\n`,
         `There are ${artworksCount} artworks available in database now!`
     )
 }
