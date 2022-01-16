@@ -77,6 +77,33 @@ github: {
 
 This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is `3600` seconds.
 
+### Forward Hexo blog to Telegram chat
+
+You can enable Github issue comment forwarding service by configuring `config.js`:
+
+```js
+hexo: {
+    forwardHexoBlog: {
+        enable: true,
+        duration: 28800,
+        task: [
+            {
+                // Path of Hexo blog posts directory
+                path: 'path/to/source/_posts',
+                baseUrl: 'https://your_username.github.io',
+                // ':day' in permalink will be as ':day + offsetDay'
+                offsetDay: 0,
+                forwardChannelId: '@telegram_channel_id',
+                // Since created date of blog
+                since: '2022-01-01T00:00:00.000Z',
+            },
+        ],
+    },
+},
+```
+
+This configuration means: the bot will automatically forward the hexo blogs in `path/to/source/_posts` directory to the `@telegram_channel_id` channel, and the forwarded blog are created or updated no earlier than `2022-01-01T00:00:00.000Z`. The link jump to the blog will be as `https://your_username.github.io/${year}/${month}/${day + offsetDay}/${blog_filename}`. The execution interval between two services is `3600` seconds.
+
 ### Generate Pivix collection index and random send to Telegram chat
 
 You can enable Github issue comment forwarding service by configuring `config.js`:

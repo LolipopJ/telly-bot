@@ -36,7 +36,10 @@ const generateCollectionIndex = async function () {
         try {
             files = files.concat(await readdir(collectionPath))
         } catch (err) {
-            console.err(`Service error: ${serviceName}\n`, err)
+            console.error(
+                `Service error: ${serviceName}\n`,
+                "Read Pixiv artworks' filename failed."
+            )
             throw err
         }
 
@@ -114,6 +117,7 @@ const generateCollectionIndex = async function () {
             },
             picFile
         )
+
         console.log(
             `Service info: ${serviceName}\n`,
             `New Pixiv artwork index has been updated or created: ${picFile.picName}`
