@@ -11,6 +11,7 @@ const serviceProcessModel = require('./model/serviceProcess')
 
 const options = {
     timezone: pgsqlConfig.timezone || '+08:00',
+    logging: false,
 }
 
 let instance

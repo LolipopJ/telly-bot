@@ -214,6 +214,24 @@ const connectTelegramBot = async () => {
             }
         })
 
+        bot.onText(/^\/pixiv_count$/, async (msg) => {
+            const apiName = 'Get Pixiv artworks count'
+            const chatId = msg.chat.id
+
+            const sequelize = await Sequelize()
+            const ServicePixivCollection =
+                sequelize.models.ServicePixivCollection
+
+            try {
+                const artworksCount = await ServicePixivCollection.count()
+                const message = `We have ${artworksCount} Pixiv artwork collections for you now!`
+
+                await bot.sendMessage(chatId, message)
+            } catch (error) {
+                console.error(`Bot API error: ${apiName}\n`, error)
+            }
+        })
+
         bot.onText(/^\/today_of_history$/, async (msg) => {
             const apiName = 'Get Today of History'
             const chatId = msg.chat.id
