@@ -72,7 +72,8 @@ const forwardGithubIssueComment = async function () {
         let page = 0
 
         // Get initial query comment update since time
-        let since
+        const issueSince = issue.since
+        let since = issueSince || new Date()
         const issueServiceInfo = await ServiceGithubIssueComment.findOne({
             where: queryConfig,
         })
@@ -82,24 +83,18 @@ const forwardGithubIssueComment = async function () {
                 issueServiceInfo.dataValues.lastUpdateCommentAt
             if (lastUpdateCommentDate) {
                 // Use comment last update date added by 1 ms as since
-                since = new Date(
-                    new Date(lastUpdateCommentDate).getTime() + 1
-                ).toISOString()
+                since = new Date(lastUpdateCommentDate).getTime() + 1
             } else {
-                console.error(
-                    `Service error: ${serviceName}\n`,
-                    `Can\'t get the last update date of issue ${issueUrl} in database\n`,
-                    'To fix this, you need to delete the data record of this service, and then set a new start date (since) in config.js if you have already forward messages.'
+                console.warn(
+                    `Service warning: ${serviceName}\n`,
+                    `Can\'t get the last update date of issue ${issueUrl} in database`
                 )
-                // Use current date as since
-                since = new Date().toISOString()
             }
         } else {
             // The service record does not exist in the database, create a new one
             await ServiceGithubIssueComment.create(queryConfig)
-            // Use configuration date as since
-            if (issue.since) since = new Date(issue.since).toISOString()
         }
+        since = new Date(since).toISOString()
 
         // Call the API to get the latest comments on the issue
         let issueComments = []

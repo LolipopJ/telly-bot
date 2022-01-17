@@ -5,6 +5,7 @@ const pgsqlConfig = require('../config').database.postgresql
 const updateOrCreate = require('./utils/updateOrCreate')
 
 const serviceGithubIssueCommentModel = require('./model/ServiceGithubIssueComment')
+const serviceHexoBlogModel = require('./model/ServiceHexoBlog')
 const servicePixivCollectionModel = require('./model/ServicePixivCollection')
 const serviceProcessModel = require('./model/serviceProcess')
 
@@ -38,6 +39,10 @@ const connectDababase = async () => {
             'ServiceGithubIssueComment',
             serviceGithubIssueCommentModel
         )
+        const ServiceHexoBlog = sequelize.define(
+            'ServiceHexoBlog',
+            serviceHexoBlogModel
+        )
         const ServicePixivCollection = sequelize.define(
             'ServicePixivCollection',
             servicePixivCollectionModel
@@ -46,6 +51,11 @@ const connectDababase = async () => {
             'ServiceProcess',
             serviceProcessModel
         )
+
+        ServiceProcess.hasMany(ServiceHexoBlog, {
+            foreignKey: 'serviceProcessId',
+        })
+        ServiceHexoBlog.belongsTo(ServiceProcess)
 
         try {
             await sequelize.sync({ alter: true })

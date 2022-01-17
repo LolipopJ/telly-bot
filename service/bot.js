@@ -80,6 +80,17 @@ const connectTelegramBot = async () => {
             bot.sendMessage(msg.chat.id, 'Hi, this is Telly Bot!')
         })
 
+        bot.onText(/^\/get_me$/, (msg) => {
+            const from = msg.from
+            const chat = msg.chat
+            // const date = new Date(msg.date).toISOString()
+            let message = `From:\n\tid: ${from.id}\n\tname: ${from.first_name} ${from.last_name}\n\tusername: ${from.username}`
+            if (from.id !== chat.id) {
+                message += `\n\nChat:\n\tid: ${chat.id}`
+            }
+            bot.sendMessage(chat.id, message)
+        })
+
         bot.onText(/^\/qrcode/, (msg) => {
             const text = msg.text
             const chatId = msg.chat.id

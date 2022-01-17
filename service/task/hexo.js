@@ -13,11 +13,12 @@ const forwardHexoBlog = async function () {
     const bot = await Bot()
 
     const sequelize = await Sequelize()
+    const ServiceHexoBlog = sequelize.models.ServiceHexoBlog
     const ServiceProcess = sequelize.models.ServiceProcess
 
     for (const task of config.forwardHexoBlog.task) {
         const filePath = task.path
-        const databaseWhere = {
+        const serviceProcessWhere = {
             serviceName,
             serviceConfig: filePath,
         }
@@ -25,9 +26,9 @@ const forwardHexoBlog = async function () {
         const { baseUrl, offsetDay, forwardChannelId, since } = task
 
         // Query last time of forwarding Hexo blog
-        let lastForwardHexoBlogTime = new Date()
-        const serviceProcess = await ServiceProcess.findOne({
-            where: databaseWhere,
+        let lastForwardHexoBlogTime = since || new Date()
+        let serviceProcess = await ServiceProcess.findOne({
+            where: serviceProcessWhere,
         })
         if (serviceProcess) {
             const lastForwardHexoBlogAt = serviceProcess.dataValues.lastExecAt
@@ -35,10 +36,10 @@ const forwardHexoBlog = async function () {
                 lastForwardHexoBlogTime = lastForwardHexoBlogAt
             }
         } else {
-            await ServiceProcess.create(databaseWhere)
-            lastForwardHexoBlogTime = since
+            serviceProcess = await ServiceProcess.create(serviceProcessWhere)
         }
         lastForwardHexoBlogTime = new Date(lastForwardHexoBlogTime).getTime()
+        const serviceProcessId = serviceProcess.dataValues.id
 
         // Read source filenames
         let sourceFilenames
@@ -91,6 +92,8 @@ const forwardHexoBlog = async function () {
                 // Blog file has been resolved, skip
                 continue
             }
+            frontMatter.createdTime = sourceCreatedTime
+            frontMatter.updatedTime = sourceUpdatedTime
             frontMatter.filename = sourceFilename.substring(
                 0,
                 sourceFilename.lastIndexOf('.')
@@ -99,32 +102,38 @@ const forwardHexoBlog = async function () {
             unresolvedBlogFiles.push(frontMatter)
         }
 
-        const resolveBlogFilesAt = new Date().toISOString()
-
         // Forward unresolved blog info to the specified Telegram channel
+        let resolveBlogFilesAt = 0
         const unresolvedBlogFilesLength = unresolvedBlogFiles.length
+
         if (unresolvedBlogFilesLength > 0) {
             for (const unresolvedBlogFile of unresolvedBlogFiles) {
-                const blogRealCreatedDate = new Date(unresolvedBlogFile.date)
-
                 const blogCreatedDate = new Date(unresolvedBlogFile.date)
-                blogCreatedDate.setDate(blogCreatedDate.getDate() + offsetDay)
-                const blogCreatedYear = blogCreatedDate.getFullYear()
-                const blogCreatedMonth = String(
-                    blogCreatedDate.getMonth() + 1
+                const blogUpdatedDate = new Date(unresolvedBlogFile.updated)
+
+                const blogUrlCreatedDate = new Date(unresolvedBlogFile.date)
+                blogUrlCreatedDate.setDate(
+                    blogUrlCreatedDate.getDate() + offsetDay
+                )
+                const blogUrlCreatedYear = blogUrlCreatedDate.getFullYear()
+                const blogUrlCreatedMonth = String(
+                    blogUrlCreatedDate.getMonth() + 1
                 ).padStart(2, '0')
-                const blogCreatedDay = String(
-                    blogCreatedDate.getDate()
+                const blogUrlCreatedDay = String(
+                    blogUrlCreatedDate.getDate()
                 ).padStart(2, '0')
 
                 const blogFilename = unresolvedBlogFile.filename
 
-                const blogUrl = `${baseUrl}/${blogCreatedYear}/${blogCreatedMonth}/${blogCreatedDay}/${blogFilename}`
+                const blogUrl = `${baseUrl}/${blogUrlCreatedYear}/${blogUrlCreatedMonth}/${blogUrlCreatedDay}/${blogFilename}`
 
+                const blogTitle = unresolvedBlogFile.title
                 const blogCategories = unresolvedBlogFile.categories || []
                 const blogTags = unresolvedBlogFile.tags || []
-                for (let i = 0; i < blogTags.length; i++) {
-                    blogTags[i] = `\\#${blogTags[i]}`
+
+                const blogMsgTags = new Array(blogTags.length)
+                for (let i = 0; i < blogMsgTags.length; i++) {
+                    blogMsgTags[i] = `\\#${blogTags[i]}`
                 }
 
                 const blogAbstract =
@@ -140,13 +149,11 @@ const forwardHexoBlog = async function () {
 
                 let message
                 if (unresolvedBlogFile.isCreated) {
-                    let messageBody = `\n\n「${
-                        unresolvedBlogFile.title
-                    }」\nCategories: ${blogCategories.join(
+                    let messageBody = `\n\n「${blogTitle}」\nCategories: ${blogCategories.join(
                         ' / '
-                    )}\nTags: ${blogTags.join(
+                    )}\nTags: ${blogMsgTags.join(
                         ' '
-                    )}\nCreated at: ${blogRealCreatedDate.toISOString()}`
+                    )}\nCreated at: ${blogCreatedDate.toISOString()}`
 
                     if (blogAbstract) {
                         messageBody += `\nAbstract: ${blogAbstract}`
@@ -159,11 +166,7 @@ const forwardHexoBlog = async function () {
                             .replace(/\./g, '\\.') +
                         messageCaption
                 } else if (unresolvedBlogFile.isUpdated) {
-                    const blogUpdatedDate = new Date(unresolvedBlogFile.updated)
-
-                    const messageBody = `\n\n「${
-                        unresolvedBlogFile.title
-                    }」\nCreated at: ${blogRealCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
+                    const messageBody = `\n\n「${blogTitle}」\nCreated at: ${blogCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
 
                     message =
                         'Updated an existing blog:' +
@@ -174,6 +177,11 @@ const forwardHexoBlog = async function () {
                 } else {
                     continue
                 }
+
+                const createdTime = unresolvedBlogFile.createdTime
+                const updatedTime = unresolvedBlogFile.updatedTime
+                const latestTime =
+                    updatedTime > createdTime ? updatedTime : createdTime
 
                 try {
                     await bot.sendMessage(
@@ -187,11 +195,48 @@ const forwardHexoBlog = async function () {
                         'Post to Telegram Channel successfully! Message:\n',
                         `${message}`
                     )
+
+                    if (latestTime > resolveBlogFilesAt) {
+                        resolveBlogFilesAt = latestTime
+                    }
                 } catch (error) {
                     console.error(
                         `Service error: ${serviceName}\n`,
                         'Post to Telegram Channel failed. Message:\n',
                         `${message}`
+                    )
+                }
+
+                try {
+                    const hexoBlog = {
+                        serviceProcessId,
+                        filename: blogFilename,
+                        permalink: blogUrl,
+                        blogTitle,
+                        blogCreatedAt: blogCreatedDate,
+                        blogCategories,
+                        blogTags,
+                    }
+
+                    if (updatedTime > createdTime) {
+                        hexoBlog.blogUpdatedAt = blogUpdatedDate
+                    } else {
+                        hexoBlog.blogUpdatedAt = blogCreatedDate
+                    }
+
+                    await sequelize.updateOrCreate(
+                        ServiceHexoBlog,
+                        {
+                            serviceProcessId,
+                            filename: blogFilename,
+                        },
+                        hexoBlog
+                    )
+                } catch (error) {
+                    console.error(
+                        `Service error: ${serviceName}\n`,
+                        'Update datebase failed. Hexo blog:\n',
+                        `${hexoBlog}`
                     )
                 }
             }
@@ -204,17 +249,22 @@ const forwardHexoBlog = async function () {
                     lastExecAt: resolveBlogFilesAt,
                 },
                 {
-                    where: databaseWhere,
+                    where: serviceProcessWhere,
                 }
             )
         }
-        ServiceProcess.increment('haveExecTime', { where: databaseWhere })
+        ServiceProcess.increment('haveExecTime', { where: serviceProcessWhere })
 
         console.log(
             `Service info: ${serviceName}\n`,
             `Forward ${unresolvedBlogFiles.length} new Hexo blog files in path ${filePath} to channel.`
         )
     }
+
+    console.log(
+        `Service info: ${serviceName}\n`,
+        `Execute service successfully!`
+    )
 }
 
 const getHexoBlogFrontMatter = function (content) {
