@@ -67,7 +67,7 @@ const initService = async function () {
     const taskGenerateCollectionIndex = new AsyncTask(
         'Generate Pixiv Collection Index',
         async () => {
-            await pixivTask.generateCollectionIndex()
+            await pixivTask.generateCollectionIndex({ updateAll: false })
         },
         (error) => {
             console.error(error)
@@ -81,6 +81,23 @@ const initService = async function () {
         taskGenerateCollectionIndex
     )
 
+    const taskGenerateCollectionIndexUpdateAll = new AsyncTask(
+        'Generate Pixiv Collection Index Update All',
+        async () => {
+            await pixivTask.generateCollectionIndex({ updateAll: true })
+        },
+        (error) => {
+            console.error(error)
+        }
+    )
+    const jobGenerateCollectionIndexUpdateAll = new SimpleIntervalJob(
+        {
+            seconds: config.pixiv.generateCollectionIndex.duration * 48.5,
+            runImmediately: false,
+        },
+        taskGenerateCollectionIndexUpdateAll
+    )
+
     // Run services
     const scheduler = new ToadScheduler()
     if (config.github.forwardIssueComment.enable) {
@@ -91,6 +108,7 @@ const initService = async function () {
     }
     if (config.pixiv.generateCollectionIndex.enable) {
         scheduler.addSimpleIntervalJob(jobGenerateCollectionIndex)
+        scheduler.addSimpleIntervalJob(jobGenerateCollectionIndexUpdateAll)
     }
 }
 

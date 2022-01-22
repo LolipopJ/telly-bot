@@ -1,9 +1,9 @@
 module.exports = {
-    parserOptions: {
-        ecmaVersion: 2017,
-    },
+    root: true,
+    parser: '@babel/eslint-parser',
     env: {
-        es6: true,
+        node: true,
     },
+    plugins: ['@babel'],
     extends: ['plugin:prettier/recommended', 'prettier'],
 }

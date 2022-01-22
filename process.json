@@ -2,7 +2,7 @@
     "apps": [
         {
             "name": "telly-bot",
-            "script": "bin/www",
+            "script": "babel-node bin/www",
             "log_date_format": "YYYY-MM-DD HH:mm Z",
             "error_file": "./logs/telly_bot_err.log",
             "out_file": "./logs/telly_bot_out.log"

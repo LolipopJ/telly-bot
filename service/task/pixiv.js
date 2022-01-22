@@ -5,7 +5,7 @@ const config = require('../../config').pixiv
 
 const Sequelize = require('../../db/index')
 
-const generateCollectionIndex = async function () {
+const generateCollectionIndex = async function ({ updateAll = false }) {
     const serviceName = 'Generate Collection Index'
     const bToMB = 1024 * 1024
 
@@ -82,24 +82,28 @@ const generateCollectionIndex = async function () {
             }
         }
 
-        // Only keep files that recently saved
-        const serviceProcess = await ServiceProcess.findOne({
-            where: { serviceName, serviceConfig: collectionPath },
-        })
-        if (serviceProcess) {
-            // Only update or create Pixiv artwork that saved after last time this service is done
-            let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
-            if (lastUpdateIndexTime) {
-                lastUpdateIndexTime = new Date(lastUpdateIndexTime).getTime()
-                files = files.filter((pic) => {
-                    return pic.picCreatedAt > lastUpdateIndexTime
+        if (!updateAll) {
+            // Only keep files that recently saved
+            const serviceProcess = await ServiceProcess.findOne({
+                where: { serviceName, serviceConfig: collectionPath },
+            })
+            if (serviceProcess) {
+                // Only update or create Pixiv artwork that saved after last time this service is done
+                let lastUpdateIndexTime = serviceProcess.dataValues.lastExecAt
+                if (lastUpdateIndexTime) {
+                    lastUpdateIndexTime = new Date(
+                        lastUpdateIndexTime
+                    ).getTime()
+                    files = files.filter((pic) => {
+                        return pic.picCreatedAt > lastUpdateIndexTime
+                    })
+                }
+            } else {
+                await ServiceProcess.create({
+                    serviceName,
+                    serviceConfig: collectionPath,
                 })
             }
-        } else {
-            await ServiceProcess.create({
-                serviceName,
-                serviceConfig: collectionPath,
-            })
         }
 
         allFiles = allFiles.concat(files)

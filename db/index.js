@@ -7,7 +7,7 @@ const updateOrCreate = require('./utils/updateOrCreate')
 const serviceGithubIssueCommentModel = require('./model/ServiceGithubIssueComment')
 const serviceHexoBlogModel = require('./model/ServiceHexoBlog')
 const servicePixivCollectionModel = require('./model/ServicePixivCollection')
-const serviceProcessModel = require('./model/serviceProcess')
+const serviceProcessModel = require('./model/ServiceProcess')
 
 const options = {
     timezone: pgsqlConfig.timezone || '+08:00',

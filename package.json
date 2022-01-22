@@ -3,19 +3,20 @@
     "version": "0.0.5",
     "description": "A Telegram bot based on Koa.",
     "scripts": {
-        "start": "nodemon bin/www",
+        "start": "nodemon --exec babel-node -- bin/www",
         "pm2": "pm2 start process.json",
-        "lint": "eslint --ignore-path .gitignore --ext .ts,.js,.vue .",
+        "lint": "eslint --ignore-path .gitignore --ext .js .",
         "lint:fix": "yarn lint --fix",
         "lint:prettier": "prettier --ignore-path .gitignore --write **/* --ignore-unknown"
     },
     "author": "LolipopJ",
     "license": "MIT",
     "dependencies": {
+        "@babel/runtime": "^7.16.7",
         "@octokit/core": "^3.5.1",
-        "axios": "^0.24.0",
+        "axios": "^0.25.0",
         "debug": "^4.3.3",
-        "dotenv": "^12.0.4",
+        "dotenv": "^14.2.0",
         "js-yaml": "^4.1.0",
         "koa": "^2.13.4",
         "koa-bodyparser": "^4.3.0",
@@ -29,6 +30,12 @@
         "toad-scheduler": "^1.6.0"
     },
     "devDependencies": {
+        "@babel/core": "^7.16.10",
+        "@babel/eslint-parser": "^7.16.5",
+        "@babel/eslint-plugin": "^7.16.5",
+        "@babel/node": "^7.16.8",
+        "@babel/plugin-transform-runtime": "^7.16.10",
+        "@babel/preset-env": "^7.16.11",
         "eslint": "^8.7.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^4.0.0",
