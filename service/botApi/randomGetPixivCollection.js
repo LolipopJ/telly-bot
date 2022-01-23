@@ -1,19 +1,21 @@
+const { Op } = require('sequelize')
 const Sequelize = require('../../db/index')
 
-const randomGetPixivCollection = async function () {
+const randomGetPixivCollection = async function ({ r18 = false }) {
     try {
         const sequelize = await Sequelize()
         const ServicePixivCollection = sequelize.models.ServicePixivCollection
 
-        // Gain the total number of Pixiv artworks
-        const artworksCount = await ServicePixivCollection.count()
+        let isR18
+        if (r18) {
+            isR18 = [{ r18: true }]
+        } else {
+            isR18 = [{ r18: false }, { r18: null }]
+        }
 
-        // Generate a random value
-        const randomArtworkId = Math.floor(Math.random() * artworksCount) + 1
-
-        // Get random artwork
         const artwork = await ServicePixivCollection.findOne({
-            where: { id: randomArtworkId },
+            order: sequelize.random(),
+            where: { [Op.or]: isR18 },
         })
 
         // Resolve artwork object

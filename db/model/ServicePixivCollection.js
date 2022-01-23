@@ -48,5 +48,6 @@ module.exports = {
     // Is artwork not safe for work?
     r18: {
         type: DataTypes.BOOLEAN,
+        defaultValue: false,
     },
 }

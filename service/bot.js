@@ -103,18 +103,26 @@ const connectTelegramBot = async () => {
             }
         })
 
-        bot.onText(/^\/random_pixiv$/, async (msg) => {
+        bot.onText(/^\/random_pixiv/, async (msg) => {
             if (!config.pixiv.generateCollectionIndex.enable) return
 
             const chatId = msg.chat.id
+            const chatText = msg.text
             const apiName = 'Random Get Pixiv Collection'
 
-            const res = await randomGetPixivCollection()
+            let r18 = false
+            if (/_r18$/.test(chatText)) {
+                r18 = true
+            }
+
+            const res = await randomGetPixivCollection({ r18 })
             if (res.ok === true) {
                 // Send placeholder message
                 const placeholderMessage = await bot.sendMessage(
                     chatId,
-                    `${randomKaomoji()} Geeeeting a random Pixiv artwork ...`
+                    `${randomKaomoji()} Geeeeting a random ${
+                        r18 ? 'NSFW ' : ''
+                    }Pixiv artwork ...`
                 )
 
                 const data = res.data
@@ -224,7 +232,16 @@ const connectTelegramBot = async () => {
 
             try {
                 const artworksCount = await ServicePixivCollection.count()
-                const message = `We have ${artworksCount} Pixiv artwork collections for you now!`
+                let message = `We have ${artworksCount} Pixiv artwork collections for you now!`
+
+                const artworksR18Count = await ServicePixivCollection.count({
+                    where: { r18: true },
+                })
+                if (artworksR18Count > 0) {
+                    message += `\nThere are ${
+                        artworksCount - artworksR18Count
+                    } all-age artworks, and ${artworksR18Count} NSFW ones.`
+                }
 
                 await bot.sendMessage(chatId, message)
             } catch (error) {

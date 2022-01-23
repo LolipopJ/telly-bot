@@ -17,7 +17,7 @@ const generateCollectionIndex = async function ({ updateAll = false }) {
     const ServicePixivCollection = sequelize.models.ServicePixivCollection
     const ServiceProcess = sequelize.models.ServiceProcess
 
-    let collectionPaths = config.generateCollectionIndex.path
+    let collectionPaths = config.generateCollectionIndex.paths
     if (!collectionPaths) {
         console.error(
             `Service error: ${serviceName}\n`,
@@ -31,7 +31,10 @@ const generateCollectionIndex = async function ({ updateAll = false }) {
 
     // Get filenames in collection paths
     let allFiles = []
-    for (const collectionPath of collectionPaths) {
+    for (const collectionPathObj of collectionPaths) {
+        const collectionPath = collectionPathObj.path || collectionPathObj
+        const isR18 = collectionPathObj.r18 || false
+
         let files = []
         try {
             files = files.concat(await readdir(collectionPath))
@@ -79,6 +82,7 @@ const generateCollectionIndex = async function ({ updateAll = false }) {
                 picSize,
                 picCreatedAt,
                 comicMode,
+                r18: isR18,
             }
         }
 

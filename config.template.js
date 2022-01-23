@@ -29,7 +29,10 @@ const config = {
         generateCollectionIndex: {
             enable: false,
             duration: 3600, // 1 hour
-            path: ['path/to/pixiv_collection'],
+            paths: [
+                'path/to/pixiv_collection',
+                { path: 'path/to/pixiv_collection_r18', r18: true },
+            ],
         },
     },
     hexo: {

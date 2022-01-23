@@ -113,12 +113,15 @@ pixiv: {
     generateCollectionIndex: {
         enable: true,
         duration: 3600,
-        path: ['pixiv_collection_path'],
+        paths: [
+            'pixiv_collection_path',
+            { path: 'pixiv_collection_path_r18', r18: true },
+        ],
     },
 },
 ```
 
-This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` path every `3600` seconds. In that case, your can send message `/random_pixiv` to the bot and get a random collection each time.
+This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` and `pixiv_collection_path_r18` paths every `3600` seconds. In that case, your can send message `/random_pixiv` or `/random_pixiv_r18` to the bot and get a random collection each time.
 
 ## Development
 
