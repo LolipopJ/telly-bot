@@ -121,7 +121,24 @@ pixiv: {
 },
 ```
 
-This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` and `pixiv_collection_path_r18` paths every `3600` seconds. In that case, your can send message `/random_pixiv` or `/random_pixiv_r18` to the bot and get a random collection each time.
+This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` and `pixiv_collection_path_r18` paths every `3600` seconds. In that case, you can send message `/random_pixiv` or `/random_pixiv_r18` to the bot and get a random collection each time.
+
+### QQ Music API support
+
+Based on project [Rain120/qq-music-api](https://github.com/Rain120/qq-music-api).
+
+You can enable QQ Music related services by configuring `config.js`:
+
+```js
+qqmusic: {
+    enable: true,
+    host: 'http://127.0.0.1',
+    port: 3200,
+    musicListId: 'your_music_list_id',
+},
+```
+
+This configuration means: Rain120/qq-music-api server is running on `http://127.0.0.1:3200`. You can send message `/random_music` to the bot and get a random music from the QQ music playlist `your_music_list_id` each time.
 
 ## Development
 

@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 const config = require('../config').qqMusic
-const utils = require('../assets/index')
+const { transformObjectToParams } = require('../assets/index')
 
 let instance
 
@@ -13,9 +13,7 @@ const connectQQMusic = async () => {
 
         const qqMusic = {}
         qqMusic.api = async function (api, params) {
-            const requestParams = params
-                ? utils.transformObjectToParams(params)
-                : ''
+            const requestParams = params ? transformObjectToParams(params) : ''
             const requestUrl = `${baseUrl}${api}${requestParams}`
 
             console.log(`QQ Music API request:\n`, requestUrl)

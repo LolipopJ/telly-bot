@@ -55,6 +55,7 @@ const config = {
         enable: false,
         host: 'http://127.0.0.1',
         port: 3200,
+        musicListId: 'your_music_list_id',
     },
 }
 

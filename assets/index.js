@@ -15,4 +15,8 @@ const transformObjectToParams = function (obj) {
         .replace(/"/g, '')
 }
 
-module.exports = { randomKaomoji, transformObjectToParams }
+const transformKbToMb = function (kb, fixed = 2) {
+    return (kb / 1024 / 1024).toFixed(fixed)
+}
+
+module.exports = { randomKaomoji, transformObjectToParams, transformKbToMb }

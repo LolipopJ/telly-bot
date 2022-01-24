@@ -3,11 +3,11 @@ const TelegramBot = require('node-telegram-bot-api')
 const Sequelize = require('../db/index')
 
 const generateQrcode = require('./botApi/generateQrcode')
-// const qqMusicApi = require('./botApi/qqMusicApi')
+const qqMusicApi = require('./botApi/qqMusicApi')
 const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
 
-const { randomKaomoji } = require('../assets/index')
+const { randomKaomoji, transformKbToMb } = require('../assets/index')
 
 const config = require('../config')
 
@@ -267,10 +267,75 @@ const connectTelegramBot = async () => {
             }
         })
 
-        // bot.onText(/^\/random_music$/, async (msg) => {
-        //     const apiName = 'Random Get QQ Music Collection'
-        //     const chatId = msg.chat.id
-        // })
+        bot.onText(/^\/random_music$/, async (msg) => {
+            const apiName = 'Random Get QQ Music Collection'
+            const chatId = msg.chat.id
+
+            const res = await qqMusicApi.randomGetQQMusicCollection()
+            if (res.ok === true) {
+                let message = ''
+
+                const musicInfo = res.data
+                const singerInfo = musicInfo.singer
+                const albumInfo = musicInfo.album
+                const mvInfo = musicInfo.mv
+
+                const musicName = musicInfo.name
+                const musicMId = musicInfo.mid
+                const musicPublicTime = musicInfo.time_public
+                const musicMvVId = mvInfo.vid
+
+                let singerMessage = ''
+                for (const singer of singerInfo) {
+                    singerMessage += `${singer.name} `
+                }
+
+                message += `<b>${musicName}</b>\n\nSinger: ${singerMessage}\nAlbum: ${albumInfo.name}\nPublic time: ${musicPublicTime}`
+
+                if (musicMvVId) {
+                    const mvUrlRes = await qqMusicApi.getQQMusicMvUrl(
+                        musicMvVId
+                    )
+                    if (mvUrlRes.ok) {
+                        const mvUrlList = mvUrlRes.data
+
+                        message += '\n'
+                        for (const mvUrlItem of mvUrlList) {
+                            message += `\n<a href="${
+                                mvUrlItem.freeflow_url[0]
+                            }">MV - ${transformKbToMb(
+                                mvUrlItem.fileSize
+                            )} MB</a>`
+                        }
+                        message += `\n<i>MV url will be expired at: <u>${new Date(
+                            new Date().getTime() + 86400000
+                        ).toISOString()}</u></i>`
+                    }
+                }
+
+                const playUrlRes = await qqMusicApi.getQQMusicPlayUrl(musicMId)
+                if (playUrlRes.ok) {
+                    const playUrl = playUrlRes.data
+                    message += `\n\n<a href="${playUrl}">Play music</a>`
+                }
+
+                console.log(
+                    `Bot API info: ${apiName}\n`,
+                    `Send message:\n${message}`
+                )
+
+                bot.sendMessage(chatId, message, {
+                    parse_mode: 'HTML',
+                })
+            } else {
+                console.error(`Bot API error: ${apiName}\n`, res.error)
+
+                bot.sendMessage(
+                    chatId,
+                    'Get random music failed. You may try to call it again later!'
+                )
+            }
+        })
 
         bot.on('polling_error', (error) => {
             console.error(error)
