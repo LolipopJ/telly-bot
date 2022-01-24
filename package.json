@@ -25,12 +25,12 @@
         "pg": "^8.7.1",
         "pg-hstore": "^2.3.4",
         "pm2": "^5.1.2",
-        "sequelize": "^6.13.0",
+        "sequelize": "^6.14.0",
         "socks5-https-client": "^1.2.1",
         "toad-scheduler": "^1.6.0"
     },
     "devDependencies": {
-        "@babel/core": "^7.16.10",
+        "@babel/core": "^7.16.12",
         "@babel/eslint-parser": "^7.16.5",
         "@babel/eslint-plugin": "^7.16.5",
         "@babel/node": "^7.16.8",

@@ -6,4 +6,13 @@ const randomKaomoji = function () {
     return kaomoji[randomIndex]
 }
 
-module.exports = { randomKaomoji }
+const transformObjectToParams = function (obj) {
+    return JSON.stringify(obj)
+        .replace(/:/g, '=')
+        .replace(/,/g, '&')
+        .replace(/{/g, '?')
+        .replace(/}/g, '')
+        .replace(/"/g, '')
+}
+
+module.exports = { randomKaomoji, transformObjectToParams }

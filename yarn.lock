@@ -14,17 +14,17 @@
   resolved "https://registry.npmmirror.com/@babel/compat-data/download/@babel/compat-data-7.16.8.tgz#31560f9f29fdf1868de8cb55049538a1b9732a60"
   integrity sha512-m7OkX0IdKLKPpBlJtF561YJal5y/jyI5fNfWbPxh2D/nbzzGI4qRyrD8xO2jB24u7l+5I2a43scCG2IrfjC50Q==
 
-"@babel/core@^7.16.10":
-  version "7.16.10"
-  resolved "https://registry.npmmirror.com/@babel/core/download/@babel/core-7.16.10.tgz#ebd034f8e7ac2b6bfcdaa83a161141a646f74b50"
-  integrity sha512-pbiIdZbCiMx/MM6toR+OfXarYix3uz0oVsnNtfdAGTcCTu3w/JGF8JhirevXLBJUu0WguSZI12qpKnx7EeMyLA==
+"@babel/core@^7.16.12":
+  version "7.16.12"
+  resolved "https://registry.npmmirror.com/@babel/core/download/@babel/core-7.16.12.tgz#5edc53c1b71e54881315923ae2aedea2522bb784"
+  integrity sha512-dK5PtG1uiN2ikk++5OzSYsitZKny4wOCD0nrO4TqnW4BVBTQ2NGS3NgilvT/TEyxTST7LNyWV/T4tXDoD3fOgg==
   dependencies:
     "@babel/code-frame" "^7.16.7"
     "@babel/generator" "^7.16.8"
     "@babel/helper-compilation-targets" "^7.16.7"
     "@babel/helper-module-transforms" "^7.16.7"
     "@babel/helpers" "^7.16.7"
-    "@babel/parser" "^7.16.10"
+    "@babel/parser" "^7.16.12"
     "@babel/template" "^7.16.7"
     "@babel/traverse" "^7.16.10"
     "@babel/types" "^7.16.8"
@@ -305,6 +305,11 @@
   version "7.16.10"
   resolved "https://registry.npmmirror.com/@babel/parser/download/@babel/parser-7.16.10.tgz#aba1b1cb9696a24a19f59c41af9cf17d1c716a88"
   integrity sha512-Sm/S9Or6nN8uiFsQU1yodyDW3MWXQhFeqzMPM+t8MJjM+pLsnFVxFZzkpXKvUXh+Gz9cbMoYYs484+Jw/NTEFQ==
+
+"@babel/parser@^7.16.12":
+  version "7.16.12"
+  resolved "https://registry.npmmirror.com/@babel/parser/download/@babel/parser-7.16.12.tgz#9474794f9a650cf5e2f892444227f98e28cdf8b6"
+  integrity sha512-VfaV15po8RiZssrkPweyvbGVSe4x2y+aciFCgn0n0/SJMR22cwofRV1mtnJQYcSB1wUTaA/X1LnA3es66MCO5A==
 
 "@babel/parser@^7.16.7", "@babel/parser@^7.16.8":
   version "7.16.8"
@@ -4113,10 +4118,10 @@ sequelize-pool@^7.1.0:
   resolved "https://registry.nlark.com/sequelize-pool/download/sequelize-pool-7.1.0.tgz#210b391af4002762f823188fd6ecfc7413020768"
   integrity sha1-IQs5GvQAJ2L4IxiP1uz8dBMCB2g=
 
-sequelize@^6.13.0:
-  version "6.13.0"
-  resolved "https://registry.npmmirror.com/sequelize/download/sequelize-6.13.0.tgz#ce042fc511313094c1e4ca2b2ee13a563359e7b6"
-  integrity sha512-p0dXXGZSc0Ng7CdGwlKN4P6DTRD/w9Ar2CnmHamNVDnqEWh6pMVOp3xrlG5+IWhbwrqL3SjIYEYt3Xog1vXRDw==
+sequelize@^6.14.0:
+  version "6.14.0"
+  resolved "https://registry.npmmirror.com/sequelize/download/sequelize-6.14.0.tgz#aeec994fb4f789a2180aa58c722d23b65116a96c"
+  integrity sha512-rgfJFixBwnrxdouIlYS1G0nTo2xj+Gyn7EDn/miE6r5xCzN3EdjtbNrDXapLHNZxgKfu7hZHLzZvwl3DbfhM6g==
   dependencies:
     "@types/debug" "^4.1.7"
     debug "^4.3.3"

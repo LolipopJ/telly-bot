@@ -3,6 +3,7 @@ const TelegramBot = require('node-telegram-bot-api')
 const Sequelize = require('../db/index')
 
 const generateQrcode = require('./botApi/generateQrcode')
+// const qqMusicApi = require('./botApi/qqMusicApi')
 const randomGetPixivCollection = require('./botApi/randomGetPixivCollection')
 const todayOfHistory = require('./botApi/todayOfHistory')
 
@@ -264,6 +265,23 @@ const connectTelegramBot = async () => {
                     'Get today of history failed. You may try to call it again later!'
                 )
             }
+        })
+
+        // bot.onText(/^\/random_music$/, async (msg) => {
+        //     const apiName = 'Random Get QQ Music Collection'
+        //     const chatId = msg.chat.id
+        // })
+
+        bot.on('polling_error', (error) => {
+            console.error(error)
+        })
+
+        bot.on('webhook_error', (error) => {
+            console.error(error)
+        })
+
+        bot.on('error', (error) => {
+            console.error(error)
         })
 
         instance = bot

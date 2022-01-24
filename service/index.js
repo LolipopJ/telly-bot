@@ -6,6 +6,7 @@ const {
 
 const Sequelize = require('../db/index')
 const Bot = require('./bot')
+const QQMusic = require('./qqMusic')
 
 const githubTask = require('./task/github')
 const hexoTask = require('./task/hexo')
@@ -17,16 +18,32 @@ const initService = async function () {
     // Init database and bot
     try {
         await Sequelize()
+        console.log('Connect to database server successfully!')
     } catch (error) {
-        console.error('Init service failed:\nDatabase startup failed.')
+        console.error('Init service failed:\n', 'Database startup failed.')
         throw error
     }
 
     try {
         await Bot()
+        console.log('Connect to Telegram Bot server successfully!')
     } catch (error) {
-        console.error('Init service failed:\nTelegram Bot startup failed.')
+        console.error('Init service failed:\n', 'Telegram Bot startup failed.')
         throw error
+    }
+
+    // Init optional service executors
+    if (config.qqMusic?.enable) {
+        try {
+            await QQMusic()
+            console.log('Connect to QQ Music API server successfully!')
+        } catch (error) {
+            console.error(
+                'Connect to QQ Music API server failed.\n',
+                'If this situation is continuly caused, try to disable QQ Music service.'
+            )
+            throw error
+        }
     }
 
     // Init scheduler tasks
