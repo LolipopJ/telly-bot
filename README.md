@@ -50,7 +50,7 @@ database: {
 
 ### Forward Github issue comment to Telegram channel
 
-<img align="right" src="./docs/github_issue_comment.png">
+<img src="./docs/github_issue_comment.png">
 
 You can enable Github issue comment forwarding service by configuring `config.js`:
 
@@ -83,7 +83,7 @@ This configuration means: the bot will automatically forward the comments of all
 
 ### Forward Hexo blog to Telegram chat
 
-<img align="left" height="200" src="./docs/hexo_blog.png">
+<img src="./docs/hexo_blog.png">
 
 You can enable Github issue comment forwarding service by configuring `config.js`:
 
