@@ -5,7 +5,7 @@ const config = require('../../config').pixiv
 
 const Sequelize = require('../../db/index')
 
-const generateCollectionIndex = async function ({ updateAll = false }) {
+const generateCollectionIndex = async function ({ updateAll = false } = {}) {
     const serviceName = 'Generate Collection Index'
     const bToMB = 1024 * 1024
 

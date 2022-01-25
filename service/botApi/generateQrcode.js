@@ -1,4 +1,4 @@
-const generateQrcode = function ({ text, size = 600 }) {
+const generateQrcode = function ({ text, size = 600 } = {}) {
     const apiName = 'Generate QRcode'
 
     const qrcodeText = String(text).slice(7).trim()

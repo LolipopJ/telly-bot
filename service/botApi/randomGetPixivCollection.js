@@ -1,7 +1,7 @@
 const { Op } = require('sequelize')
 const Sequelize = require('../../db/index')
 
-const randomGetPixivCollection = async function ({ r18 = false }) {
+const randomGetPixivCollection = async function ({ r18 = false } = {}) {
     try {
         const sequelize = await Sequelize()
         const ServicePixivCollection = sequelize.models.ServicePixivCollection
