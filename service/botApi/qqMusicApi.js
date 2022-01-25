@@ -1,7 +1,7 @@
 const QQMusic = require('../qqMusic')
 const config = require('../../config').qqMusic
 
-let musicList
+let musicList = []
 
 const randomGetQQMusicCollection = async function () {
     const result = {
@@ -10,23 +10,10 @@ const randomGetQQMusicCollection = async function () {
         error: undefined,
     }
 
-    if (!musicList) {
-        const musicListId = config.musicListId
-
-        if (!musicListId) {
-            result.error = 'Music list id is not defined.'
-            return result
-        }
-
-        const qqMusic = await QQMusic()
-        const musicListDetails = await qqMusic.api('/getSongListDetail', {
-            disstid: musicListId,
-        })
-
-        if (musicListDetails.data?.response?.cdlist[0]?.songlist) {
-            musicList = musicListDetails.data.response.cdlist[0].songlist
-        } else {
-            result.error = "Can't get specified music list."
+    if (musicList.length === 0) {
+        const getMusicListRes = await getMusicList()
+        if (!getMusicListRes.ok) {
+            result.error = 'Get music list failed.'
             return result
         }
     }
@@ -37,6 +24,37 @@ const randomGetQQMusicCollection = async function () {
 
     result.ok = true
     result.data = musicList[randomMusicId]
+    return result
+}
+
+const getMusicList = async function () {
+    const result = {
+        ok: false,
+        data: undefined,
+        error: undefined,
+    }
+
+    const musicListId = config.musicListId
+
+    if (!musicListId) {
+        result.error = 'Music list id is not defined.'
+        return result
+    }
+
+    const qqMusic = await QQMusic()
+    const musicListDetails = await qqMusic.api('/getSongListDetail', {
+        disstid: musicListId,
+    })
+
+    const songList = musicListDetails.data?.response?.cdlist[0]?.songlist
+    if (songList) {
+        result.ok = true
+        result.data = songList
+        musicList = songList
+    } else {
+        result.error = "Can't get specified music list."
+    }
+
     return result
 }
 
@@ -97,8 +115,17 @@ const getQQMusicMvUrl = async function (vid) {
     }
 }
 
+const getMusicCount = async function () {
+    if (musicList.length === 0) {
+        await getMusicList()
+    }
+
+    return musicList.length
+}
+
 module.exports = {
     randomGetQQMusicCollection,
     getQQMusicPlayUrl,
     getQQMusicMvUrl,
+    getMusicCount,
 }

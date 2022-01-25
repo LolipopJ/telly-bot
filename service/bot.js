@@ -337,6 +337,20 @@ const connectTelegramBot = async () => {
             }
         })
 
+        bot.onText(/^\/music_count$/, async (msg) => {
+            const apiName = 'Get music count'
+            const chatId = msg.chat.id
+
+            try {
+                const musicCount = await qqMusicApi.getMusicCount()
+                const message = `We have ${musicCount} songs for you now!`
+
+                await bot.sendMessage(chatId, message)
+            } catch (error) {
+                console.error(`Bot API error: ${apiName}\n`, error)
+            }
+        })
+
         bot.on('polling_error', (error) => {
             console.error(error)
         })
