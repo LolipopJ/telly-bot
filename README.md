@@ -50,6 +50,8 @@ database: {
 
 ### Forward Github issue comment to Telegram channel
 
+<img align="right" src="./docs/github_issue_comment.png">
+
 You can enable Github issue comment forwarding service by configuring `config.js`:
 
 ```js
@@ -75,9 +77,13 @@ github: {
 },
 ```
 
+<img align="right" height="200" src="./docs/tg_forward_github_issue_comment.png">
+
 This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is `3600` seconds.
 
 ### Forward Hexo blog to Telegram chat
+
+<img align="left" height="200" src="./docs/hexo_blog.png">
 
 You can enable Github issue comment forwarding service by configuring `config.js`:
 
@@ -102,6 +108,8 @@ hexo: {
 },
 ```
 
+<img align="left" height="200" src="./docs/tg_forward_hexo_blog.png">
+
 This configuration means: the bot will automatically forward the hexo blogs in `path/to/source/_posts` directory to the `@telegram_channel_id` channel, and the forwarded blog are created or updated no earlier than `2022-01-01T00:00:00.000Z`. The link jump to the blog will be as `https://your_username.github.io/${year}/${month}/${day + offsetDay}/${blog_filename}`. The execution interval between two services is `3600` seconds.
 
 ### Generate Pivix collection index and random send to Telegram chat
@@ -121,6 +129,8 @@ pixiv: {
 },
 ```
 
+<img align="right" height="300" src="./docs/tg_random_pixiv_artwork.png">
+
 This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` and `pixiv_collection_path_r18` paths every `3600` seconds. In that case, you can send message `/random_pixiv` or `/random_pixiv_r18` to the bot and get a random collection each time.
 
 ### QQ Music API support
@@ -137,6 +147,8 @@ qqmusic: {
     musicListId: 'your_music_list_id',
 },
 ```
+
+<img align="left" height="250" src="./docs/tg_random_music.png">
 
 This configuration means: Rain120/qq-music-api server is running on `http://127.0.0.1:3200`. You can send message `/random_music` to the bot and get a random music from the QQ music playlist `your_music_list_id` each time.
 
