@@ -3168,6 +3168,11 @@ make-dir@^3.0.0:
   dependencies:
     semver "^6.0.0"
 
+marked@^4.0.12:
+  version "4.0.12"
+  resolved "https://registry.npmmirror.com/marked/download/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
+  integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
+
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.nlark.com/media-typer/download/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"

@@ -1,3 +1,5 @@
+const { marked } = require('marked')
+
 const kaomoji = require('./kaomoji')
 const kaomojiLeng = kaomoji.length
 
@@ -19,4 +21,20 @@ const transformKbToMb = function (kb, fixed = 2) {
     return (kb / 1024 / 1024).toFixed(fixed)
 }
 
-module.exports = { randomKaomoji, transformObjectToParams, transformKbToMb }
+const parseMdToHtml = function (mdText, parseMode = 'default') {
+    let parsedResult = marked.parse(mdText)
+
+    if (parseMode && parseMode === 'tgbot') {
+        // Remove <p> tags
+        parsedResult = parsedResult.replace(/<p>/g, '').replace(/<\/p>/g, '\n')
+    }
+
+    return parsedResult
+}
+
+module.exports = {
+    randomKaomoji,
+    transformObjectToParams,
+    transformKbToMb,
+    parseMdToHtml,
+}

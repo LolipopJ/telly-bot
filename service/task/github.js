@@ -5,6 +5,8 @@ const Sequelize = require('../../db/index')
 
 const config = require('../../config').github
 
+const { parseMdToHtml } = require('../../assets/index')
+
 // Init API requester
 const octokitOptions = {}
 const authToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN
@@ -53,6 +55,7 @@ const forwardGithubIssueComment = async function () {
             `Start to resolve issue: ${issueUrl}`
         )
 
+        // Resolve user ID filter
         let issueUserId = issue.issueUserId
         if (issueUserId !== undefined && !Array.isArray(issueUserId)) {
             issueUserId = [issueUserId]
@@ -62,6 +65,7 @@ const forwardGithubIssueComment = async function () {
             else return false
         })
 
+        // Init Github API query params
         const queryConfig = {
             issueUrl,
             issueUserId,
@@ -133,36 +137,47 @@ const forwardGithubIssueComment = async function () {
                 const sourceDate = `${new Date(
                     issueComment.updated_at
                 ).toLocaleString()}`
+                const sourceHtmlUrl = issueComment.html_url
+
+                // Parse markdown to html
+                const commentBody = parseMdToHtml(issueComment.body, 'tgbot')
+
                 try {
-                    const sourceCaption = `\n\n${sourceDate} \\| [source](${issueComment.html_url})`
+                    // Send HTML type message
+                    const sourceCaption = `${sourceDate} | <a href="${sourceHtmlUrl}">source</a>`
                     await bot.sendMessage(
                         forwardChannelId,
-                        issueComment.body + sourceCaption,
+                        commentBody + sourceCaption,
                         {
-                            parse_mode: 'MarkdownV2',
+                            parse_mode: 'HTML',
                             disable_web_page_preview: true,
                         }
                     )
+
                     console.log(
                         `Service info: ${serviceName}\n`,
-                        `Send message successfully:\n${issueComment.body}`
+                        `Send message successfully:\n${commentBody}`
                     )
                 } catch (error) {
-                    // console.log(error)
+                    console.error(error)
+
+                    // if failed, only send url link
                     console.warn(
-                        `Service warning: ${serviceName}\n---\nParse message failed:\n${issueComment.body}`
+                        `Service warning: ${serviceName}\n---\nSend parsed message failed:\n${commentBody}`
                     )
+
                     const sourceCaption = `\n\n${sourceDate}`
                     await bot.sendMessage(
                         forwardChannelId,
-                        issueComment.html_url + sourceCaption,
+                        sourceHtmlUrl + sourceCaption,
                         {
                             disable_web_page_preview: true,
                         }
                     )
+
                     console.log(
                         `Service info: ${serviceName}\n`,
-                        'Message url link has been sended!\n---'
+                        `Message url link has been sended: ${sourceHtmlUrl}\n---`
                     )
                 }
 
