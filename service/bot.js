@@ -276,6 +276,7 @@ const connectTelegramBot = async () => {
             const res = await qqMusicApi.randomGetQQMusicCollection()
             if (res.ok === true) {
                 let message = ''
+                let disableWebPagePreview = true
 
                 const musicInfo = res.data
                 const singerInfo = musicInfo.singer
@@ -283,6 +284,7 @@ const connectTelegramBot = async () => {
                 const mvInfo = musicInfo.mv
 
                 const musicName = musicInfo.name
+                const musicNameUrl = encodeURIComponent(musicName)
                 const musicMId = musicInfo.mid
                 const musicPublicTime = musicInfo.time_public
                 const musicMvVId = mvInfo.vid
@@ -322,12 +324,13 @@ const connectTelegramBot = async () => {
                 if (playUrlRes.ok) {
                     const playUrl = playUrlRes.data
                     message += `\n\n<a href="${playUrl}">Play music</a>`
+                    disableWebPagePreview = false
                 }
 
                 // Search url
-                const qqMusicSearchUrl = `https://y.qq.com/n/ryqq/search?w=${musicName}`
-                const netEaseCloudMusicSearchUrl = `https://music.163.com/#/search/m/?s=${musicName}`
-                const spotifySearchUrl = `https://open.spotify.com/search/${musicName}`
+                const qqMusicSearchUrl = `https://y.qq.com/n/ryqq/search?w=${musicNameUrl}`
+                const netEaseCloudMusicSearchUrl = `https://music.163.com/#/search/m/?s=${musicNameUrl}`
+                const spotifySearchUrl = `https://open.spotify.com/search/${musicNameUrl}`
                 message += `\n\nSearch: <a href="${qqMusicSearchUrl}">QQ Music</a> | <a href="${netEaseCloudMusicSearchUrl}">NetEase Cloud Music</a> | <a href="${spotifySearchUrl}">Spotify</a>`
 
                 console.log(
@@ -337,6 +340,7 @@ const connectTelegramBot = async () => {
 
                 bot.sendMessage(chatId, message, {
                     parse_mode: 'HTML',
+                    disable_web_page_preview: disableWebPagePreview,
                 })
             } else {
                 console.error(`Bot API error: ${apiName}\n`, res.error)
