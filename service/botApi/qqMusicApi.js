@@ -2,6 +2,7 @@ const QQMusic = require('../qqMusic')
 const config = require('../../config').qqMusic
 
 let musicList = []
+let getMusicListInterval = undefined
 
 const randomGetQQMusicCollection = async function () {
     const result = {
@@ -10,10 +11,25 @@ const randomGetQQMusicCollection = async function () {
         error: undefined,
     }
 
+    if (!getMusicListInterval) {
+        // Get music list every 3600 seconds
+        getMusicListInterval = setInterval(async function () {
+            await getMusicList()
+        }, 3600 * 1000)
+    }
+
     if (musicList.length === 0) {
         const getMusicListRes = await getMusicList()
+
+        // API request failed
         if (!getMusicListRes.ok) {
             result.error = 'Get music list failed.'
+            return result
+        }
+
+        // There is no music in list
+        if (musicList.length === 0) {
+            result.error = 'There is no music in list.'
             return result
         }
     }
@@ -51,6 +67,7 @@ const getMusicList = async function () {
         result.ok = true
         result.data = songList
         musicList = songList
+        console.log('Get QQ Music list successfully!')
     } else {
         result.error = "Can't get specified music list."
     }

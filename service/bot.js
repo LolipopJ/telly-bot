@@ -149,7 +149,7 @@ const connectTelegramBot = async () => {
                 let msgReplied = false
 
                 if (picSize < 5) {
-                    // Artwork size is smaller than 5 MB, send photo message
+                    // Artwork size is smaller than 5 MB, send photo type message
                     const sendPhotoOptions = {
                         caption,
                         parse_mode: 'MarkdownV2',
@@ -167,6 +167,7 @@ const connectTelegramBot = async () => {
                     } catch (err) {
                         console.error(
                             `Bot API error: ${apiName}\n`,
+                            `Send artwork failed: ${picName}\n`,
                             err.response.body
                         )
 
@@ -195,6 +196,7 @@ const connectTelegramBot = async () => {
                             } catch (err) {
                                 console.error(
                                     `Bot API error: ${apiName}\n`,
+                                    `Send artwork failed: ${picName}\n`,
                                     err.response.body
                                 )
                             }
@@ -290,8 +292,10 @@ const connectTelegramBot = async () => {
                     singerMessage += `${singer.name} `
                 }
 
+                // Music info
                 message += `<b>${musicName}</b>\n\nSinger: ${singerMessage}\nAlbum: ${albumInfo.name}\nPublic time: ${musicPublicTime}`
 
+                // MV url
                 if (musicMvVId) {
                     const mvUrlRes = await qqMusicApi.getQQMusicMvUrl(
                         musicMvVId
@@ -313,11 +317,18 @@ const connectTelegramBot = async () => {
                     }
                 }
 
+                // Play url
                 const playUrlRes = await qqMusicApi.getQQMusicPlayUrl(musicMId)
                 if (playUrlRes.ok) {
                     const playUrl = playUrlRes.data
                     message += `\n\n<a href="${playUrl}">Play music</a>`
                 }
+
+                // Search url
+                const qqMusicSearchUrl = `https://y.qq.com/n/ryqq/search?w=${musicName}`
+                const netEaseCloudMusicSearchUrl = `https://music.163.com/#/search/m/?s=${musicName}`
+                const spotifySearchUrl = `https://open.spotify.com/search/${musicName}`
+                message += `\n\nSearch: <a href="${qqMusicSearchUrl}">QQ Music</a> | <a href="${netEaseCloudMusicSearchUrl}">NetEase Cloud Music</a> | <a href="${spotifySearchUrl}">Spotify</a>`
 
                 console.log(
                     `Bot API info: ${apiName}\n`,
