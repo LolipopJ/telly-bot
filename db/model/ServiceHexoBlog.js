@@ -6,11 +6,6 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
     },
-    // ID of service process (not serviceId)
-    serviceProcessId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-    },
     filename: {
         type: DataTypes.TEXT,
         allowNull: false,

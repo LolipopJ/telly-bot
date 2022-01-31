@@ -31,6 +31,7 @@ const forwardGithubIssueComment = async function () {
     const sequelize = await Sequelize()
 
     const ServiceGithubIssueComment = sequelize.models.ServiceGithubIssueComment
+    const ServiceProcess = sequelize.models.ServiceProcess
 
     const execStartTime = new Date().getTime()
     console.log(`Service info: ${serviceName}\n`, `Start execute service.`)
@@ -50,41 +51,42 @@ const forwardGithubIssueComment = async function () {
         }
 
         const issueUrl = `${owner}/${repo}/issues/${issueNumber}`
+
         console.log(
             `Service info: ${serviceName}\n`,
-            `Start to resolve issue: ${issueUrl}`
+            `Start to resolve issue: ${issueUrl}\n`,
+            `Forwarded to chat (channel): ${forwardChannelId}`
         )
 
-        // Resolve user ID filter
-        let issueUserId = issue.issueUserId
-        if (issueUserId !== undefined && !Array.isArray(issueUserId)) {
-            issueUserId = [issueUserId]
-        }
-        issueUserId.filter((id) => {
-            if (id) return true
-            else return false
-        })
-
-        // Init Github API query params
-        const queryConfig = {
-            issueUrl,
-            issueUserId,
-            forwardChannelId,
+        // Resolve user ID array of comments to be reserved
+        let issueUserId = issue.issueUserId || []
+        if (!Array.isArray(issueUserId)) {
+            issueUserId = [issueUserId].filter((id) => {
+                if (id) return true
+                else return false
+            })
         }
 
-        const perPage = 100
-        let page = 0
+        // Init service process query params
+        const serviceProcessWhere = {
+            serviceName,
+            serviceConfig: JSON.stringify({
+                issueUrl,
+                issueUserId,
+                forwardChannelId,
+            }),
+        }
 
         // Get initial query comment update since time
         const issueSince = issue.since
         let since = issueSince || new Date()
-        const issueServiceInfo = await ServiceGithubIssueComment.findOne({
-            where: queryConfig,
+        let serviceProcessInfo = await ServiceProcess.findOne({
+            where: serviceProcessWhere,
         })
-        if (issueServiceInfo) {
+        if (serviceProcessInfo) {
             // The service record exists
             const lastUpdateCommentDate =
-                issueServiceInfo.dataValues.lastUpdateCommentAt
+                serviceProcessInfo.dataValues.lastExecAt
             if (lastUpdateCommentDate) {
                 // Use comment last update date added by 1 ms as since
                 since = new Date(lastUpdateCommentDate).getTime() + 1
@@ -96,11 +98,17 @@ const forwardGithubIssueComment = async function () {
             }
         } else {
             // The service record does not exist in the database, create a new one
-            await ServiceGithubIssueComment.create(queryConfig)
+            serviceProcessInfo = await ServiceProcess.create(
+                serviceProcessWhere
+            )
         }
         since = new Date(since).toISOString()
+        const serviceProcessId = serviceProcessInfo.dataValues.id
 
-        // Call the API to get the latest comments on the issue
+        // Call the Github API to get the latest comments on the issue
+        const perPage = 100
+        let page = 0
+
         let issueComments = []
         while (issueComments.length === perPage * page) {
             ++page
@@ -119,7 +127,7 @@ const forwardGithubIssueComment = async function () {
         }
 
         // Only keep comments for the specified userId
-        if (issueUserId.length > 0) {
+        if (Array.isArray(issueUserId) && issueUserId.length > 0) {
             issueComments = issueComments.filter((comment) => {
                 const commentUserId = comment.user.id
                 if (issueUserId.includes(commentUserId)) {
@@ -134,51 +142,112 @@ const forwardGithubIssueComment = async function () {
         if (issueComments.length > 0) {
             let lastUpdateCommentAt = new Date(0).toISOString()
             for (const issueComment of issueComments) {
-                const sourceDate = `${new Date(
+                const sourceDate = new Date(
                     issueComment.updated_at
-                ).toLocaleString()}`
+                ).toLocaleString()
                 const sourceHtmlUrl = issueComment.html_url
 
                 // Parse markdown to html
                 const commentBody = parseMdToHtml(issueComment.body, 'tgbot')
 
+                // Query forwarded comment in chat (channel) if exists
+                let isModifyMessage = false
+                let messageId
+                const commentId = issueComment.id
+                const githubIssueCommentWhere = {
+                    ServiceProcessId: serviceProcessId,
+                    commentId,
+                }
+                const githubIssueCommentInfo =
+                    await ServiceGithubIssueComment.findOne({
+                        where: githubIssueCommentWhere,
+                    })
+                if (githubIssueCommentInfo) {
+                    isModifyMessage = true
+                    messageId = githubIssueCommentInfo.dataValues.messageId
+                }
+
                 try {
                     // Send HTML type message
                     const sourceCaption = `${sourceDate} | <a href="${sourceHtmlUrl}">source</a>`
-                    await bot.sendMessage(
-                        forwardChannelId,
-                        commentBody + sourceCaption,
-                        {
+                    const messageBody = commentBody + sourceCaption
+
+                    if (isModifyMessage) {
+                        await bot.editMessageText(messageBody, {
+                            chat_id: forwardChannelId,
+                            message_id: messageId,
                             parse_mode: 'HTML',
                             disable_web_page_preview: true,
-                        }
-                    )
+                        })
 
-                    console.log(
-                        `Service info: ${serviceName}\n`,
-                        `Send message successfully:\n${commentBody}`
-                    )
+                        console.log(
+                            `Service info: ${serviceName}\n`,
+                            `Edit existing message successfully:\n${messageBody}`
+                        )
+                    } else {
+                        const sendMessageInfo = await bot.sendMessage(
+                            forwardChannelId,
+                            messageBody,
+                            {
+                                parse_mode: 'HTML',
+                                disable_web_page_preview: true,
+                            }
+                        )
+
+                        messageId = sendMessageInfo.message_id
+
+                        console.log(
+                            `Service info: ${serviceName}\n`,
+                            `Send message successfully:\n${messageBody}`
+                        )
+                    }
                 } catch (error) {
                     console.error(error)
 
                     // if failed, only send url link
                     console.warn(
-                        `Service warning: ${serviceName}\n---\nSend parsed message failed:\n${commentBody}`
+                        `Service warning: ${serviceName}\n---\nSend parsed message failed:\n${messageBody}`
                     )
 
                     const sourceCaption = `\n\n${sourceDate}`
-                    await bot.sendMessage(
-                        forwardChannelId,
-                        sourceHtmlUrl + sourceCaption,
-                        {
-                            disable_web_page_preview: true,
-                        }
-                    )
+                    const messageBody = sourceHtmlUrl + sourceCaption
 
-                    console.log(
-                        `Service info: ${serviceName}\n`,
-                        `Message url link has been sended: ${sourceHtmlUrl}\n---`
-                    )
+                    if (isModifyMessage) {
+                        await bot.editMessageText(messageBody, {
+                            chat_id: forwardChannelId,
+                            message_id: messageId,
+                            disable_web_page_preview: true,
+                        })
+
+                        console.log(
+                            `Service info: ${serviceName}\n`,
+                            `Edit existing message through url link successfully:\n${messageBody}`
+                        )
+                    } else {
+                        const sendMessageInfo = await bot.sendMessage(
+                            forwardChannelId,
+                            messageBody,
+                            {
+                                disable_web_page_preview: true,
+                            }
+                        )
+
+                        messageId = sendMessageInfo.message_id
+
+                        console.log(
+                            `Service info: ${serviceName}\n`,
+                            `Message url link has been sended: ${messageBody}\n---`
+                        )
+                    }
+                }
+
+                // Save sended message info to database
+                if (!isModifyMessage && messageId !== undefined) {
+                    await ServiceGithubIssueComment.create({
+                        ServiceProcessId: serviceProcessId,
+                        commentId,
+                        messageId,
+                    })
                 }
 
                 // Get the last update date of comments
@@ -192,16 +261,20 @@ const forwardGithubIssueComment = async function () {
             }
 
             // Update database records
-            ServiceGithubIssueComment.update(
+            ServiceProcess.update(
                 {
-                    lastUpdateCommentAt,
-                    lastExecServiceAt: new Date().toISOString(),
+                    lastExecAt: lastUpdateCommentAt,
                 },
                 {
-                    where: queryConfig,
+                    where: { id: serviceProcessId },
                 }
             )
         }
+
+        // Increment the time of execution
+        ServiceProcess.increment('haveExecTime', {
+            where: { id: serviceProcessId },
+        })
 
         console.log(
             `Service info: ${serviceName}\n`,

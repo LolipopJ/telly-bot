@@ -5,7 +5,7 @@ const yaml = require('js-yaml')
 const Bot = require('../bot')
 const Sequelize = require('../../db/index')
 
-const { sleep } = require('../../assets/index')
+const { parseMdToHtml, sleep } = require('../../assets/index')
 
 const config = require('../../config').hexo
 
@@ -22,13 +22,14 @@ const forwardHexoBlog = async function () {
     console.log(`Service info: ${serviceName}\n`, `Start execute service.`)
 
     for (const task of config.forwardHexoBlog.task) {
+        const { baseUrl, offsetDay, forwardChannelId, since, abstractLines } =
+            task
         const filePath = task.path
+
         const serviceProcessWhere = {
             serviceName,
-            serviceConfig: filePath,
+            serviceConfig: JSON.stringify({ filePath, forwardChannelId }),
         }
-
-        const { baseUrl, offsetDay, forwardChannelId, since } = task
 
         // Query last time of forwarding Hexo blog
         let lastForwardHexoBlogTime = since || new Date()
@@ -113,7 +114,7 @@ const forwardHexoBlog = async function () {
             // Update blog info stored in database
             try {
                 const hexoBlog = {
-                    serviceProcessId,
+                    ServiceProcessId: serviceProcessId,
                     filename: blogFilename,
                     permalink: blogUrl,
                     blogTitle: frontMatter.title,
@@ -126,7 +127,7 @@ const forwardHexoBlog = async function () {
                 await sequelize.updateOrCreate(
                     ServiceHexoBlog,
                     {
-                        serviceProcessId,
+                        ServiceProcessId: serviceProcessId,
                         filename: blogFilename,
                     },
                     hexoBlog
@@ -172,51 +173,53 @@ const forwardHexoBlog = async function () {
                 const blogTitle = updatedOrCreatedBlog.title
                 const blogUrl = updatedOrCreatedBlog.blogUrl
 
-                const messageCaption = `\n\n[source](${blogUrl}) \\| powered by [Hexo](https://hexo.io/)`
+                const messageCaption = `\n\n<a href="${blogUrl}">source</a> | powered by <a href="https://hexo.io/">Hexo</a>`
                 const messageOptions = {
-                    parse_mode: 'MarkdownV2',
+                    parse_mode: 'HTML',
                     disable_web_page_preview: true,
                 }
 
                 let message
                 if (updatedOrCreatedBlog.isCreated) {
                     const blogCategories = updatedOrCreatedBlog.categories
-                    const blogMsgTags = new Array(
-                        updatedOrCreatedBlog.tags.length
-                    )
-                    for (let i = 0; i < blogMsgTags.length; i++) {
-                        blogMsgTags[i] = `\\#${blogTags[i]}`
+                    const blogCategoriesMsg = new Array(blogCategories.length)
+                    for (let i = 0; i < blogCategoriesMsg.length; i++) {
+                        blogCategoriesMsg[i] = `#${blogCategories[i]}`
                     }
 
+                    const blogTags = updatedOrCreatedBlog.tags
+                    const blogTagsMsg = new Array(blogTags.length)
+                    for (let i = 0; i < blogTagsMsg.length; i++) {
+                        blogTagsMsg[i] = `#${blogTags[i]}`
+                    }
+
+                    const autoAbstract = getHexoBlogAutoAbstract(
+                        updatedOrCreatedBlog.article
+                    )
                     const blogAbstract =
                         updatedOrCreatedBlog.abstract ||
                         updatedOrCreatedBlog.summary ||
-                        updatedOrCreatedBlog.description
+                        updatedOrCreatedBlog.description ||
+                        autoAbstract
 
-                    let messageBody = `\n\n「${blogTitle}」\nCategories: ${blogCategories.join(
+                    let messageBody = `\n\n<b>${blogTitle}</b>\n\nCategories: ${blogCategoriesMsg.join(
                         ' / '
-                    )}\nTags: ${blogMsgTags.join(
+                    )}\nTags: ${blogTagsMsg.join(
                         ' '
-                    )}\nCreated at: ${blogCreatedDate.toISOString()}`
+                    )}\nCreated at: ${blogCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
 
                     if (blogAbstract) {
-                        messageBody += `\nAbstract: ${blogAbstract}`
+                        messageBody += `\nAbstract: \n「${blogAbstract}」`
                     }
 
                     message =
-                        'Published a new blog:' +
-                        messageBody
-                            .replace(/\-/g, '\\-')
-                            .replace(/\./g, '\\.') +
-                        messageCaption
+                        'Published a new blog:' + messageBody + messageCaption
                 } else if (updatedOrCreatedBlog.isUpdated) {
-                    const messageBody = `\n\n「${blogTitle}」\nCreated at: ${blogCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
+                    const messageBody = `\n\n<b>${blogTitle}</b>\n\nCreated at: ${blogCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
 
                     message =
                         'Updated an existing blog:' +
-                        messageBody
-                            .replace(/\-/g, '\\-')
-                            .replace(/\./g, '\\.') +
+                        messageBody +
                         messageCaption
                 } else {
                     continue
@@ -247,7 +250,8 @@ const forwardHexoBlog = async function () {
                     console.error(
                         `Service error: ${serviceName}\n`,
                         'Post to Telegram Channel failed. Message:\n',
-                        `${message}`
+                        `${message}\n`,
+                        `Error: ${error}`
                     )
                 }
 
@@ -261,12 +265,15 @@ const forwardHexoBlog = async function () {
                     lastExecAt: resolveBlogFilesAt,
                 },
                 {
-                    where: serviceProcessWhere,
+                    where: { id: serviceProcessId },
                 }
             )
         }
 
-        ServiceProcess.increment('haveExecTime', { where: serviceProcessWhere })
+        // Increment the time of execution
+        ServiceProcess.increment('haveExecTime', {
+            where: { id: serviceProcessId },
+        })
 
         console.log(
             `Service info: ${serviceName}\n`,
@@ -292,6 +299,33 @@ const getHexoBlogFrontMatter = function (content) {
     if (contentArrayLeng >= 3) {
         const contentInfo = contentArray[1]
         result = yaml.load(contentInfo)
+
+        let article = ''
+        for (let i = 2; i < contentArrayLeng; i++) {
+            article += contentArray[i] + '\n'
+        }
+        result.article = article
+    }
+
+    return result
+}
+
+const getHexoBlogAutoAbstract = function (article, autoAbstractLines = 5) {
+    let result
+
+    if (article) {
+        const abstractLines = Number(autoAbstractLines)
+        if (abstractLines && abstractLines > 0) {
+            const articleHtml = parseMdToHtml(article, 'tgbot')
+            const articleHtmlArray = articleHtml.split(/\r?\n/g)
+
+            let autoAbstract = ''
+            for (let i = 0; i < autoAbstractLines; i++) {
+                autoAbstract += articleHtmlArray[i] + '\n'
+            }
+
+            result = autoAbstract.trim()
+        }
     }
 
     return result

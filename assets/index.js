@@ -26,7 +26,28 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
 
     if (parseMode && parseMode === 'tgbot') {
         // Remove <p> tags
-        parsedResult = parsedResult.replace(/<p>/g, '').replace(/<\/p>/g, '\n')
+        parsedResult = parsedResult
+            .replace(/<p.*?>/g, '')
+            .replace(/<\/p>/g, '\n')
+
+        // Transform <h*> tags to <b>
+        parsedResult = parsedResult
+            .replace(/<h..*?>/g, '<b>')
+            .replace(/<\/h.>/g, '</b>\n')
+
+        // Romove <ol> <ul> <li> tags
+        parsedResult = parsedResult
+            .replace(/<ol.*?>/g, '')
+            .replace(/<ul.*?>/g, '')
+            .replace(/<li.*?>/g, '')
+            .replace(/<\/ol>/g, '\n')
+            .replace(/<\/ul>/g, '\n')
+            .replace(/<\/li>/g, '')
+
+        // Transform <blockquote> tags to <i>
+        parsedResult = parsedResult
+            .replace(/<blockquote.*?>/g, '<i>')
+            .replace(/<\/blockquote>/g, '</i>\n')
     }
 
     return parsedResult

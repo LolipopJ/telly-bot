@@ -46,6 +46,8 @@ const config = {
                     // permalink: ':year/:month/:day/', // Only support this permalink
                     offsetDay: 0, // ':day' in permalink will be as ':day + offsetDay'
                     forwardChannelId: '@telegram_channel_id',
+                    // Auto abstract lines
+                    abstractLines: 5,
                     since: '2022-01-01T00:00:00.000Z', // Since created date of blog
                 },
             ],

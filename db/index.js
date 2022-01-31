@@ -53,9 +53,10 @@ const connectDababase = async () => {
             serviceProcessModel
         )
 
-        ServiceProcess.hasMany(ServiceHexoBlog, {
-            foreignKey: 'serviceProcessId',
-        })
+        ServiceProcess.hasMany(ServiceGithubIssueComment)
+        ServiceGithubIssueComment.belongsTo(ServiceProcess)
+
+        ServiceProcess.hasMany(ServiceHexoBlog)
         ServiceHexoBlog.belongsTo(ServiceProcess)
 
         try {

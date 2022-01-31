@@ -5,7 +5,7 @@
 Install required dependances.
 
 ```bash
-npm install
+yarn install
 ```
 
 ### Environment variables
@@ -110,6 +110,8 @@ hexo: {
                 // ':day' in permalink will be as ':day + offsetDay'
                 offsetDay: 0,
                 forwardChannelId: '@telegram_channel_id',
+                // Auto abstract lines
+                abstractLines: 5,
                 // Since created date of blog
                 since: '2022-01-01T00:00:00.000Z',
             },
@@ -165,11 +167,35 @@ This configuration means: Rain120/qq-music-api server is running on `http://127.
 ## Development
 
 ```bash
-npm run start
+yarn start
 ```
 
 ## Deployment
 
 ```bash
-npm run pm2
+yarn pm2
 ```
+
+### PM2 strategy
+
+By default, pm2 service will read strategy in `process.json`:
+
+```json
+{
+    "apps": [
+        {
+            "name": "telly-bot",
+            "script": "babel-node bin/www",
+            "instances": 1,
+            "cron_restart": "0 0 * * 6", // Restart the instance every Saturday at midnight
+            "max_memory_restart": "300M",
+            "restart_delay": 3000,
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "error_file": "./logs/telly_bot_err.log",
+            "out_file": "./logs/telly_bot_out.log"
+        }
+    ]
+}
+```
+
+Check more details about pm2 strategy [here](https://pm2.keymetrics.io/docs/usage/application-declaration/).
