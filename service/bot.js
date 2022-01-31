@@ -313,6 +313,8 @@ const connectTelegramBot = async () => {
                                 mvUrlItem.fileSize
                             )} MB</a>`
                         }
+
+                        // MV will be expired in 24 hours
                         message += `\n<i>MV url will be expired at: <u>${new Date(
                             new Date().getTime() + 86400000
                         ).toISOString()}</u></i>`

@@ -5,7 +5,7 @@ const Sequelize = require('../../db/index')
 
 const config = require('../../config').github
 
-const { parseMdToHtml } = require('../../assets/index')
+const { parseMdToHtml, sleep } = require('../../assets/index')
 
 // Init API requester
 const octokitOptions = {}
@@ -186,10 +186,13 @@ const forwardGithubIssueComment = async function () {
                 if (issueCommentUpdatedAt > lastUpdateCommentAt) {
                     lastUpdateCommentAt = issueCommentUpdatedAt
                 }
+
+                // Sleep 1000 ms
+                await sleep(1000)
             }
 
             // Update database records
-            await ServiceGithubIssueComment.update(
+            ServiceGithubIssueComment.update(
                 {
                     lastUpdateCommentAt,
                     lastExecServiceAt: new Date().toISOString(),

@@ -5,6 +5,8 @@ const yaml = require('js-yaml')
 const Bot = require('../bot')
 const Sequelize = require('../../db/index')
 
+const { sleep } = require('../../assets/index')
+
 const config = require('../../config').hexo
 
 const forwardHexoBlog = async function () {
@@ -248,11 +250,12 @@ const forwardHexoBlog = async function () {
                         `${message}`
                     )
                 }
-            }
-        }
 
-        // Update database record
-        if (updatedOrCreatedBlogsLeng > 0) {
+                // Sleep 1000 ms
+                await sleep(1000)
+            }
+
+            // Update database record
             ServiceProcess.update(
                 {
                     lastExecAt: resolveBlogFilesAt,
@@ -262,6 +265,7 @@ const forwardHexoBlog = async function () {
                 }
             )
         }
+
         ServiceProcess.increment('haveExecTime', { where: serviceProcessWhere })
 
         console.log(

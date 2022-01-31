@@ -32,9 +32,14 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
     return parsedResult
 }
 
+const sleep = function (ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 module.exports = {
     randomKaomoji,
     transformObjectToParams,
     transformKbToMb,
     parseMdToHtml,
+    sleep,
 }
