@@ -26,27 +26,25 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
 
     if (parseMode && parseMode === 'tgbot') {
         // Remove <p> tags
-        parsedResult = parsedResult
-            .replace(/<p(\b)*.*?>/g, '')
-            .replace(/<\/p>/g, '\n')
+        parsedResult = parsedResult.replace(/<p>/g, '').replace(/<\/p>/g, '\n')
 
-        // Transform <h*> tags to <b>
+        // Transform <h[1-6]> tags to <b>
         parsedResult = parsedResult
-            .replace(/<h[1-6](\b)*.*?>/g, '<b>')
+            .replace(/<h[1-6].*?>/g, '<b>')
             .replace(/<\/h[1-6]>/g, '</b>\n')
 
         // Romove <ol> <ul> <li> tags
         parsedResult = parsedResult
-            .replace(/<ol(\b)*.*?>/g, '')
-            .replace(/<ul(\b)*.*?>/g, '')
-            .replace(/<li(\b)*.*?>/g, '')
+            .replace(/<ol>/g, '')
+            .replace(/<ul>/g, '')
+            .replace(/<li>/g, '')
             .replace(/<\/ol>/g, '\n')
             .replace(/<\/ul>/g, '\n')
             .replace(/<\/li>/g, '')
 
         // Transform <blockquote> tags to <i>
         parsedResult = parsedResult
-            .replace(/<blockquote(\b)*.*?>/g, '<i>')
+            .replace(/<blockquote>/g, '<i>')
             .replace(/<\/blockquote>/g, '</i>\n')
     }
 
