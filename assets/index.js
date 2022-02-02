@@ -25,10 +25,11 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
     let parsedResult = marked.parse(mdText)
 
     if (parseMode && parseMode === 'tgbot') {
-        // Remove <p> tags
+        // Remove <p> and <pre> tags
         parsedResult = parsedResult
             .replace(/<p.*?>/g, '')
             .replace(/<\/p>/g, '\n')
+            .replace(/<\/pre>/g, '')
 
         // Transform <h*> tags to <b>
         parsedResult = parsedResult

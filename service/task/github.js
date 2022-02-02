@@ -206,7 +206,7 @@ const forwardGithubIssueComment = async function () {
 
                     // if failed, only send url link
                     console.warn(
-                        `Service warning: ${serviceName}\n---\nSend parsed message failed:\n${messageBody}`
+                        `Service warning: ${serviceName}\n---\nSend parsed message failed.`
                     )
 
                     const sourceCaption = `\n\n${sourceDate}`
