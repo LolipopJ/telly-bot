@@ -47,7 +47,7 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
             .replace(/<\/li>/g, '')
             // Transform <blockquote> tags to <i>
             .replace(/<blockquote>/g, '<i>')
-            .replace(/<\/blockquote>/g, '</i>\n')
+            .replace(/<\/blockquote>/g, '</i>')
             // Transform <hr> tags
             .replace(/<hr>/g, '======\n')
 
