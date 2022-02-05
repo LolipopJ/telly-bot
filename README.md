@@ -91,6 +91,8 @@ github: {
 
 This configuration means: the bot will automatically forward the comments of all users in `https://github.com/github_repo_owner/github_repo_name/issues/1` to the `@telegram_channel_id` channel, and the forwarded comments are last updated no earlier than `2022-01-01T00:00:00.000Z`. The execution interval between two services is `3600` seconds.
 
+Telly-bot remembers the message corresponding to the comment, and when you edit the comment, the message will be updated, too.
+
 ### Forward Hexo blog to Telegram chat
 
 <img src="./docs/hexo_blog.png">
@@ -145,6 +147,8 @@ pixiv: {
 
 This configuration means: the server will automatically generate index for your Pivix collections stored in the `pixiv_collection_path` and `pixiv_collection_path_r18` paths every `3600` seconds. In that case, you can send message `/random_pixiv` or `/random_pixiv_r18` to the bot and get a random collection each time.
 
+The command `/pixiv_count` can get the number of artworks stored in database.
+
 ### QQ Music API support
 
 Based on project [Rain120/qq-music-api](https://github.com/Rain120/qq-music-api).
@@ -164,6 +168,8 @@ qqmusic: {
 
 This configuration means: Rain120/qq-music-api server is running on `http://127.0.0.1:3200`. You can send message `/random_music` to the bot and get a random music from the QQ music playlist `your_music_list_id` each time.
 
+The command `/music_count` can get the number of musics in music list.
+
 ## Development
 
 ```bash
@@ -178,31 +184,16 @@ yarn build
 
 # Start service
 yarn pm2
+```
 
-# Or just run
+Or you can just run:
+
+```bash
 yarn deploy
 ```
 
 ### PM2 strategy
 
-By default, pm2 service will read strategy in `process.json`:
-
-```json
-{
-    "apps": [
-        {
-            "name": "telly-bot",
-            "script": "babel-node bin/www",
-            "instances": 1,
-            "cron_restart": "0 0 * * 6", // Restart the instance every Saturday at midnight
-            "max_memory_restart": "300M",
-            "restart_delay": 3000,
-            "log_date_format": "YYYY-MM-DD HH:mm Z",
-            "error_file": "./logs/telly_bot_err.log",
-            "out_file": "./logs/telly_bot_out.log"
-        }
-    ]
-}
-```
+By default, pm2 service will read strategy in `process.json`.
 
 Check more details about pm2 strategy [here](https://pm2.keymetrics.io/docs/usage/application-declaration/).
