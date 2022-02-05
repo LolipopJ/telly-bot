@@ -12,7 +12,7 @@ const githubTask = require('./task/github')
 const hexoTask = require('./task/hexo')
 const pixivTask = require('./task/pixiv')
 
-const config = require('../config')
+const config = require('../../config')
 
 const initService = async function () {
     // Init database and bot

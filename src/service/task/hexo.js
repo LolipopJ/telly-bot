@@ -7,7 +7,7 @@ const Sequelize = require('../../db/index')
 
 const { parseMdToHtml, sleep } = require('../../assets/index')
 
-const config = require('../../config').hexo
+const config = require('../../../config').hexo
 
 const forwardHexoBlog = async function () {
     const serviceName = 'Forward Hexo Blog'

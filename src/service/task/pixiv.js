@@ -1,7 +1,7 @@
 const { readdir, stat } = require('fs/promises')
 const path = require('path')
 
-const config = require('../../config').pixiv
+const config = require('../../../config').pixiv
 
 const Sequelize = require('../../db/index')
 

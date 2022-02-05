@@ -1,5 +1,5 @@
 const QQMusic = require('../qqMusic')
-const config = require('../../config').qqMusic
+const config = require('../../../config').qqMusic
 
 let musicList = []
 let getMusicListInterval = undefined

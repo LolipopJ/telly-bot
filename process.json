@@ -2,11 +2,12 @@
     "apps": [
         {
             "name": "telly-bot",
-            "script": "babel-node bin/www",
+            "script": "build/bin/www.js",
+            "exec_mode": "fork",
             "instances": 1,
             "cron_restart": "0 0 * * 6",
             "max_memory_restart": "300M",
-            "restart_delay": 3000,
+            "restart_delay": 10000,
             "log_date_format": "YYYY-MM-DD HH:mm Z",
             "error_file": "./logs/telly_bot_err.log",
             "out_file": "./logs/telly_bot_out.log"

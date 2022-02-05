@@ -77,3 +77,6 @@ typings/
 
 # User configuration
 config.js
+
+# Babel build output
+build

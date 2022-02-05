@@ -1,6 +1,6 @@
 const { Sequelize } = require('sequelize')
 
-const pgsqlConfig = require('../config').database.postgresql
+const pgsqlConfig = require('../../config').database.postgresql
 
 const updateOrCreate = require('./utils/updateOrCreate')
 

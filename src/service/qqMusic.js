@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const config = require('../config').qqMusic
+const config = require('../../config').qqMusic
 const { transformObjectToParams } = require('../assets/index')
 
 let instance

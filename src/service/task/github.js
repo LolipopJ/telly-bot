@@ -3,7 +3,7 @@ const { Octokit } = require('@octokit/core')
 const Bot = require('../bot')
 const Sequelize = require('../../db/index')
 
-const config = require('../../config').github
+const config = require('../../../config').github
 
 const { parseMdToHtml, sleep } = require('../../assets/index')
 

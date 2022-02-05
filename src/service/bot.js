@@ -9,7 +9,7 @@ const todayOfHistory = require('./api/todayOfHistory')
 
 const { randomKaomoji, transformKbToMb } = require('../assets/index')
 
-const config = require('../config')
+const config = require('../../config')
 
 const token = process.env.TELEGRAM_BOT_TOKEN
 

@@ -173,7 +173,14 @@ yarn start
 ## Deployment
 
 ```bash
+# Use babel to build source files
+yarn build
+
+# Start service
 yarn pm2
+
+# Or just run
+yarn deploy
 ```
 
 ### PM2 strategy
