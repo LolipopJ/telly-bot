@@ -1,4 +1,5 @@
 const { marked } = require('marked')
+const { convert2img } = require('mdimg')
 
 const kaomoji = require('./kaomoji')
 const kaomojiLeng = kaomoji.length
@@ -90,10 +91,36 @@ const sleep = function (ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+const md2img = async function (
+    input,
+    output,
+    {
+        type,
+        width,
+        encoding,
+        quality,
+        htmlTemplate,
+        cssTemplate = 'github',
+    } = {}
+) {
+    const convertRes = await convert2img({
+        mdText: input,
+        outputFilename: output,
+        type,
+        width,
+        encoding,
+        quality,
+        htmlTemplate,
+        cssTemplate,
+    })
+    return convertRes
+}
+
 module.exports = {
     randomKaomoji,
     transformObjectToParams,
     transformKbToMb,
     parseMdToHtml,
     sleep,
+    md2img,
 }
