@@ -1,11 +1,12 @@
 const { Octokit } = require('@octokit/core')
+const path = require('path')
 
 const Bot = require('../bot')
 const Sequelize = require('../../db/index')
 
 const config = require('../../../config').github
 
-const { parseMdToHtml, sleep } = require('../../assets/index')
+const { parseMdToHtml, sleep, md2img } = require('../../assets/index')
 
 // Init API requester
 const octokitOptions = {}
@@ -147,8 +148,16 @@ const forwardGithubIssueComment = async function () {
                 ).toLocaleString()
                 const sourceHtmlUrl = issueComment.html_url
 
+                // Parse markdown to image
+                const commentBody = issueComment.body
+                const commentImageRes = await md2img(
+                    commentBody,
+                    path.resolve(__dirname, 'github_images'),
+                    { width: 700 }
+                )
+
                 // Parse markdown to html
-                const commentBody = parseMdToHtml(issueComment.body, 'tgbot')
+                const commentParsedBody = parseMdToHtml(commentBody, 'tgbot')
 
                 // Query forwarded comment in chat (channel) if exists
                 let isModifyMessage = false
@@ -170,9 +179,10 @@ const forwardGithubIssueComment = async function () {
                 try {
                     // Send HTML type message
                     const sourceCaption = `${sourceDate} | <a href="${sourceHtmlUrl}">source</a>`
-                    const messageBody = commentBody + sourceCaption
+                    const messageBody = commentParsedBody + sourceCaption
 
                     if (isModifyMessage) {
+                        // Modify existing message
                         await bot.editMessageText(messageBody, {
                             chat_id: forwardChannelId,
                             message_id: messageId,
@@ -185,6 +195,7 @@ const forwardGithubIssueComment = async function () {
                             `Edit existing message successfully:\n${messageBody}`
                         )
                     } else {
+                        // Send new message
                         const sendMessageInfo = await bot.sendMessage(
                             forwardChannelId,
                             messageBody,
@@ -213,6 +224,7 @@ const forwardGithubIssueComment = async function () {
                     const messageBody = sourceHtmlUrl + sourceCaption
 
                     if (isModifyMessage) {
+                        // Modify existing message
                         await bot.editMessageText(messageBody, {
                             chat_id: forwardChannelId,
                             message_id: messageId,
@@ -224,6 +236,7 @@ const forwardGithubIssueComment = async function () {
                             `Edit existing message through url link successfully:\n${messageBody}`
                         )
                     } else {
+                        // Send new message
                         const sendMessageInfo = await bot.sendMessage(
                             forwardChannelId,
                             messageBody,

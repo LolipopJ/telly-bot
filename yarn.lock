@@ -3476,17 +3476,15 @@ marked@^4.0.12:
   resolved "https://registry.npmmirror.com/marked/download/marked-4.0.12.tgz#2262a4e6fd1afd2f13557726238b69a48b982f7d"
   integrity sha512-hgibXWrEDNBWgGiK18j/4lkS6ihTe9sxtV4Q1OQppb/0zzyPSzoFANBa5MfsG/zgsWklmNnhm0XACZOH/0HBiQ==
 
-mdimg@^0.1.3:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/mdimg/-/mdimg-0.1.3.tgz#3f178e5cae58188c22679c9ff424cbe10a11c367"
-  integrity sha512-oSpatDXm5JHaAY++ka1oQuqk3jMCRDxFp1z3xvgjm3+cwQAE/pm6aqRFr1MiaYNHH7qmKAW/oHjuVcNd1Gr9VQ==
+mdimg@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/mdimg/-/mdimg-0.2.0.tgz#a19bac09eae50d2b6b63721c274d20fd10f0b23d"
+  integrity sha512-2CLzqre3MmG6I87yB9TF0pq1eKMoLbf9lewluKEaGW4YV+ihgIWEDa66oLnbgSYjvLr7rPxl+1/HRRd1I0JcZQ==
   dependencies:
-    "@babel/runtime" "^7.17.2"
     cheerio "^1.0.0-rc.10"
     commander "^9.0.0"
     marked "^4.0.12"
-    puppeteer "^13.3.2"
-    string "^3.3.3"
+    puppeteer "^13.4.0"
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -4220,7 +4218,7 @@ pupa@^2.1.1:
   dependencies:
     escape-goat "^2.0.0"
 
-puppeteer@^13.3.2:
+puppeteer@^13.4.0:
   version "13.4.0"
   resolved "https://registry.yarnpkg.com/puppeteer/-/puppeteer-13.4.0.tgz#d2366542fb0fc7af0cc68719c048a68363a0a940"
   integrity sha512-WrHtFF2WpYC6KWFP4OCPOHWCjW4f8tFk+FkYZeNQ8/lHn+asjXBEXiIWauune8CY2xIHBVExGas+WI6Ay8/MgQ==
@@ -4727,11 +4725,6 @@ string.prototype.trimstart@^1.0.4:
   dependencies:
     call-bind "^1.0.2"
     define-properties "^1.1.3"
-
-string@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/string/-/string-3.3.3.tgz#5ea211cd92d228e184294990a6cc97b366a77cb0"
-  integrity sha1-XqIRzZLSKOGEKUmQpsyXs2anfLA=
 
 string_decoder@^1.1.1:
   version "1.3.0"
