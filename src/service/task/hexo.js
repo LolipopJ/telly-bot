@@ -202,14 +202,14 @@ const forwardHexoBlog = async function () {
                         updatedOrCreatedBlog.description ||
                         autoAbstract
 
-                    let messageBody = `\n\n<b>${blogTitle}</b>\n\nCategories: ${blogCategoriesMsg.join(
+                    let messageBody = `\n\n<a href="${blogUrl}"><b>${blogTitle}</b></a>\n\nCategories: ${blogCategoriesMsg.join(
                         ' / '
                     )}\nTags: ${blogTagsMsg.join(
                         ' '
                     )}\nCreated at: ${blogCreatedDate.toISOString()}\nUpdated at: ${blogUpdatedDate.toISOString()}`
 
                     if (blogAbstract) {
-                        messageBody += `\nAbstract: \n「${blogAbstract}」`
+                        messageBody += `\nAbstract: \n\n「${blogAbstract}」`
                     }
 
                     message =
