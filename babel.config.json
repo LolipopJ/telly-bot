@@ -1,4 +1,12 @@
 {
-    "presets": ["@babel/preset-env"],
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "bugfixes": true,
+                "targets": { "node": "12.0.0" }
+            }
+        ]
+    ],
     "plugins": ["@babel/plugin-transform-runtime"]
 }
