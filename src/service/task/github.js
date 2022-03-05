@@ -1,4 +1,5 @@
 const { Octokit } = require('@octokit/core')
+const { convert2img } = require('mdimg')
 const path = require('path')
 
 const Bot = require('../bot')
@@ -6,7 +7,7 @@ const Sequelize = require('../../db/index')
 
 const config = require('../../../config').github
 
-const { parseMdToHtml, sleep, md2img } = require('../../assets/index')
+const { parseMdToHtml, sleep } = require('../../assets/index')
 
 // Init API requester
 const octokitOptions = {}
@@ -150,11 +151,17 @@ const forwardGithubIssueComment = async function () {
 
                 // Parse markdown to image
                 const commentBody = issueComment.body
-                const commentImageRes = await md2img(
-                    commentBody,
-                    path.resolve(__dirname, 'github_images'),
-                    { width: 700 }
-                )
+                const commentId = issueComment.id
+                const commentImageRes = await convert2img({
+                    mdText: commentBody,
+                    outputFilename: path.resolve(
+                        __dirname,
+                        'github_comment_images',
+                        `${owner}_${repo}_${issueNumber}_${commentId}.png`
+                    ),
+                    width: 700,
+                    cssTemplate: 'github',
+                })
 
                 // Parse markdown to html
                 const commentParsedBody = parseMdToHtml(commentBody, 'tgbot')
@@ -162,7 +169,6 @@ const forwardGithubIssueComment = async function () {
                 // Query forwarded comment in chat (channel) if exists
                 let isModifyMessage = false
                 let messageId
-                const commentId = issueComment.id
                 const githubIssueCommentWhere = {
                     ServiceProcessId: serviceProcessId,
                     commentId,

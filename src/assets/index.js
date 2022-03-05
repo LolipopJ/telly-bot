@@ -1,5 +1,4 @@
 const { marked } = require('marked')
-const { convert2img } = require('mdimg')
 
 const kaomoji = require('./kaomoji')
 const kaomojiLeng = kaomoji.length
@@ -42,7 +41,7 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
             // Romove <ol> <ul> <li> tags
             .replace(/<ol>/g, '')
             .replace(/<ul>/g, '')
-            .replace(/<li>/g, '')
+            .replace(/<li>/g, '- ')
             .replace(/<\/ol>/g, '\n')
             .replace(/<\/ul>/g, '\n')
             .replace(/<\/li>/g, '')
@@ -50,7 +49,7 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
             .replace(/<blockquote>/g, '<i>')
             .replace(/<\/blockquote>/g, '</i>')
             // Transform <hr> tags
-            .replace(/<hr>/g, '======\n')
+            .replace(/<hr>/g, '------\n')
 
         // Transform <img> tags to <a>
         const imgReg = /<img.*?(?:>|\/>)/g
@@ -91,36 +90,10 @@ const sleep = function (ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-const md2img = async function (
-    input,
-    output,
-    {
-        type,
-        width,
-        encoding,
-        quality,
-        htmlTemplate,
-        cssTemplate = 'github',
-    } = {}
-) {
-    const convertRes = await convert2img({
-        mdText: input,
-        outputFilename: output,
-        type,
-        width,
-        encoding,
-        quality,
-        htmlTemplate,
-        cssTemplate,
-    })
-    return convertRes
-}
-
 module.exports = {
     randomKaomoji,
     transformObjectToParams,
     transformKbToMb,
     parseMdToHtml,
     sleep,
-    md2img,
 }
