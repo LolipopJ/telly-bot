@@ -144,9 +144,11 @@ const forwardGithubIssueComment = async function () {
         if (issueComments.length > 0) {
             let lastUpdateCommentAt = new Date(0).toISOString()
             for (const issueComment of issueComments) {
-                const sourceDate = new Date(
-                    issueComment.updated_at
-                ).toLocaleString()
+                const sourceCreatedAt = issueComment.created_at
+                const sourceUpdatedAt = issueComment.updated_at
+                const isEdited =
+                    sourceUpdatedAt !== sourceCreatedAt ? true : false
+                const sourceDate = new Date(sourceUpdatedAt).toLocaleString()
                 const sourceHtmlUrl = issueComment.html_url
 
                 // Parse markdown to image
@@ -184,7 +186,9 @@ const forwardGithubIssueComment = async function () {
 
                 try {
                     // Send HTML type message
-                    const sourceCaption = `${sourceDate} | <a href="${sourceHtmlUrl}">source</a>`
+                    const sourceCaption = `${sourceDate}${
+                        isEdited ? ' • Edited' : ''
+                    } | <a href="${sourceHtmlUrl}">source</a>`
                     const messageBody = commentParsedBody + sourceCaption
 
                     if (isModifyMessage) {

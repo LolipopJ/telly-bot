@@ -1,6 +1,6 @@
 {
     "name": "telly-bot",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "A Telegram bot based on Koa.",
     "scripts": {
         "start": "nodemon --exec babel-node -- src/bin/www",
@@ -16,7 +16,7 @@
     "dependencies": {
         "@babel/runtime": "^7.17.2",
         "@octokit/core": "^3.5.1",
-        "axios": "^0.26.0",
+        "axios": "^0.26.1",
         "debug": "^4.3.3",
         "dotenv": "^16.0.0",
         "js-yaml": "^4.1.0",
@@ -29,7 +29,7 @@
         "pg": "^8.7.3",
         "pg-hstore": "^2.3.4",
         "pm2": "^5.2.0",
-        "sequelize": "^6.16.2",
+        "sequelize": "^6.17.0",
         "socks5-https-client": "^1.2.1",
         "toad-scheduler": "^1.6.0"
     },
@@ -41,8 +41,8 @@
         "@babel/node": "^7.16.8",
         "@babel/plugin-transform-runtime": "^7.17.0",
         "@babel/preset-env": "^7.16.11",
-        "eslint": "^8.9.0",
-        "eslint-config-prettier": "^8.4.0",
+        "eslint": "^8.11.0",
+        "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.0.0",
         "nodemon": "^2.0.15",
         "prettier": "^2.5.1"

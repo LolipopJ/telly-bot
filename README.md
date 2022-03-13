@@ -2,7 +2,7 @@
 
 ## Requirements
 
-This bot server requires a LTS Node version (v12.0.0+).
+The telly-bot requires a LTS Node version (v12.0.0+).
 
 ## Init
 

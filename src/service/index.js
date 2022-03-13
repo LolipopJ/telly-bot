@@ -107,16 +107,12 @@ const initService = async function () {
             console.error(error)
         }
     )
-    // By default, server will read all files every 48.5 durations
-    // And the duration of regenerating collection index is no more than 6 days (518400 seconds)
+    // By default, server will reload all Pixiv artworks every 72.5 durations
     const generateCollectionIndexUpdateAllSeconds =
-        config.pixiv.generateCollectionIndex.duration * 48.5
+        config.pixiv.generateCollectionIndex.duration * 72.5
     const jobGenerateCollectionIndexUpdateAll = new SimpleIntervalJob(
         {
-            seconds:
-                generateCollectionIndexUpdateAllSeconds < 518400
-                    ? generateCollectionIndexUpdateAllSeconds
-                    : 518400,
+            seconds: generateCollectionIndexUpdateAllSeconds,
             runImmediately: false,
         },
         taskGenerateCollectionIndexUpdateAll
