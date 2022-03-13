@@ -2,10 +2,10 @@ const TelegramBot = require('node-telegram-bot-api')
 
 const Sequelize = require('../db/index')
 
-const generateQrcode = require('./api/generateQrcode')
-const qqMusicApi = require('./api/qqMusicApi')
-const randomGetPixivCollection = require('./api/randomGetPixivCollection')
-const todayOfHistory = require('./api/todayOfHistory')
+const generateQrcode = require('./api/generate-qrcode')
+const qqMusicApi = require('./api/qq-music-api')
+const randomGetPixivCollection = require('./api/random-get-pixiv-collection')
+const todayOfHistory = require('./api/today-of-history')
 
 const { randomKaomoji, transformKbToMb } = require('../assets/index')
 

@@ -154,11 +154,11 @@ const forwardGithubIssueComment = async function () {
                 // Parse markdown to image
                 const commentBody = issueComment.body
                 const commentId = issueComment.id
-                const commentImageRes = await convert2img({
+                convert2img({
                     mdText: commentBody,
                     outputFilename: path.resolve(
                         __dirname,
-                        'github_comment_images',
+                        '../../../github_comment_images',
                         `${owner}_${repo}_${issueNumber}_${commentId}.png`
                     ),
                     width: 700,
@@ -184,11 +184,14 @@ const forwardGithubIssueComment = async function () {
                     messageId = githubIssueCommentInfo.dataValues.messageId
                 }
 
+                // Initial date info in source caption
+                const sourceCaptionDate = `${sourceDate}${
+                    isEdited ? ' • Edited' : ''
+                }`
+
                 try {
                     // Send HTML type message
-                    const sourceCaption = `${sourceDate}${
-                        isEdited ? ' • Edited' : ''
-                    } | <a href="${sourceHtmlUrl}">source</a>`
+                    const sourceCaption = `${sourceCaptionDate} | <a href="${sourceHtmlUrl}">source</a>`
                     const messageBody = commentParsedBody + sourceCaption
 
                     if (isModifyMessage) {
@@ -230,8 +233,7 @@ const forwardGithubIssueComment = async function () {
                         `Service warning: ${serviceName}\n---\nSend parsed message failed.`
                     )
 
-                    const sourceCaption = `\n\n${sourceDate}`
-                    const messageBody = sourceHtmlUrl + sourceCaption
+                    const messageBody = `${sourceHtmlUrl}\n\n${sourceCaptionDate}`
 
                     if (isModifyMessage) {
                         // Modify existing message

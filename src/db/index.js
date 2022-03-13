@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize')
 
 const pgsqlConfig = require('../../config').database.postgresql
 
-const updateOrCreate = require('./utils/updateOrCreate')
+const updateOrCreate = require('./utils/update-or-create')
 
 const serviceGithubIssueCommentModel = require('./model/ServiceGithubIssueComment')
 const serviceHexoBlogModel = require('./model/ServiceHexoBlog')
