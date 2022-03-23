@@ -20,6 +20,8 @@ Create `.env` file in the project root directory and fill in the project configu
 # Telegram bot settings. Must be set
 TELEGRAM_BOT_TOKEN="Your Telegram Bot token"
 WEBHOOK_HOST="Your server's public address (HTTPS protocol address is required)"
+# Due to https://github.com/yagop/node-telegram-bot-api/issues/319
+NTBA_FIX_319='any value'
 ```
 
 The following are optional environment variables, please fill in as required.

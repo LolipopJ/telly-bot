@@ -30,7 +30,7 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
         // <a> <code> <pre> and so on
         // Full list see: https://core.telegram.org/bots/api#html-style
 
-        // TO FIX: skip replace strings in <pre> code block
+        // TO FIX: skip replace strings in <pre> and <code> block
         parsedResult = parsedResult
             // Remove <p> tags
             .replace(/<p>/g, '')

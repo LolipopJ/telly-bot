@@ -1,4 +1,6 @@
 require('dotenv').config()
+require('node-telegram-bot-api')
+
 const app = require('../app.js')
 const http = require('http')
 const debug = require('debug')('telly-bot:server')
