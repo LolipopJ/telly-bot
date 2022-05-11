@@ -16,7 +16,7 @@ const options = {
 
 let instance
 
-const connectDababase = async () => {
+const connectDatabase = async () => {
     if (!instance) {
         const sequelize = new Sequelize(
             `postgres://${pgsqlConfig.user}:${pgsqlConfig.password}@${pgsqlConfig.host}:${pgsqlConfig.port}/${pgsqlConfig.database}`,
@@ -78,4 +78,4 @@ const connectDababase = async () => {
     return instance
 }
 
-module.exports = connectDababase
+module.exports = connectDatabase

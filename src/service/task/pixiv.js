@@ -47,7 +47,7 @@ const generateCollectionIndex = async function ({ updateAll = false } = {}) {
         }
 
         // Only keep files with Pixiv naming style
-        const reg = /^\d+_p\d+.(jpg|png|gif)$/
+        const reg = /^(\d+)_p(\d+)(_master1200)?.(jpg|png|gif)$/
         files = files.filter((filename) => {
             return reg.test(filename)
         })
@@ -57,13 +57,10 @@ const generateCollectionIndex = async function ({ updateAll = false } = {}) {
             const filename = files[i]
             const filePath = path.join(collectionPath, filename)
 
-            const picIdSplitArr = filename.split('_p')
-            const picId = Number(picIdSplitArr[0])
-
-            const picIndexSplitArr = picIdSplitArr[1].split('.')
-            const picIndex = Number(picIndexSplitArr[0])
-
-            const picType = picIndexSplitArr[1]
+            const filenameExecRegResult = reg.exec(filename)
+            const picId = Number(filenameExecRegResult[1])
+            const picIndex = Number(filenameExecRegResult[2])
+            const picType = filenameExecRegResult[4]
 
             const picStat = await stat(filePath)
             const picSize =
