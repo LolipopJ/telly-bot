@@ -132,14 +132,8 @@ const connectTelegramBot = async () => {
                     }Pixiv artwork ...`
                 )
 
-                const data = resolvePixivDataObject(res.data)
-
-                console.log(
-                    `Bot API info: ${apiName}\n`,
-                    `Sending Pixiv artwork name: ${data.picName}`
-                )
-
                 // Send Pixiv photo
+                const data = resolvePixivDataObject(res.data)
                 try {
                     await sendPixivPhoto(bot, chatId, data)
                 } catch (err) {

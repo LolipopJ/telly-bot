@@ -28,6 +28,8 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
         }
 
         try {
+            console.log(`Sending Pixiv artwork: ${picName} (${picSize} MB)`)
+
             await bot.sendPhoto(chatId, picProxyUrl, sendPhotoOptions)
 
             msgReplied = true
@@ -39,6 +41,7 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
 
             // Comic mode artwork with index=0 may send failed
             if (picIndex == 0) {
+                console.log(`Retry by comic mode: ${picName} (${picSize} MB)`)
                 try {
                     // Use comic mode url instead
                     const picProxyUrl = `https://pixiv.cat/${picId}-1.${picType}`
@@ -57,7 +60,7 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
                     )
                 } catch (err) {
                     console.error(
-                        `Send artwork using comic mode url failed: ${picName}\n`,
+                        `Send artwork using comic mode failed: ${picName} (${picSize} MB)\n`,
                         err?.response?.body
                     )
                 }
@@ -68,6 +71,10 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
     // Artwork size is bigger than 10 MB or send failed again,
     // send caption message
     if (!msgReplied) {
+        console.log(
+            `Sending Pixiv artwork url link text: ${picName} (${picSize} MB)`
+        )
+
         await bot.sendMessage(chatId, caption, {
             parse_mode: 'MarkdownV2',
             disable_web_page_preview: false,
