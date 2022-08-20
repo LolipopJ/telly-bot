@@ -9,7 +9,11 @@ const todayOfHistory = require('./api/today-of-history')
 
 const { sendPixivPhoto } = require('./action/send-pixiv-photo')
 
-const { randomKaomoji, transformKbToMb } = require('../assets/index')
+const {
+    randomKaomoji,
+    transformKbToMb,
+    resolvePixivDataObject,
+} = require('../assets/index')
 
 const config = require('../../config')
 
