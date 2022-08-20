@@ -15,12 +15,12 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
         picType,
     } = resolvedArtwork
 
-    const caption = `Pixiv Artwork: ${picNameMD}\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
+    const caption = `Pixiv Artwork: ${picNameMD} \(${picSize} MB\)\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
 
     let msgReplied = false
 
     if (picSize < TELEGRAM_BOT_SEND_PHOTO_MAX_SIZE) {
-        // Artwork size is smaller than 10 MB, send photo type message
+        // Artwork size is smaller than 5 MB, send photo type message
         const sendPhotoOptions = {
             caption,
             parse_mode: 'MarkdownV2',
@@ -68,7 +68,7 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
         }
     }
 
-    // Artwork size is bigger than 10 MB or send failed again,
+    // Artwork size is bigger than 5 MB or send failed again,
     // send caption message
     if (!msgReplied) {
         console.log(
