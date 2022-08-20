@@ -15,7 +15,7 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
         picType,
     } = resolvedArtwork
 
-    const caption = `Pixiv Artwork: ${picNameMD} \(${picSize} MB\)\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
+    const caption = `Pixiv Artwork: ${picNameMD} \\(${picSize} MB\\)\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
 
     let msgReplied = false
 
