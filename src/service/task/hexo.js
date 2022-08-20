@@ -7,9 +7,7 @@ const Sequelize = require('../../db/index')
 
 const { parseMdToHtml, sleep } = require('../../assets/index')
 
-const config = require('../../../config').hexo
-
-const forwardHexoBlog = async function () {
+const forwardHexoBlog = async function (forwardHexoBlogConfig) {
     const serviceName = 'Forward Hexo Blog'
 
     const bot = await Bot()
@@ -21,7 +19,7 @@ const forwardHexoBlog = async function () {
     const execStartTime = new Date().getTime()
     console.log(`Service info: ${serviceName}\n`, `Start execute service.`)
 
-    for (const task of config.forwardHexoBlog.task) {
+    for (const task of forwardHexoBlogConfig.task) {
         const { baseUrl, offsetDay, forwardChannelId, since, abstractLines } =
             task
         const filePath = task.path

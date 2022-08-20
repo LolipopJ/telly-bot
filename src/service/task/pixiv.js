@@ -1,13 +1,24 @@
 const { readdir, stat } = require('fs/promises')
 const path = require('path')
-
-const config = require('../../../config').pixiv
+const { Op } = require('sequelize')
 
 const Sequelize = require('../../db/index')
+const Bot = require('../bot')
 
-const generateCollectionIndex = async function ({ updateAll = false } = {}) {
+const { sendPixivPhoto } = require('../action/send-pixiv-photo')
+
+const { seekLucky, resolvePixivDataObject } = require('../../assets')
+
+const bToMB = 1024 * 1024
+
+/**
+ * 根据 Config 配置的 Pixiv 文件夹，更新数据库信息
+ */
+const generateCollectionIndex = async function (
+    generateCollectionIndexConfig,
+    { updateAll = false } = {}
+) {
     const serviceName = 'Generate Collection Index'
-    const bToMB = 1024 * 1024
 
     // File size with decimal places
     const fileSizeReservedDecimalPlace = 3
@@ -17,7 +28,7 @@ const generateCollectionIndex = async function ({ updateAll = false } = {}) {
     const ServicePixivCollection = sequelize.models.ServicePixivCollection
     const ServiceProcess = sequelize.models.ServiceProcess
 
-    let collectionPaths = config.generateCollectionIndex.paths
+    let collectionPaths = generateCollectionIndexConfig.paths
     if (!collectionPaths) {
         console.error(
             `Service error: ${serviceName}\n`,
@@ -151,6 +162,74 @@ const generateCollectionIndex = async function ({ updateAll = false } = {}) {
     )
 }
 
+/**
+ * 转发数据库收藏的 Pixiv 图像到 Telegram 频道
+ */
+const forwardPixivCollections = async (forwardPixivCollectionsConfig) => {
+    const serviceName = 'Forward Pixiv Collections'
+    const forwardChannelId = forwardPixivCollectionsConfig.forwardChannelId
+
+    // 这一次抽取到的是……
+    let result = ''
+    let forwardCount = 0
+    const luckyScore = seekLucky()
+    if (luckyScore === 100) {
+        // 1%
+        result = '👑 U · G 👑'
+        forwardCount = 10
+    } else if (luckyScore >= 97) {
+        // 3%
+        result = '💎 U · R 💎'
+        forwardCount = 5
+    } else if (luckyScore >= 86) {
+        // 11%
+        result = 'SSR 🥇'
+        forwardCount = 3
+    } else if (luckyScore >= 56) {
+        // 30%
+        result = 'SR 🥈'
+        forwardCount = 2
+    } else {
+        // 55%
+        result = 'R 🥉'
+        forwardCount = 1
+    }
+
+    const sequelize = await Sequelize()
+    const bot = await Bot()
+
+    const ServicePixivCollection = sequelize.models.ServicePixivCollection
+    const artworks = await ServicePixivCollection.find({
+        order: sequelize.random(),
+        limit: forwardCount,
+        where: { [Op.or]: [{ r18: false }, { r18: null }] },
+    })
+
+    const resolvedArtworks = artworks.dataValues.map((artwork) => {
+        return resolvePixivDataObject(artwork)
+    })
+
+    await bot.sendMessage(
+        forwardChannelId,
+        `铛铛铛铛，今天抽取到的是…… ${result} !! 将随机抽取 ${forwardCount} 张健康（存疑）、治愈（大概）的二次元插画!! （如发送失败或重复，请见谅 😭`,
+        {
+            disable_web_page_preview: true,
+        }
+    )
+
+    for (const resolvedArtwork of resolvedArtworks) {
+        await sendPixivPhoto(bot, forwardChannelId, resolvedArtwork)
+    }
+
+    // TODO: 对于总结日，发表额外的内容
+    // 指定日期总结过去一周的行为数据
+    const conclusionDayOfWeek =
+        forwardPixivCollectionsConfig?.conclusionDayOfWeek ?? 0
+    const todayOfWeek = new Date().getDay()
+    const isConclusionDay = Number(conclusionDayOfWeek) === Number(todayOfWeek)
+}
+
 module.exports = {
     generateCollectionIndex,
+    forwardPixivCollections,
 }

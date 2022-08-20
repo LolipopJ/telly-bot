@@ -7,6 +7,8 @@ const qqMusicApi = require('./api/qq-music-api')
 const randomGetPixivCollection = require('./api/random-get-pixiv-collection')
 const todayOfHistory = require('./api/today-of-history')
 
+const { sendPixivPhoto } = require('./action/send-pixiv-photo')
+
 const { randomKaomoji, transformKbToMb } = require('../assets/index')
 
 const config = require('../../config')
@@ -126,92 +128,15 @@ const connectTelegramBot = async () => {
                     }Pixiv artwork ...`
                 )
 
-                const data = res.data
-                const {
-                    id,
-                    picName,
-                    picNameMD,
-                    picUrl,
-                    picSize,
-                    picProxyUrl,
-                    picId,
-                    picIndex,
-                    picType,
-                } = data
+                const data = resolvePixivDataObject(res.data)
 
                 console.log(
                     `Bot API info: ${apiName}\n`,
-                    `Sending Pixiv artwork name: ${picName}`
+                    `Sending Pixiv artwork name: ${data.picName}`
                 )
 
-                const caption = `Pixiv Artwork: ${picNameMD}\n[source](${picUrl}) \\| powered by [pixiv\\.cat](https://pixiv.cat/)`
-
-                let msgReplied = false
-
-                if (picSize < 5) {
-                    // Artwork size is smaller than 5 MB, send photo type message
-                    const sendPhotoOptions = {
-                        caption,
-                        parse_mode: 'MarkdownV2',
-                        disable_web_page_preview: true,
-                    }
-
-                    try {
-                        await bot.sendPhoto(
-                            chatId,
-                            picProxyUrl,
-                            sendPhotoOptions
-                        )
-
-                        msgReplied = true
-                    } catch (err) {
-                        console.error(
-                            `Bot API error: ${apiName}\n`,
-                            `Send artwork failed: ${picName}\n`,
-                            err.response.body
-                        )
-
-                        if (picIndex == 0) {
-                            try {
-                                // Comic mode artwork with index=0 may send failed
-                                // Use comic mode url instead
-                                const picProxyUrl = `https://pixiv.cat/${picId}-1.${picType}`
-                                await bot.sendPhoto(
-                                    chatId,
-                                    picProxyUrl,
-                                    sendPhotoOptions
-                                )
-
-                                msgReplied = true
-
-                                // Send successfully, set this artwork with comic mode
-                                const sequelize = await Sequelize()
-                                const ServicePixivCollection =
-                                    sequelize.models.ServicePixivCollection
-
-                                ServicePixivCollection.update(
-                                    { comicMode: true },
-                                    { where: { id: id } }
-                                )
-                            } catch (err) {
-                                console.error(
-                                    `Bot API error: ${apiName}\n`,
-                                    `Send artwork failed: ${picName}\n`,
-                                    err.response.body
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Artwork size is not smaller than 5 MB or send failed again,
-                // send caption message
-                if (!msgReplied) {
-                    await bot.sendMessage(chatId, caption, {
-                        parse_mode: 'MarkdownV2',
-                        disable_web_page_preview: false,
-                    })
-                }
+                // Send Pixiv photo
+                await sendPixivPhoto(bot, chatId, data)
 
                 // Remove placeholder message
                 bot.deleteMessage(chatId, placeholderMessage.message_id)

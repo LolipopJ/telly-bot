@@ -1,4 +1,5 @@
 const { marked } = require('marked')
+const Chance = require('chance')
 
 const kaomoji = require('./kaomoji')
 const kaomojiLeng = kaomoji.length
@@ -90,10 +91,43 @@ const sleep = function (ms) {
     return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+const seekLucky = () => {
+    const chance = new Chance()
+
+    // Lucky Score is between 1 and 100
+    const luckyScore = chance.integer({ min: 1, max: 100 })
+
+    return luckyScore
+}
+
+const resolvePixivDataObject = (pixivDataObject) => {
+    const data = { ...pixivDataObject }
+
+    const picId = data.picId
+    const picIndex = data.picIndex
+    const picType = data.picType
+
+    data.picName = `${picId}_p${picIndex}.${picType}`
+    data.picNameMD = `${picId}\\_p${picIndex}\\.${picType}`
+    data.picUrl = `https://www.pixiv.net/artworks/${picId}`
+
+    let picProxyUrlParam
+    if (data.comicMode || picIndex > 0) {
+        picProxyUrlParam = `${picId}-${picIndex + 1}.${picType}`
+    } else {
+        picProxyUrlParam = `${picId}.${picType}`
+    }
+    data.picProxyUrl = `https://pixiv.cat/${picProxyUrlParam}`
+
+    return data
+}
+
 module.exports = {
     randomKaomoji,
     transformObjectToParams,
     transformKbToMb,
     parseMdToHtml,
     sleep,
+    seekLucky,
+    resolvePixivDataObject,
 }

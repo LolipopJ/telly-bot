@@ -5,8 +5,6 @@ const path = require('path')
 const Bot = require('../bot')
 const Sequelize = require('../../db/index')
 
-const config = require('../../../config').github
-
 const { parseMdToHtml, sleep } = require('../../assets/index')
 
 // Init API requester
@@ -18,9 +16,11 @@ if (authToken) {
 const octokit = new Octokit(octokitOptions)
 
 // Forward Github issue comment service
-const forwardGithubIssueComment = async function () {
+const forwardGithubIssueComment = async function (
+    forwardGithubIssueCommentConfig
+) {
     const serviceName = 'Forward Github Issue Comment'
-    const issues = config.forwardIssueComment.task
+    const issues = forwardGithubIssueCommentConfig.task
     if (!Array.isArray(issues) || issues.length === 0) {
         console.log(
             `Service info: ${serviceName}\n`,

@@ -34,6 +34,12 @@ const config = {
                 { path: 'path/to/pixiv_collection_r18', r18: true },
             ],
         },
+        forwardPixivCollections: {
+            enable: false,
+            forwardChannelId: '@telegram_channel_id',
+            execHourOfDay: 9, // 9 A.M.
+            conclusionDayOfWeek: 0, // 0 for Sunday and 6 for Saturday
+        },
     },
     hexo: {
         forwardHexoBlog: {
