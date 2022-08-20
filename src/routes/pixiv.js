@@ -1,6 +1,6 @@
 const router = require('koa-router')()
 
-const randomGetPixivCollection = require('../service/api/randomGetPixivCollection')
+const randomGetPixivCollection = require('../service/api/random-get-pixiv-collection')
 
 const config = require('../../config').pixiv
 
