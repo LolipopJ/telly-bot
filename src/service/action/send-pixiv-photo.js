@@ -20,7 +20,7 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
     let msgReplied = false
 
     if (picSize < TELEGRAM_BOT_SEND_PHOTO_MAX_SIZE) {
-        // Artwork size is smaller than 10 MB, send photo type message
+        // Artwork size is smaller than 5 MB, send photo type message
         const sendPhotoOptions = {
             caption,
             parse_mode: 'MarkdownV2',
@@ -33,9 +33,8 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
             msgReplied = true
         } catch (err) {
             console.error(
-                `Bot API error: ${apiName}\n`,
                 `Send artwork failed: ${picName}\n`,
-                err.response.body
+                err?.response?.body
             )
 
             // Comic mode artwork with index=0 may send failed
@@ -58,16 +57,15 @@ const sendPixivPhoto = async (bot, chatId, resolvedArtwork) => {
                     )
                 } catch (err) {
                     console.error(
-                        `Bot API error: ${apiName}\n`,
-                        `Send artwork failed: ${picName}\n`,
-                        err.response.body
+                        `Send artwork using comic mode url failed: ${picName}\n`,
+                        err?.response?.body
                     )
                 }
             }
         }
     }
 
-    // Artwork size is not smaller than 10 MB or send failed again,
+    // Artwork size is not smaller than 5 MB or send failed again,
     // send caption message
     if (!msgReplied) {
         await bot.sendMessage(chatId, caption, {

@@ -140,7 +140,16 @@ const connectTelegramBot = async () => {
                 )
 
                 // Send Pixiv photo
-                await sendPixivPhoto(bot, chatId, data)
+                try {
+                    await sendPixivPhoto(bot, chatId, data)
+                } catch (err) {
+                    console.error(`Bot API error: ${apiName}\n`, err)
+
+                    bot.sendMessage(
+                        chatId,
+                        'Get random pixiv artwork failed. You may try to call it again later!'
+                    )
+                }
 
                 // Remove placeholder message
                 bot.deleteMessage(chatId, placeholderMessage.message_id)

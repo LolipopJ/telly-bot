@@ -218,7 +218,11 @@ const forwardPixivCollections = async (forwardPixivCollectionsConfig) => {
     )
 
     for (const resolvedArtwork of resolvedArtworks) {
-        await sendPixivPhoto(bot, forwardChannelId, resolvedArtwork)
+        try {
+            await sendPixivPhoto(bot, forwardChannelId, resolvedArtwork)
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     // TODO: 对于总结日，发表额外的内容
