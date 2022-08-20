@@ -109,7 +109,9 @@ const resolvePixivDataObject = (pixivDataObject) => {
 
     data.picName = `${picId}_p${picIndex}.${picType}`
     data.picNameMD = `${picId}\\_p${picIndex}\\.${picType}`
-    data.picSizeMd = (data.picSize ?? '0.0').spilt('.').join('\\.')
+    data.picSizeMd = String(data.picSize ?? '0.0')
+        .split('.')
+        .join('\\.')
     data.picUrl = `https://www.pixiv.net/artworks/${picId}`
 
     let picProxyUrlParam
