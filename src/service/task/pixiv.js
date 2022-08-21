@@ -7,6 +7,7 @@ const Bot = require('../bot')
 
 const { sendPixivPhoto } = require('../action/send-pixiv-photo')
 
+const { TELEGRAM_BOT_SEND_PHOTO_MAX_SIZE } = require('../../constants')
 const { seekLucky, resolvePixivDataObject } = require('../../assets')
 
 const bToMB = 1024 * 1024
@@ -199,10 +200,13 @@ const forwardPixivCollections = async (forwardPixivCollectionsConfig) => {
     const bot = await Bot()
 
     const ServicePixivCollection = sequelize.models.ServicePixivCollection
-    const artworks = await ServicePixivCollection.find({
+    const artworks = await ServicePixivCollection.findAll({
         order: sequelize.random(),
         limit: forwardCount,
-        where: { [Op.or]: [{ r18: false }, { r18: null }] },
+        where: {
+            picSize: { [Op.lt]: TELEGRAM_BOT_SEND_PHOTO_MAX_SIZE },
+            r18: { [Op.or]: [false, null] },
+        },
     })
 
     const resolvedArtworks = artworks.dataValues.map((artwork) => {
@@ -211,7 +215,7 @@ const forwardPixivCollections = async (forwardPixivCollectionsConfig) => {
 
     await bot.sendMessage(
         forwardChannelId,
-        `铛铛铛铛，今天抽取到的是…… ${result} !! 将随机抽取 ${forwardCount} 张健康（存疑）、治愈（大概）的二次元插画!! （如发送失败或重复，请见谅 😭`,
+        `铛铛铛铛，今天抽取到的是…… ${result} !! 将随机抽取 ${forwardCount} 张健康（存疑）、治愈（大概）的二次元插画!! （如发送失败或重复或已删除，请见谅 😭`,
         {
             disable_web_page_preview: true,
         }
@@ -231,6 +235,8 @@ const forwardPixivCollections = async (forwardPixivCollectionsConfig) => {
         forwardPixivCollectionsConfig?.conclusionDayOfWeek ?? 0
     const todayOfWeek = new Date().getDay()
     const isConclusionDay = Number(conclusionDayOfWeek) === Number(todayOfWeek)
+    if (isConclusionDay) {
+    }
 }
 
 module.exports = {
