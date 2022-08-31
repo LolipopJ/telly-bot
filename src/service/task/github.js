@@ -150,10 +150,15 @@ const forwardGithubIssueComment = async function (
                     sourceUpdatedAt !== sourceCreatedAt ? true : false
                 const sourceDate = new Date(sourceUpdatedAt).toLocaleString()
                 const sourceHtmlUrl = issueComment.html_url
-
-                // Parse markdown to image
                 const commentBody = issueComment.body
                 const commentId = issueComment.id
+
+                console.log(
+                    `Service info: ${serviceName}\n`,
+                    `Queried comment body:\n${commentBody}`
+                )
+
+                // Parse markdown to image
                 convert2img({
                     mdText: commentBody,
                     outputFilename: path.resolve(
@@ -167,6 +172,10 @@ const forwardGithubIssueComment = async function (
 
                 // Parse markdown to html
                 const commentParsedBody = parseMdToHtml(commentBody, 'tgbot')
+                console.log(
+                    `Service info: ${serviceName}\n`,
+                    `Parsed to HTML body:\n${commentParsedBody}`
+                )
 
                 // Query forwarded comment in chat (channel) if exists
                 let isModifyMessage = false
@@ -226,11 +235,10 @@ const forwardGithubIssueComment = async function (
                         )
                     }
                 } catch (error) {
-                    console.error(error)
-
                     // if failed, only send url link
-                    console.warn(
-                        `Service warning: ${serviceName}\n---\nSend parsed message failed.`
+                    console.error(
+                        `Service error: ${serviceName}\n`,
+                        `Send parsed message failed:\n${error}`
                     )
 
                     const messageBody = `${sourceHtmlUrl}\n\n${sourceCaptionDate}`
@@ -261,7 +269,7 @@ const forwardGithubIssueComment = async function (
 
                         console.log(
                             `Service info: ${serviceName}\n`,
-                            `Message url link has been sended: ${messageBody}\n---`
+                            `Message url link has been sended: ${messageBody}\n`
                         )
                     }
                 }

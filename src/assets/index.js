@@ -26,62 +26,68 @@ const parseMdToHtml = function (mdText, parseMode = 'default') {
     // Preview: https://marked.js.org/demo/
     let parsedResult = marked.parse(mdText)
 
-    if (parseMode && parseMode === 'tgbot') {
-        // Telegram Bot only supports: <b> <i> <u> <s> <span>
-        // <a> <code> <pre> and so on
-        // Full list see: https://core.telegram.org/bots/api#html-style
+    switch (parseMode) {
+        case 'tgbot':
+            // Telegram Bot only supports: <b> <i> <u> <s> <span>
+            // <a> <code> <pre> and so on
+            // Full list see: https://core.telegram.org/bots/api#html-style
 
-        // TO FIX: skip replace strings in <pre> and <code> block
-        parsedResult = parsedResult
-            // Remove <p> tags
-            .replace(/<p>/g, '')
-            .replace(/<\/p>/g, '\n')
-            // Transform <h[1-6]> tags to <b>
-            .replace(/<h[1-6].*?>/g, '<b>')
-            .replace(/<\/h[1-6]>/g, '</b>\n')
-            // Romove <ol> <ul> <li> tags
-            .replace(/<ol>/g, '')
-            .replace(/<ul>/g, '')
-            .replace(/<li>/g, '- ')
-            .replace(/<\/ol>/g, '\n')
-            .replace(/<\/ul>/g, '\n')
-            .replace(/<\/li>/g, '')
-            // Transform <blockquote> tags to <i>
-            .replace(/<blockquote>/g, '<i>')
-            .replace(/<\/blockquote>/g, '</i>')
-            // Transform <hr> tags
-            .replace(/<hr>/g, '------\n')
+            // TO FIX: skip replace strings in <pre> and <code> block
+            parsedResult = parsedResult
+                // Remove <p> tags
+                .replace(/<p>/g, '')
+                .replace(/<\/p>/g, '\n')
+                // Transform <h[1-6]> tags to <b>
+                .replace(/<h[1-6].*?>/g, '<b>')
+                .replace(/<\/h[1-6]>/g, '</b>\n')
+                // Romove <ol> <ul> <li> tags
+                .replace(/<ol>/g, '')
+                .replace(/<ul>/g, '')
+                .replace(/<li>/g, '- ')
+                .replace(/<\/ol>/g, '\n')
+                .replace(/<\/ul>/g, '\n')
+                .replace(/<\/li>/g, '')
+                // Transform <blockquote> tags to <i>
+                .replace(/<blockquote>/g, '<i>')
+                .replace(/<\/blockquote>/g, '</i>')
+                // Transform <hr> tags
+                .replace(/<hr>/g, '------\n')
 
-        // Transform <img> tags to <a>
-        const imgReg = /<img.*?(?:>|\/>)/g
-        const imgSrcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/
-        const imgAltReg = /alt=[\'\"]?([^\'\"]*)[\'\"]?/
-        const imgArr = parsedResult.match(imgReg) || []
-        if (imgArr.length > 0) {
-            const imgSrcArr = []
-            const imgAltArr = []
-            for (const img of imgArr) {
-                const imgSrcRegRes = img.match(imgSrcReg)
-                imgSrcArr.push(imgSrcRegRes[1])
+            // Transform <img> tags to <a>
+            const imgReg = /<img.*?(?:>|\/>)/g
+            const imgArr = parsedResult.match(imgReg) || []
+            if (imgArr.length > 0) {
+                const imgSrcArr = []
+                const imgAltArr = []
 
-                const imgAltRegRes = img.match(imgAltReg) || []
-                let imgAltText = 'Picture'
-                if (imgAltRegRes.length >= 2 && imgAltRegRes[1]) {
-                    imgAltText = imgAltRegRes[1]
+                const imgSrcReg = /src=[\'\"]?([^\'\"]*)[\'\"]?/
+                const imgAltReg = /alt=[\'\"]?([^\'\"]*)[\'\"]?/
+
+                for (const img of imgArr) {
+                    const imgSrcRegRes = img.match(imgSrcReg)
+                    imgSrcArr.push(imgSrcRegRes[1])
+
+                    const imgAltRegRes = img.match(imgAltReg) || []
+                    let imgAltText = 'Picture'
+                    if (imgAltRegRes.length >= 2 && imgAltRegRes[1]) {
+                        imgAltText = imgAltRegRes[1]
+                    }
+                    imgAltArr.push(imgAltText)
                 }
-                imgAltArr.push(imgAltText)
-            }
 
-            const splitedParsedResult = parsedResult.split(imgReg)
-            let resolvedParsedResult = splitedParsedResult[0]
-            for (let i = 1; i < splitedParsedResult.length; i++) {
-                resolvedParsedResult += `<a href="${imgSrcArr[i - 1]}">${
-                    imgAltArr[i - 1]
-                }</a>`
-                resolvedParsedResult += splitedParsedResult[i]
+                const splitedParsedResult = parsedResult.split(imgReg)
+                let resolvedParsedResult = splitedParsedResult[0]
+                for (let i = 1; i < splitedParsedResult.length; i++) {
+                    resolvedParsedResult += `<a href="${imgSrcArr[i - 1]}">${
+                        imgAltArr[i - 1]
+                    }</a>`
+                    resolvedParsedResult += splitedParsedResult[i]
+                }
+                parsedResult = resolvedParsedResult
             }
-            parsedResult = resolvedParsedResult
-        }
+            break
+        default:
+            break
     }
 
     return parsedResult
