@@ -80,3 +80,6 @@ config.js
 
 # Babel build output
 build
+
+# Auto generated images
+github_comment_images/
