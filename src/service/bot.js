@@ -98,6 +98,7 @@ const connectTelegramBot = async () => {
             bot.sendMessage(chat.id, message)
         })
 
+        /** 根据传入的文本生成二维码 */
         bot.onText(/^\/qrcode/, (msg) => {
             const text = msg.text
             const chatId = msg.chat.id
@@ -110,6 +111,7 @@ const connectTelegramBot = async () => {
             }
         })
 
+        /** 随机发送一张收藏的 Pixiv 图片 */
         bot.onText(/^\/random_pixiv/, async (msg) => {
             if (!config.pixiv.generateCollectionIndex.enable) return
 
@@ -157,6 +159,7 @@ const connectTelegramBot = async () => {
             }
         })
 
+        /** 获取收藏的 Pixiv 图片总数 */
         bot.onText(/^\/pixiv_count$/, async (msg) => {
             const apiName = 'Get Pixiv artworks count'
             const chatId = msg.chat.id
@@ -184,6 +187,7 @@ const connectTelegramBot = async () => {
             }
         })
 
+        /** 获取历史上的今天 */
         bot.onText(/^\/today_of_history$/, async (msg) => {
             const apiName = 'Get Today of History'
             const chatId = msg.chat.id
@@ -201,6 +205,7 @@ const connectTelegramBot = async () => {
             }
         })
 
+        /** 随机发送一首收藏的音乐 */
         bot.onText(/^\/random_music$/, async (msg) => {
             const apiName = 'Random Get QQ Music Collection'
             const chatId = msg.chat.id
@@ -286,6 +291,7 @@ const connectTelegramBot = async () => {
             }
         })
 
+        /** 获取收藏的音乐总数 */
         bot.onText(/^\/music_count$/, async (msg) => {
             const apiName = 'Get music count'
             const chatId = msg.chat.id
