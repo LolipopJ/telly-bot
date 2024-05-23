@@ -1,2 +1,1 @@
-bun run eslint
-bun run prettier
+bun run lint
