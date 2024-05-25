@@ -1,12 +1,12 @@
 import TelegramBot from "node-telegram-bot-api";
 import { replyMessageErrorHandler } from "middlewares/errorHandler";
+import { chat } from "services/chatgpt";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error(
     "Environment variable `TELEGRAM_BOT_TOKEN` is required to connect Telegram bot.",
   );
 }
-
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 bot.on("message", (msg) => {
@@ -52,6 +52,21 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   bot.sendMessage(chatId, resp).catch((err: unknown) => {
     replyMessageErrorHandler(err, msg.text);
   });
+});
+
+bot.onText(/\/chat (.+)/, (msg, match) => {
+  const chatId = msg.chat.id;
+  const text = match?.[1]?.trim() ?? "跟我随便聊聊吧";
+
+  chat(text)
+    .then((resp) => {
+      bot.sendMessage(chatId, resp).catch((err: unknown) => {
+        replyMessageErrorHandler(err, msg.text);
+      });
+    })
+    .catch((err: unknown) => {
+      replyMessageErrorHandler(err, msg.text);
+    });
 });
 
 export default bot;

@@ -1,4 +1,4 @@
-import bot from "services/bot";
+import bot from "bot";
 
 const port = Number(process.env.PORT) || 3300;
 const isDevelopmentMode = process.env.NODE_ENV === "development";
