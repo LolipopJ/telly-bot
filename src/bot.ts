@@ -1,6 +1,7 @@
 import TelegramBot from "node-telegram-bot-api";
 import { replyMessageErrorHandler } from "middlewares/errorHandler";
 import { chat } from "services/chatgpt";
+import { checkIsChatGPTEnabled } from "utils/chatgpt";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error(
@@ -8,6 +9,8 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
   );
 }
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+
+const isChatGPTEnabled = checkIsChatGPTEnabled();
 
 bot.on("message", (msg) => {
   const from = msg.from;
@@ -54,19 +57,21 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   });
 });
 
-bot.onText(/\/chat (.+)/, (msg, match) => {
-  const chatId = msg.chat.id;
-  const text = match?.[1]?.trim() ?? "跟我随便聊聊吧";
+if (isChatGPTEnabled) {
+  bot.onText(/\/chat (.+)/, (msg, match) => {
+    const chatId = msg.chat.id;
+    const text = match?.[1]?.trim() ?? "跟我随便聊聊吧";
 
-  chat(text)
-    .then((resp) => {
-      bot.sendMessage(chatId, resp).catch((err: unknown) => {
+    chat(text)
+      .then((resp) => {
+        bot.sendMessage(chatId, resp).catch((err: unknown) => {
+          replyMessageErrorHandler(err, msg.text);
+        });
+      })
+      .catch((err: unknown) => {
         replyMessageErrorHandler(err, msg.text);
       });
-    })
-    .catch((err: unknown) => {
-      replyMessageErrorHandler(err, msg.text);
-    });
-});
+  });
+}
 
 export default bot;
