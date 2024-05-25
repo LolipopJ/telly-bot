@@ -1,13 +1,13 @@
-import axios from "utils/axios";
 import {
   DEFAULT_MODEL,
   MESSAGE_MAX_LENGTH,
   MESSAGE_SYSTEM,
 } from "constants/chatgpt";
 import type { IChatMessage, IChatResponse } from "interfaces/chatgpt";
+import axios from "utils/axios";
 
 let tempMessages: IChatMessage[] = [];
-export default async (content: string) => {
+export const chat = async (content: string) => {
   if (tempMessages.length > MESSAGE_MAX_LENGTH * 2) {
     tempMessages = tempMessages.slice(2);
   }
@@ -38,3 +38,5 @@ export default async (content: string) => {
     return resp.statusText;
   }
 };
+
+export default chat;

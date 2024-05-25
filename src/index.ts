@@ -1,13 +1,13 @@
-import { Elysia, redirect } from "elysia";
 import bot from "bot";
+import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
+import { PORT } from "constants/server";
+import { Elysia } from "elysia";
+import "scheduler";
+import queryBalance from "services/chatgpt/balance";
 import chat from "services/chatgpt/chat";
-import { checkIsChatGPTEnabled } from "utils/chatgpt";
-
-const port = Number(process.env.PORT) || 3300;
-const isChatGPTEnabled = checkIsChatGPTEnabled();
 
 new Elysia()
-  /** Pre-check api token for POST methods */
+  //#region Pre-check api token for POST methods
   .onBeforeHandle(({ request, headers, error }) => {
     if (
       request.method === "POST" &&
@@ -17,14 +17,16 @@ new Elysia()
       return error(401, "Unauthorized: headers['Authorization'] is not valid.");
     }
   })
-  /** Query current bot status */
+  //#endregion
+  //#region Query current bot status
   .get("/bot/status", () => {
     if (bot.isPolling()) return "Telly bot is running!";
     return "Telly bot is not running.";
   })
-  .get("/", () => redirect("/bot/status"))
-  .get("/bot", () => redirect("/bot/status"))
-  /** Send message to target chat using bot */
+  .get("/", ({ redirect }) => redirect("/bot/status", 301))
+  .get("/bot", ({ redirect }) => redirect("/bot/status", 301))
+  //#endregion
+  //#region Send message to target chat using bot
   .post("/bot/send-message", async ({ body, error }) => {
     const { content, chatId = Number(process.env.TELEGRAM_CHAT_ID) } = body as {
       content: string;
@@ -34,11 +36,23 @@ new Elysia()
       return error(402, "Payment Required: body['content'] is required.");
     if (!chatId)
       return error(402, "Payment Required: body['chatId'] is required.");
-    return await bot.sendMessage(chatId, content, { parse_mode: "MarkdownV2" });
+    return await bot.sendMessage(chatId, content, { parse_mode: "HTML" });
   })
-  /** Chat with cat girl */
+  //#endregion
+  //#region Query balance of ChatAnywhere key
+  .get("/chatgpt/balance", async ({ error }) => {
+    if (!IS_CHATGPT_ENABLED)
+      return error(
+        503,
+        "Service Unavailable: process.env['CHATGPT_API_KEY'] is required.",
+      );
+
+    return await queryBalance();
+  })
+  //#endregion
+  //#region Chat with cat girl
   .post("/chatgpt/chat", async ({ body, error }) => {
-    if (!isChatGPTEnabled)
+    if (!IS_CHATGPT_ENABLED)
       return error(
         503,
         "Service Unavailable: process.env['CHATGPT_API_KEY'] is required.",
@@ -49,9 +63,10 @@ new Elysia()
       return error(402, "Payment Required: body['content'] is required.");
     return await chat(content);
   })
+  //#endregion
   .onError(({ code }) => {
     if (code === "NOT_FOUND") return "Service not found :(";
   })
-  .listen(port);
+  .listen(PORT);
 
-console.info(`Telly bot is running on http://127.0.0.1:${String(port)}`);
+console.info(`Telly bot is running on http://127.0.0.1:${String(PORT)}`);

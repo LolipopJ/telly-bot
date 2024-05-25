@@ -20,3 +20,12 @@ export interface IChatResponse {
     total_tokens: number;
   };
 }
+
+export interface IKeyBalance {
+  id: number;
+  apiKey: string;
+  adminKeyId: number;
+  balanceTotal: number;
+  balanceUsed: number;
+  status: number;
+}

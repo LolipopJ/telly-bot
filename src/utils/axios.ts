@@ -1,5 +1,5 @@
-import axios from "axios";
 import packageJson from "../../package.json";
+import axios from "axios";
 
 const instance = axios.create({
   timeout: 15000,

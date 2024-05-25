@@ -1,7 +1,7 @@
-import TelegramBot from "node-telegram-bot-api";
+import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { replyMessageErrorHandler } from "middlewares/error-handler";
+import TelegramBot from "node-telegram-bot-api";
 import chat from "services/chatgpt/chat";
-import { checkIsChatGPTEnabled } from "utils/chatgpt";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error(
@@ -9,8 +9,6 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
   );
 }
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
-
-const isChatGPTEnabled = checkIsChatGPTEnabled();
 
 bot.on("message", (msg) => {
   const from = msg.from;
@@ -57,7 +55,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   });
 });
 
-if (isChatGPTEnabled) {
+if (IS_CHATGPT_ENABLED) {
   bot.onText(/\/chat (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const { text } = msg;

@@ -1,5 +1,7 @@
 import type { IChatMessage } from "interfaces/chatgpt";
 
+export const IS_CHATGPT_ENABLED = !!process.env.CHATGPT_API_KEY;
+
 /** Available model list: https://chatanywhere.apifox.cn/doc-2694962 */
 export const DEFAULT_MODEL = "gpt-3.5-turbo-0125";
 
