@@ -7,7 +7,7 @@ import {
 import type { IChatMessage, IChatResponse } from "interfaces/chatgpt";
 
 let tempMessages: IChatMessage[] = [];
-export const chat = async (content: string) => {
+export default async (content: string) => {
   if (tempMessages.length > MESSAGE_MAX_LENGTH * 2) {
     tempMessages = tempMessages.slice(2);
   }
@@ -20,8 +20,8 @@ export const chat = async (content: string) => {
       model: String(process.env.CHATGPT_MODEL) || DEFAULT_MODEL,
       messages: [MESSAGE_SYSTEM, ...tempMessages, userMessage],
       temperature: 1.2,
-      presence_penalty: 1,
-      frequency_penalty: 1,
+      presence_penalty: 0.8,
+      frequency_penalty: 0.8,
     },
     {
       headers: {

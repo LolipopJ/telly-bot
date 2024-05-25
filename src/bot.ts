@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
-import { replyMessageErrorHandler } from "middlewares/errorHandler";
-import { chat } from "services/chatgpt";
+import { replyMessageErrorHandler } from "middlewares/error-handler";
+import chat from "services/chatgpt/chat";
 import { checkIsChatGPTEnabled } from "utils/chatgpt";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
@@ -19,7 +19,7 @@ bot.on("message", (msg) => {
     username = "UNKNOWN",
     first_name: userFirstName = "UNKNOWN",
     last_name: userLastName = "UNKNOWN",
-    is_bot = false,
+    is_bot,
   } = from ?? {};
 
   const chat = msg.chat;
@@ -60,16 +60,17 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 if (isChatGPTEnabled) {
   bot.onText(/\/chat (.+)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const text = match?.[1]?.trim() ?? "跟我随便聊聊吧";
+    const { text } = msg;
+    const message = match?.[1]?.trim() ?? "跟我随便聊聊吧";
 
-    chat(text)
+    chat(message)
       .then((resp) => {
         bot.sendMessage(chatId, resp).catch((err: unknown) => {
-          replyMessageErrorHandler(err, msg.text);
+          replyMessageErrorHandler(err, text);
         });
       })
       .catch((err: unknown) => {
-        replyMessageErrorHandler(err, msg.text);
+        replyMessageErrorHandler(err, text);
       });
   });
 }
