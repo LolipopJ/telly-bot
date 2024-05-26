@@ -1,5 +1,8 @@
+import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
+import type { IAListFileDetails } from "interfaces/alist";
 import TelegramBot from "node-telegram-bot-api";
+import { getRandomFile } from "services/alist/fs";
 import chat from "services/chatgpt/chat";
 import { replyMessageErrorHandler } from "utils/error-handler";
 
@@ -62,6 +65,52 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
       replyMessageErrorHandler(msg.text, err);
     });
 });
+
+if (IS_ALIST_ENABLED) {
+  ALIST_ROUTES.forEach((routeItem) => {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    bot.onText(new RegExp(`^${routeItem.route}$`), async (msg) => {
+      const chatId = msg.chat.id;
+      const { text } = msg;
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (routeItem.type === "random-image") {
+        let randomFile: IAListFileDetails | undefined;
+        let randomFileSize = Infinity; // MB
+        while (
+          !randomFile ||
+          randomFileSize >= 10 // The photo must be at most 10 MB in size.
+        ) {
+          try {
+            randomFile = await getRandomFile({ path: routeItem.path });
+            if (randomFile) {
+              randomFileSize = Number(
+                (randomFile.size / 1024 / 1024).toFixed(2),
+              );
+            }
+          } catch (err: unknown) {
+            replyMessageErrorHandler(text, err);
+          }
+        }
+
+        bot
+          .sendPhoto(chatId, randomFile.raw_url, {
+            caption: `<b>Filename: </b>${randomFile.name}
+<b>File size: </b>${String(randomFileSize)} MB`,
+            parse_mode: "HTML",
+          })
+          .then(() => {
+            console.info(
+              `Bot \`send photo ${randomFile.name}\` to ${String(msg.chat.id)} successfully.`,
+            );
+          })
+          .catch((err: unknown) => {
+            replyMessageErrorHandler(msg.text, err);
+          });
+      }
+    });
+  });
+}
 
 if (IS_CHATGPT_ENABLED) {
   bot.onText(/\/chat(.*)/, (msg, match) => {

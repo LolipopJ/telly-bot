@@ -1,19 +1,13 @@
 import { html } from "@elysiajs/html";
 import bot from "bot";
-import { IS_ALIST_ENABLED } from "constants/alist";
+import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { PORT } from "constants/server";
 import { Elysia } from "elysia";
-import type { IAListRoute } from "interfaces/alist";
 import "scheduler";
 import { getRandomFile } from "services/alist/fs";
 import queryBalance from "services/chatgpt/balance";
 import chat from "services/chatgpt/chat";
-
-let availableAListRoutes: IAListRoute[] = [];
-if (IS_ALIST_ENABLED && !!process.env.ALIST_ROUTES) {
-  availableAListRoutes = JSON.parse(process.env.ALIST_ROUTES) as IAListRoute[];
-}
 
 new Elysia()
   .use(html())
@@ -58,7 +52,7 @@ new Elysia()
       );
 
     const routePath: string = params["*"];
-    const routeItem = availableAListRoutes.find(
+    const routeItem = ALIST_ROUTES.find(
       (availableAListRoute) => availableAListRoute.route === routePath,
     );
     if (!routeItem)
@@ -74,7 +68,7 @@ new Elysia()
         return `
 <html>
   <body style="margin: 5vh; text-align: center;">
-    <img src=${randomFile.raw_url} style="height: 90vh;">
+    <img src="${randomFile.raw_url}" alt="${randomFile.name}" style="height: 90vh;">
   </body>
 </html>`;
       }

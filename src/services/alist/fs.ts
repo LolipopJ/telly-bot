@@ -93,6 +93,4 @@ export const getRandomFile = async (options: {
       `List file list in \`${options.path}\` failed.\n${JSON.stringify(listFilesResp)}`,
     );
   }
-
-  return null;
 };
