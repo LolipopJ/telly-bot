@@ -59,7 +59,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   bot
     .sendMessage(chatId, resp)
     .then(() => {
-      console.info(`Bot \`echo\` to ${String(msg.chat.id)} successfully.`);
+      console.info(`Bot \`echo\` to ${String(chatId)} successfully.`);
     })
     .catch((err: unknown) => {
       replyMessageErrorHandler(msg.text, err);
@@ -76,14 +76,20 @@ if (IS_ALIST_ENABLED) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (routeItem.type === "random-image") {
         let randomFile: IAListFileDetails | undefined;
+        let randomFileType = "";
         let randomFileSize = Infinity; // MB
         while (
-          !randomFile ||
-          randomFileSize >= 10 // The photo must be at most 10 MB in size.
+          !(
+            randomFile &&
+            ["jpg", "jpeg", "png"].includes(randomFileType) &&
+            // The file must be at most 50 MB in size.
+            randomFileSize <= 50
+          )
         ) {
           try {
             randomFile = await getRandomFile({ path: routeItem.path });
             if (randomFile) {
+              randomFileType = randomFile.name.split(".").pop() ?? "";
               randomFileSize = Number(
                 (randomFile.size / 1024 / 1024).toFixed(2),
               );
@@ -93,20 +99,39 @@ if (IS_ALIST_ENABLED) {
           }
         }
 
-        bot
-          .sendPhoto(chatId, randomFile.raw_url, {
-            caption: `<b>Filename: </b>${randomFile.name}
+        if (randomFileSize <= 10) {
+          // randomFileSize <= 10 MB, use `sendPhoto()`
+          bot
+            .sendPhoto(chatId, randomFile.raw_url, {
+              caption: `<b>Filename: </b>${randomFile.name}
 <b>File size: </b>${String(randomFileSize)} MB`,
-            parse_mode: "HTML",
-          })
-          .then(() => {
-            console.info(
-              `Bot \`send photo ${randomFile.name}\` to ${String(msg.chat.id)} successfully.`,
-            );
-          })
-          .catch((err: unknown) => {
-            replyMessageErrorHandler(msg.text, err);
-          });
+              parse_mode: "HTML",
+            })
+            .then(() => {
+              console.info(
+                `Bot \`send photo ${randomFile.name}\` to ${String(chatId)} successfully.`,
+              );
+            })
+            .catch((err: unknown) => {
+              replyMessageErrorHandler(msg.text, err);
+            });
+        } else {
+          // 10MB <= randomFileSize <= 50 MB, use `sendDocument()`
+          bot
+            .sendDocument(chatId, randomFile.raw_url, {
+              caption: `<b>Filename: </b>${randomFile.name}
+<b>File size: </b>${String(randomFileSize)} MB`,
+              parse_mode: "HTML",
+            })
+            .then(() => {
+              console.info(
+                `Bot \`send document ${randomFile.name}\` to ${String(chatId)} successfully.`,
+              );
+            })
+            .catch((err: unknown) => {
+              replyMessageErrorHandler(msg.text, err);
+            });
+        }
       }
     });
   });
@@ -123,9 +148,7 @@ if (IS_CHATGPT_ENABLED) {
         bot
           .sendMessage(chatId, resp)
           .then(() => {
-            console.info(
-              `Bot \`chat\` with ${String(msg.chat.id)} successfully.`,
-            );
+            console.info(`Bot \`chat\` with ${String(chatId)} successfully.`);
           })
           .catch((err: unknown) => {
             replyMessageErrorHandler(text, err);
