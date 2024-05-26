@@ -1,11 +1,11 @@
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
-import { replyMessageErrorHandler } from "middlewares/error-handler";
 import TelegramBot from "node-telegram-bot-api";
 import chat from "services/chatgpt/chat";
+import { replyMessageErrorHandler } from "utils/error-handler";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error(
-    "Environment variable `TELEGRAM_BOT_TOKEN` is required to connect Telegram bot.",
+    "process.env['TELEGRAM_BOT_TOKEN'] is required to connect Telegram bot.",
   );
 }
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
@@ -26,7 +26,7 @@ bot.on("message", (msg) => {
   const text = msg.text;
 
   console.info(
-    `Received a message:
+    `Bot received a message:
 ${String(text)}
 
 From:
@@ -41,8 +41,11 @@ From:
 bot.onText(/^\/start$/, (msg) => {
   bot
     .sendMessage(msg.chat.id, "Hi, this is Telly Bot!")
+    .then(() => {
+      console.info(`Bot \`say hello\` to ${String(msg.chat.id)} successfully.`);
+    })
     .catch((err: unknown) => {
-      replyMessageErrorHandler(err, msg.text);
+      replyMessageErrorHandler(msg.text, err);
     });
 });
 
@@ -50,25 +53,37 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const resp = match?.[1] ?? "echo";
 
-  bot.sendMessage(chatId, resp).catch((err: unknown) => {
-    replyMessageErrorHandler(err, msg.text);
-  });
+  bot
+    .sendMessage(chatId, resp)
+    .then(() => {
+      console.info(`Bot \`echo\` to ${String(msg.chat.id)} successfully.`);
+    })
+    .catch((err: unknown) => {
+      replyMessageErrorHandler(msg.text, err);
+    });
 });
 
 if (IS_CHATGPT_ENABLED) {
-  bot.onText(/\/chat (.+)/, (msg, match) => {
+  bot.onText(/\/chat(.*)/, (msg, match) => {
     const chatId = msg.chat.id;
     const { text } = msg;
     const message = match?.[1]?.trim() ?? "跟我随便聊聊吧";
 
     chat(message)
       .then((resp) => {
-        bot.sendMessage(chatId, resp).catch((err: unknown) => {
-          replyMessageErrorHandler(err, text);
-        });
+        bot
+          .sendMessage(chatId, resp)
+          .then(() => {
+            console.info(
+              `Bot \`chat\` with ${String(msg.chat.id)} successfully.`,
+            );
+          })
+          .catch((err: unknown) => {
+            replyMessageErrorHandler(text, err);
+          });
       })
       .catch((err: unknown) => {
-        replyMessageErrorHandler(err, text);
+        replyMessageErrorHandler(text, err);
       });
   });
 }

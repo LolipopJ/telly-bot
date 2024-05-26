@@ -1,8 +1,8 @@
-import type { IKeyBalance } from "interfaces/chatgpt";
+import type { ICAKeyBalance } from "interfaces/chatgpt";
 import axios from "utils/axios";
 
 export const queryBalance = async () => {
-  const resp = await axios.post<IKeyBalance>(
+  const resp = await axios.post<ICAKeyBalance>(
     "https://api.chatanywhere.org/v1/query/balance",
     null,
     {

@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "plugins": [{ "name": "@kitajs/ts-html-plugin" }],
+    "jsxFactory": "Html.createElement",
+    "jsxFragmentFactory": "Html.Fragment",
+
     // Enable latest features
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "allowJs": true,
 
     // Bundler mode
@@ -22,9 +27,6 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
-
-    // Custom options
-    "baseUrl": "./src"
+    "noPropertyAccessFromIndexSignature": false
   }
 }

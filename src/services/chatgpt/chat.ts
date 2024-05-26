@@ -35,7 +35,7 @@ export const chat = async (content: string) => {
     tempMessages.push(userMessage, respMessage);
     return respMessage.content;
   } else {
-    return resp.statusText;
+    return `Get chat response failed: ${resp.statusText}`;
   }
 };
 

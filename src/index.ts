@@ -1,12 +1,22 @@
+import { html } from "@elysiajs/html";
 import bot from "bot";
+import { IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { PORT } from "constants/server";
 import { Elysia } from "elysia";
+import type { IAListRoute } from "interfaces/alist";
 import "scheduler";
+import { getRandomFile } from "services/alist/fs";
 import queryBalance from "services/chatgpt/balance";
 import chat from "services/chatgpt/chat";
 
+let availableAListRoutes: IAListRoute[] = [];
+if (IS_ALIST_ENABLED && !!process.env.ALIST_ROUTES) {
+  availableAListRoutes = JSON.parse(process.env.ALIST_ROUTES) as IAListRoute[];
+}
+
 new Elysia()
+  .use(html())
   //#region Pre-check api token for POST methods
   .onBeforeHandle(({ request, headers, error }) => {
     if (
@@ -37,6 +47,39 @@ new Elysia()
     if (!chatId)
       return error(402, "Payment Required: body['chatId'] is required.");
     return await bot.sendMessage(chatId, content, { parse_mode: "HTML" });
+  })
+  //#endregion
+  //#region AList
+  .get("/alist*", async ({ params, error }) => {
+    if (!IS_ALIST_ENABLED)
+      return error(
+        503,
+        "Service Unavailable: process.env['ALIST_ADDRESS'], process.env['ALIST_USERNAME'] and process.env['ALIST_PASSWORD'] are required.",
+      );
+
+    const routePath: string = params["*"];
+    const routeItem = availableAListRoutes.find(
+      (availableAListRoute) => availableAListRoute.route === routePath,
+    );
+    if (!routeItem)
+      return error(
+        404,
+        `Not Found: route \`${routePath}\` is not defined in process.env['ALIST_ROUTES']`,
+      );
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (routeItem.type === "random-image") {
+      const randomFile = await getRandomFile({ path: routeItem.path });
+      if (randomFile) {
+        return `
+<html>
+  <body style="margin: 5vh; text-align: center;">
+    <img src=${randomFile.raw_url} style="height: 90vh;">
+  </body>
+</html>`;
+      }
+      return error(500, "Internal Server Error");
+    }
   })
   //#endregion
   //#region Query balance of ChatAnywhere key

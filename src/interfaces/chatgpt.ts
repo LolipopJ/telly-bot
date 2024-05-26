@@ -21,7 +21,7 @@ export interface IChatResponse {
   };
 }
 
-export interface IKeyBalance {
+export interface ICAKeyBalance {
   id: number;
   apiKey: string;
   adminKeyId: number;
