@@ -15,7 +15,7 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 bot.on("message", (msg) => {
-  const { chat, from, text, date } = msg;
+  const { message_id, chat, from, text, date } = msg;
   const chatId = chat.id;
   const {
     id: userId = "UNKNOWN",
@@ -34,6 +34,7 @@ From:
   username: ${username} (${userFirstName} ${userLastName})
   userId: ${String(userId)}
   chatId: ${String(chatId)}
+  messageId: ${String(message_id)}
   isBot: ${String(is_bot)}
   date: ${new Date(dateTime).toLocaleString()}`,
   );
@@ -41,30 +42,34 @@ From:
 
 bot.onText(/^\/start$/, (msg) => {
   const chatId = msg.chat.id;
-  const { text } = msg;
+  const { text, message_id } = msg;
 
   bot
-    .sendMessage(chatId, "Hi, this is Telly Bot!")
+    .sendMessage(chatId, "Hi, this is Telly Bot powered by Lolipop!", {
+      reply_to_message_id: message_id,
+    })
     .then(() => {
       console.info(`Bot \`say hello\` to ${String(chatId)} successfully.`);
     })
     .catch((err: unknown) => {
-      replyMessageErrorHandler(chatId, text, err);
+      replyMessageErrorHandler(chatId, message_id, text, err);
     });
 });
 
 bot.onText(/\/echo (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
-  const { text } = msg;
+  const { text, message_id } = msg;
   const resp = match?.[1];
 
   bot
-    .sendMessage(chatId, resp ? resp : "echo")
+    .sendMessage(chatId, resp ? resp : "echo", {
+      reply_to_message_id: message_id,
+    })
     .then(() => {
       console.info(`Bot \`echo\` to ${String(chatId)} successfully.`);
     })
     .catch((err: unknown) => {
-      replyMessageErrorHandler(chatId, text, err);
+      replyMessageErrorHandler(chatId, message_id, text, err);
     });
 });
 
@@ -75,7 +80,7 @@ if (IS_ALIST_ENABLED) {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     bot.onText(new RegExp(route.replaceAll("-", "_")), async (msg) => {
       const chatId = msg.chat.id;
-      const { text } = msg;
+      const { text, message_id } = msg;
 
       if (routeType === "random-image") {
         let randomFile: IAListFileDetails | undefined;
@@ -98,7 +103,7 @@ if (IS_ALIST_ENABLED) {
             );
           }
         } catch (err: unknown) {
-          replyMessageErrorHandler(chatId, text, err);
+          replyMessageErrorHandler(chatId, message_id, text, err);
           return;
         }
 
@@ -117,6 +122,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
           // randomFileSize <= 10 MB, use `sendPhoto()`
           bot
             .sendPhoto(chatId, randomFileRawUrl, {
+              reply_to_message_id: message_id,
               caption: messageCaption,
               parse_mode: "HTML",
             })
@@ -126,12 +132,13 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
               );
             })
             .catch((err: unknown) => {
-              replyMessageErrorHandler(chatId, text, err);
+              replyMessageErrorHandler(chatId, message_id, text, err);
             });
         } else {
           // 10MB <= randomFileSize <= 50 MB, use `sendDocument()`
           bot
             .sendDocument(chatId, randomFileRawUrl, {
+              reply_to_message_id: message_id,
               thumbnail: ["jpg", "jpeg"].includes(randomFileType)
                 ? randomFileThumbnail
                 : undefined,
@@ -144,7 +151,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
               );
             })
             .catch((err: unknown) => {
-              replyMessageErrorHandler(chatId, text, err);
+              replyMessageErrorHandler(chatId, message_id, text, err);
             });
         }
       } else {
@@ -152,6 +159,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
           .sendMessage(
             chatId,
             `Not available AList route type: \`${routeType}\``,
+            { reply_to_message_id: message_id },
           )
           .then(() => {
             console.info(
@@ -159,7 +167,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
             );
           })
           .catch((err: unknown) => {
-            replyMessageErrorHandler(chatId, text, err);
+            replyMessageErrorHandler(chatId, message_id, text, err);
           });
       }
     });
@@ -169,22 +177,22 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
 if (IS_CHATGPT_ENABLED) {
   bot.onText(/\/chat(.*)/, (msg, match) => {
     const chatId = msg.chat.id;
-    const { text } = msg;
+    const { text, message_id } = msg;
     const message = match?.[1].trim();
 
     chat(message ? message : "陪我随便聊聊吧")
       .then((resp) => {
         bot
-          .sendMessage(chatId, resp)
+          .sendMessage(chatId, resp, { reply_to_message_id: message_id })
           .then(() => {
             console.info(`Bot \`chat\` with ${String(chatId)} successfully.`);
           })
           .catch((err: unknown) => {
-            replyMessageErrorHandler(chatId, text, err);
+            replyMessageErrorHandler(chatId, message_id, text, err);
           });
       })
       .catch((err: unknown) => {
-        replyMessageErrorHandler(chatId, text, err);
+        replyMessageErrorHandler(chatId, message_id, text, err);
       });
   });
 }

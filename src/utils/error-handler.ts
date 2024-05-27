@@ -9,13 +9,19 @@ export const baseErrorHandler = (
 
 export const replyMessageErrorHandler = (
   chatId: number,
+  msgId: number,
   msg = "",
   error: unknown,
 ) => {
-  baseErrorHandler(`Reply to \`${msg}\` from ${String(chatId)} failed:`, error);
+  baseErrorHandler(
+    `Reply to message (${String(msgId)}) \`${msg}\` from ${String(chatId)} failed:`,
+    error,
+  );
 
   bot
-    .sendMessage(chatId, "Something went wrong, please try it later :(")
+    .sendMessage(chatId, "Something went wrong, please try it later :(", {
+      reply_to_message_id: msgId,
+    })
     .catch((err: unknown) => {
       baseErrorHandler(
         `Reply default error message to \`${msg}\` from ${String(chatId)} failed, too:`,
