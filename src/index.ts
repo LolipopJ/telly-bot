@@ -73,15 +73,16 @@ new Elysia()
           !(randomFile && ["jpg", "jpeg", "png"].includes(randomFileType))
         ) {
           randomFile = await getRandomFile({ path: routePath });
-          if (randomFile) {
-            randomFileType = randomFile.name.split(".").pop() ?? "";
-          }
+          randomFileType = randomFile.name.split(".").pop() ?? "";
         }
+      } catch (err: unknown) {
+        return error(500, `Internal Server Error: ${String(err)}`);
+      }
 
-        const { raw_url: randomFileRawUrl, name: randomFilename } = randomFile;
-        const randomFileUrl = getUrlFromFilename(randomFilename) ?? "";
+      const { raw_url: randomFileRawUrl, name: randomFilename } = randomFile;
+      const randomFileUrl = getUrlFromFilename(randomFilename) ?? "";
 
-        return `
+      return `
 <html>
   <head lang="en-US">
     <meta charset="UTF-8">
@@ -93,9 +94,6 @@ new Elysia()
     </a>
   </body>
 </html>`;
-      } catch (err: unknown) {
-        return error(500, `Internal Server Error: ${String(err)}`);
-      }
     } else {
       return error(
         501,

@@ -5,7 +5,6 @@ import type {
 } from "interfaces/alist";
 import { getAlistSession } from "utils/alist";
 import axios from "utils/axios";
-import { baseErrorHandler } from "utils/error-handler";
 import { genRandomNumber } from "utils/math";
 
 export const listFiles = async (options: {
@@ -50,10 +49,13 @@ export const getFileDetails = async (options: {
 export const getRandomFile = async (options: {
   path: string;
   password?: string;
-  refresh?: boolean;
 }) => {
-  const listFilesResp = await listFiles({ ...options, page: 1, per_page: 1 });
-  // console.log("listFilesResp", listFilesResp.data);
+  const listFilesResp = await listFiles({
+    ...options,
+    page: 1,
+    per_page: 1,
+    refresh: false,
+  });
 
   if (listFilesResp.code === 200 && !!listFilesResp.data) {
     const total = listFilesResp.data.total;
@@ -63,8 +65,8 @@ export const getRandomFile = async (options: {
       ...options,
       page: randomNumber,
       per_page: 1,
+      refresh: false,
     });
-    // console.log("listRandomFileResp", listRandomFileResp.data);
 
     if (listRandomFileResp.code === 200 && !!listRandomFileResp.data) {
       const filename = listRandomFileResp.data.content[0].name;
@@ -73,27 +75,27 @@ export const getRandomFile = async (options: {
       const getFileDetailsResp = await getFileDetails({
         ...options,
         path: filePath,
+        refresh: false,
       });
-      // console.log("getFileDetailsResp", getFileDetailsResp.data);
 
       if (getFileDetailsResp.code === 200 && !!getFileDetailsResp.data) {
         return getFileDetailsResp.data;
       } else {
-        baseErrorHandler(
-          "Get random file from AList failed:",
-          `Get file \`${filePath}\` details failed.\n${JSON.stringify(getFileDetailsResp)}`,
+        throw new Error(
+          "Get random file from AList failed:" +
+            `Get file \`${filePath}\` details failed.\n${JSON.stringify(getFileDetailsResp)}`,
         );
       }
     } else {
-      baseErrorHandler(
-        "Get random file from AList failed:",
-        `Get basic info of random file \`${options.path}[#${String(randomNumber)}]\` failed.\n${JSON.stringify(listRandomFileResp)}`,
+      throw new Error(
+        "Get random file from AList failed:" +
+          `Get basic info of random file \`${options.path}[#${String(randomNumber)}]\` failed.\n${JSON.stringify(listRandomFileResp)}`,
       );
     }
   } else {
-    baseErrorHandler(
-      "Get random file from AList failed:",
-      `List file list in \`${options.path}\` failed.\n${JSON.stringify(listFilesResp)}`,
+    throw new Error(
+      "Get random file from AList failed:" +
+        `List file list in \`${options.path}\` failed.\n${JSON.stringify(listFilesResp)}`,
     );
   }
 };

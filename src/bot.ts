@@ -15,7 +15,8 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
 bot.on("message", (msg) => {
-  const from = msg.from;
+  const { chat, from, text, date } = msg;
+  const chatId = chat.id;
   const {
     id: userId = "UNKNOWN",
     username = "UNKNOWN",
@@ -23,11 +24,7 @@ bot.on("message", (msg) => {
     last_name: userLastName = "UNKNOWN",
     is_bot,
   } = from ?? {};
-
-  const chat = msg.chat;
-  const chatId = chat.id;
-  const dateTime = msg.date * 1000;
-  const text = msg.text;
+  const dateTime = date * 1000;
 
   console.info(
     `Bot received a message:
@@ -73,33 +70,36 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 
 if (IS_ALIST_ENABLED) {
   ALIST_ROUTES.forEach((routeItem) => {
-    const { route, type, path } = routeItem;
+    const { route, type: routeType, path: routePath } = routeItem;
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    bot.onText(new RegExp(`^${route}$`.replace("-", "_")), async (msg) => {
+    bot.onText(new RegExp(route.replaceAll("-", "_")), async (msg) => {
       const chatId = msg.chat.id;
       const { text } = msg;
 
-      if (type === "random-image") {
+      if (routeType === "random-image") {
         let randomFile: IAListFileDetails | undefined;
         let randomFileType = "";
         let randomFileSize = Infinity; // MB
 
-        while (
-          !(
-            randomFile &&
-            ["jpg", "jpeg", "png"].includes(randomFileType) &&
-            // The file must be at most 50 MB in size.
-            randomFileSize <= 50
-          )
-        ) {
-          randomFile = await getRandomFile({ path });
-          if (randomFile) {
+        try {
+          while (
+            !(
+              randomFile &&
+              ["jpg", "jpeg", "png"].includes(randomFileType) &&
+              // The file must be at most 50 MB in size.
+              randomFileSize <= 50
+            )
+          ) {
+            randomFile = await getRandomFile({ path: routePath });
             randomFileType = randomFile.name.split(".").pop() ?? "";
             randomFileSize = Number(
               (randomFile.size / 1024 / 1024).toFixed(2), // Bytes to MB
             );
           }
+        } catch (err: unknown) {
+          replyMessageErrorHandler(chatId, text, err);
+          return;
         }
 
         const {
@@ -149,7 +149,10 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
         }
       } else {
         bot
-          .sendMessage(chatId, `Not available AList route type: \`${type}\``)
+          .sendMessage(
+            chatId,
+            `Not available AList route type: \`${routeType}\``,
+          )
           .then(() => {
             console.info(
               `Bot \`send error message\` to ${String(chatId)} successfully.`,
