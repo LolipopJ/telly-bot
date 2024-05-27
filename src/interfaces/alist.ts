@@ -1,7 +1,7 @@
 export interface IAListRoute {
   route: string;
   path: string;
-  type: "random-image";
+  type: "random-image" | "others";
 }
 
 export interface IAListResponse<T> {

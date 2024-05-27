@@ -4,10 +4,12 @@ import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { PORT } from "constants/server";
 import { Elysia } from "elysia";
+import type { IAListFileDetails } from "interfaces/alist";
 import "scheduler";
 import { getRandomFile } from "services/alist/fs";
 import queryBalance from "services/chatgpt/balance";
 import chat from "services/chatgpt/chat";
+import { getUrlFromFilename } from "utils/image";
 
 new Elysia()
   .use(html())
@@ -51,28 +53,54 @@ new Elysia()
         "Service Unavailable: process.env['ALIST_ADDRESS'], process.env['ALIST_USERNAME'] and process.env['ALIST_PASSWORD'] are required.",
       );
 
-    const routePath: string = params["*"];
+    const route: string = params["*"];
     const routeItem = ALIST_ROUTES.find(
-      (availableAListRoute) => availableAListRoute.route === routePath,
+      (availableAListRoute) => availableAListRoute.route === route,
     );
     if (!routeItem)
       return error(
         404,
-        `Not Found: route \`${routePath}\` is not defined in process.env['ALIST_ROUTES']`,
+        `Not Found: route \`${route}\` is not defined in process.env['ALIST_ROUTES']`,
       );
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (routeItem.type === "random-image") {
-      const randomFile = await getRandomFile({ path: routeItem.path });
-      if (randomFile) {
+    const { type: routeType, path: routePath } = routeItem;
+    if (routeType === "random-image") {
+      let randomFile: IAListFileDetails | undefined;
+      let randomFileType = "";
+
+      try {
+        while (
+          !(randomFile && ["jpg", "jpeg", "png"].includes(randomFileType))
+        ) {
+          randomFile = await getRandomFile({ path: routePath });
+          if (randomFile) {
+            randomFileType = randomFile.name.split(".").pop() ?? "";
+          }
+        }
+
+        const { raw_url: randomFileRawUrl, name: randomFilename } = randomFile;
+        const randomFileUrl = getUrlFromFilename(randomFilename) ?? "";
+
         return `
 <html>
-  <body style="margin: 5vh; text-align: center;">
-    <img src="${randomFile.raw_url}" alt="${randomFile.name}" style="height: 90vh;">
+  <head lang="en-US">
+    <meta charset="UTF-8">
+    <title>${randomFilename}</title>
+  </head>
+  <body style="margin: 5vh; text-align: center; background: #242424;">
+    <a href="${randomFileUrl}" target="${randomFileUrl ? "_blank" : "_self"}">
+      <img src="${randomFileRawUrl}" alt="${randomFilename}" style="height: 90vh; border-radius: 1%;">
+    </a>
   </body>
 </html>`;
+      } catch (err: unknown) {
+        return error(500, `Internal Server Error: ${String(err)}`);
       }
-      return error(500, "Internal Server Error");
+    } else {
+      return error(
+        501,
+        `Not Implemented: not available AList route type: \`${routeType}\``,
+      );
     }
   })
   //#endregion
