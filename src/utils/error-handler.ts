@@ -1,7 +1,7 @@
 import bot from "bot";
 
 export const baseErrorHandler = (
-  title = "Something goes wrong",
+  title = "Something went wrong :(",
   error: unknown,
 ) => {
   console.error(`${title}\n${String(error)}`);
@@ -15,7 +15,7 @@ export const replyMessageErrorHandler = (
   baseErrorHandler(`Reply to \`${msg}\` from ${String(chatId)} failed:`, error);
 
   bot
-    .sendMessage(chatId, "Something goes wrong, try it later :(")
+    .sendMessage(chatId, "Something went wrong, please try it later :(")
     .catch((err: unknown) => {
       baseErrorHandler(
         `Reply default error message to \`${msg}\` from ${String(chatId)} failed, too:`,

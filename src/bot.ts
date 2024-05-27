@@ -59,10 +59,10 @@ bot.onText(/^\/start$/, (msg) => {
 bot.onText(/\/echo (.+)/, (msg, match) => {
   const chatId = msg.chat.id;
   const { text } = msg;
-  const resp = match?.[1] ?? "echo";
+  const resp = match?.[1];
 
   bot
-    .sendMessage(chatId, resp)
+    .sendMessage(chatId, resp ? resp : "echo")
     .then(() => {
       console.info(`Bot \`echo\` to ${String(chatId)} successfully.`);
     })
@@ -76,7 +76,7 @@ if (IS_ALIST_ENABLED) {
     const { route, type, path } = routeItem;
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    bot.onText(new RegExp(`^${route}$`), async (msg) => {
+    bot.onText(new RegExp(`^${route}$`.replace("-", "_")), async (msg) => {
       const chatId = msg.chat.id;
       const { text } = msg;
 
@@ -167,9 +167,9 @@ if (IS_CHATGPT_ENABLED) {
   bot.onText(/\/chat(.*)/, (msg, match) => {
     const chatId = msg.chat.id;
     const { text } = msg;
-    const message = match?.[1]?.trim() ?? "跟我随便聊聊吧";
+    const message = match?.[1].trim();
 
-    chat(message)
+    chat(message ? message : "陪我随便聊聊吧")
       .then((resp) => {
         bot
           .sendMessage(chatId, resp)

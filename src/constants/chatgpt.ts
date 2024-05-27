@@ -6,7 +6,7 @@ export const IS_CHATGPT_ENABLED = !!process.env.CHATGPT_API_KEY;
 export const DEFAULT_MODEL = "gpt-3.5-turbo-0125";
 
 /** Max length of messages (a question and a answer counts one) in request body. */
-export const MESSAGE_MAX_LENGTH = 6;
+export const MESSAGE_MAX_LENGTH = 10;
 
 export const MESSAGE_SYSTEM: IChatMessage = {
   role: "system",
