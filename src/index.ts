@@ -1,5 +1,6 @@
 import { html } from "@elysiajs/html";
 import bot from "bot";
+import { consola } from "consola/basic";
 import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { PORT } from "constants/server";
@@ -132,4 +133,4 @@ new Elysia()
   })
   .listen(PORT);
 
-console.info(`Telly bot is running on http://127.0.0.1:${String(PORT)}`);
+consola.info(`Telly bot is running on http://127.0.0.1:${String(PORT)}`);

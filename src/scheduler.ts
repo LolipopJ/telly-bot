@@ -1,4 +1,5 @@
 import bot from "bot";
+import { consola } from "consola/basic";
 import { IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import schedule from "node-schedule";
@@ -12,7 +13,7 @@ if (IS_ALIST_ENABLED) {
     const resp = await getAListSession();
 
     if (resp.code === 200 && !!resp.data?.token) {
-      console.info("Refresh AList session successfully.");
+      consola.success("Refresh AList session successfully.");
       setAlistSession(resp.data.token);
     } else {
       baseErrorHandler("Refresh AList session failed:", resp.message);
@@ -37,7 +38,7 @@ Remaining: ${String(queryBalanceResp.total - queryBalanceResp.used)} CA`;
           parse_mode: "HTML",
         })
         .then(() => {
-          console.info(
+          consola.success(
             `Bot \`send ChatAnywhere API usage\` to target chat success:\n${content}`,
           );
         })

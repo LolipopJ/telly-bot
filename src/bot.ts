@@ -1,3 +1,4 @@
+import { consola } from "consola/basic";
 import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import type { IAListFileDetails } from "interfaces/alist";
@@ -26,7 +27,7 @@ bot.on("message", (msg) => {
   } = from ?? {};
   const dateTime = date * 1000;
 
-  console.info(
+  consola.info(
     `Bot received a message:
 ${String(text)}
 
@@ -49,7 +50,7 @@ bot.onText(/^\/start$/, (msg) => {
       reply_to_message_id: message_id,
     })
     .then(() => {
-      console.info(`Bot \`say hello\` to ${String(chatId)} successfully.`);
+      consola.success(`Bot \`say hello\` to ${String(chatId)} successfully.`);
     })
     .catch((err: unknown) => {
       replyMessageErrorHandler(chatId, message_id, text, err);
@@ -66,7 +67,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
       reply_to_message_id: message_id,
     })
     .then(() => {
-      console.info(`Bot \`echo\` to ${String(chatId)} successfully.`);
+      consola.success(`Bot \`echo\` to ${String(chatId)} successfully.`);
     })
     .catch((err: unknown) => {
       replyMessageErrorHandler(chatId, message_id, text, err);
@@ -127,7 +128,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
               parse_mode: "HTML",
             })
             .then(() => {
-              console.info(
+              consola.success(
                 `Bot \`send photo ${randomFilename}\` to ${String(chatId)} successfully.`,
               );
             })
@@ -146,7 +147,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
               parse_mode: "HTML",
             })
             .then(() => {
-              console.info(
+              consola.success(
                 `Bot \`send document ${randomFilename}\` to ${String(chatId)} successfully.`,
               );
             })
@@ -162,7 +163,7 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
             { reply_to_message_id: message_id },
           )
           .then(() => {
-            console.info(
+            consola.warn(
               `Bot \`send error message\` to ${String(chatId)} successfully.`,
             );
           })
@@ -185,7 +186,9 @@ if (IS_CHATGPT_ENABLED) {
         bot
           .sendMessage(chatId, resp, { reply_to_message_id: message_id })
           .then(() => {
-            console.info(`Bot \`chat\` with ${String(chatId)} successfully.`);
+            consola.success(
+              `Bot \`chat\` with ${String(chatId)} successfully.`,
+            );
           })
           .catch((err: unknown) => {
             replyMessageErrorHandler(chatId, message_id, text, err);

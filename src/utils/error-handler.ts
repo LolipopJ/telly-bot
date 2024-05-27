@@ -1,10 +1,11 @@
 import bot from "bot";
+import { consola } from "consola/basic";
 
 export const baseErrorHandler = (
   title = "Something went wrong :(",
   error: unknown,
 ) => {
-  console.error(`${title}\n${String(error)}`);
+  consola.error(`${title}\n${String(error)}`);
 };
 
 export const replyMessageErrorHandler = (
