@@ -185,7 +185,7 @@ if (IS_CHATGPT_ENABLED) {
     const { text, message_id } = msg;
     const message = match?.[1].trim();
 
-    chat(message ? message : "陪我随便聊聊吧")
+    chat(chatId, message ? message : "陪我随便聊聊吧")
       .then((resp) => {
         bot
           .sendMessage(chatId, resp, { reply_to_message_id: message_id })

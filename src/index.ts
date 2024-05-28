@@ -146,7 +146,7 @@ new Elysia()
     const { content } = body as { content: string };
     if (!content)
       return error(402, "Payment Required: body['content'] is required.");
-    return await chat(content);
+    return await chat(0, content);
   })
   //#endregion
   .onError(({ code }) => {
