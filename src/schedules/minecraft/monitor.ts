@@ -13,7 +13,7 @@ export default () => {
       !!process.env.TELEGRAM_CHAT_ID_ADMIN) &&
     !!process.env.MINECRAFT_SERVER_HOST
   ) {
-    const job = schedule.scheduleJob("*/45 * * * * *", async () => {
+    const job = schedule.scheduleJob("*/1 * * * *", async () => {
       consola.info(
         `Try to query status of Minecraft server \`${String(process.env.MINECRAFT_SERVER_HOST)}\`...`,
       );
