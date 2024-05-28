@@ -16,6 +16,24 @@ To install dependencies:
 bun install
 ```
 
+## Build for production
+
+Bundling code can reduce startup times and improve running performance.
+
+To build:
+
+```bash
+bun run build
+```
+
+## Start service
+
+To start bot service:
+
+```bash
+bun run server
+```
+
 ## Configurations
 
 Create `.env` in root directory to hold environment variables.
@@ -89,14 +107,6 @@ Visit `http://127.0.0.1:3300/chatgpt/balance` to view key usage.Key usage will a
 GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
-## Start service
-
-To start bot service:
-
-```bash
-bun run server
-```
-
 ## API
 
 ### Telegram bot API
@@ -153,7 +163,9 @@ axios.post(
 To develop:
 
 ```bash
-bun run dev
+bun run start
+# Or in production mode
+bun run start:prod
 ```
 
 To lint files:
