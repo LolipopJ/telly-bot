@@ -42,7 +42,7 @@ Create `.env` in root directory to hold environment variables.
 
 **Required** environment variables:
 
-```conf
+```bash
 # Telegram bot token
 TELEGRAM_BOT_TOKEN=XXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXX
 ```
@@ -51,29 +51,29 @@ TELEGRAM_BOT_TOKEN=XXXXXXXXXX:XXXXXXXXXXXXXXXXXXXXXXXXXXX-XXXXXXX
 
 Optional common environment variables:
 
-```conf
+```bash
 # Listening port of service. Default to `3300`
 PORT=3300
 # Secret token to execute private (POST) API
 API_SECRET_TOKEN=YOUR_SECRET_TOKEN
-# Telegram chat that receives monitoring messages and so on
-TELEGRAM_CHAT_ID=TARGET_CHAT_ID
+# Telegram chat that receives monitoring messages and so on. The chat between bot and yourself is recommended
+TELEGRAM_CHAT_ID_ADMIN=TARGET_CHAT_ID
 ```
 
 ### Database / MongoDB
 
 Telly bot chooses MongoDB as the provider of database service. Some features require connecting to MongoDB.
 
-```conf
+```bash
 # MongoDB uri
 MONGO_URI=mongodb://username:password@127.0.0.1:27017/telly-bot
 ```
 
-Don't be afraid, Telly bot can work without MongoDB.
+Don't worry, Telly bot can work without MongoDB.
 
 ### AList
 
-```conf
+```bash
 # AList address
 ALIST_URL=http://127.0.0.1:5244
 # AList login username
@@ -90,20 +90,22 @@ When visit `http://127.0.0.1:3300/alist/random-img` or send `/random_img` to bot
 
 Adapt to [ChatAnywhere](https://github.com/chatanywhere/GPT_API_free).
 
-```conf
+```bash
 # ChatGPT model version. Default to `gpt-3.5-turbo-0125`
 CHATGPT_MODEL=gpt-3.5-turbo-0125
 # ChatAnywhere API key
 CHATGPT_API_KEY=YOUR_CHATGPT_API_KEY
+# Telegram chat that receives key usage
+TELEGRAM_CHAT_ID_CHATGPT_BALANCE=TARGET_CHAT_ID
 ```
 
 Send `/chat ${message}` to chat with a cat girl!
 
-Visit `http://127.0.0.1:3300/chatgpt/balance` to view key usage.Key usage will also be forwarded to message receiver every 9 AM and 9 PM.
+Visit `http://127.0.0.1:3300/chatgpt/balance` to view key usage. If `TELEGRAM_CHAT_ID_CHATGPT_BALANCE` (higher priority) or `TELEGRAM_CHAT_ID_ADMIN` is set, key usage will also be forwarded to target chat every 9 AM and 9 PM.
 
 ### Github
 
-```conf
+```bash
 GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
@@ -111,13 +113,13 @@ GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
 
 ### Telegram bot API
 
-### Query bot status
+#### Query bot status
 
 ```ts
 axios.get("http://127.0.0.1:3300/bot/status");
 ```
 
-### Send custom message
+#### Send custom message
 
 Send custom message to target chat. Content should be parsable by HTML mode: <https://core.telegram.org/bots/api#html-style>.
 
@@ -126,15 +128,15 @@ axios.post(
   "http://127.0.0.1:3300/bot/send-message",
   {
     content: "custom message",
-    chatId: process.env.TELEGRAM_CHAT_ID,
+    chatId: TELEGRAM_CHAT_ID_ADMIN,
   },
   {
-    headers: { Authorization: process.env.API_SECRET_TOKEN },
+    headers: { Authorization: API_SECRET_TOKEN },
   },
 );
 ```
 
-If `chatId` is blank, environment variable `TELEGRAM_CHAT_ID` will be used.
+If `chatId` is blank, `TELEGRAM_CHAT_ID_ADMIN` will be used.
 
 ### ChatGPT API
 
@@ -153,7 +155,7 @@ axios.post(
     content: "custom message",
   },
   {
-    headers: { Authorization: process.env.API_SECRET_TOKEN },
+    headers: { Authorization: API_SECRET_TOKEN },
   },
 );
 ```

@@ -5,7 +5,10 @@ import queryBalance from "services/chatgpt/balance";
 import { baseErrorHandler } from "utils/error-handler";
 
 export default () => {
-  if (process.env.TELEGRAM_CHAT_ID) {
+  if (
+    !!process.env.TELEGRAM_CHAT_ID_CHATGPT_BALANCE ||
+    !!process.env.TELEGRAM_CHAT_ID_ADMIN
+  ) {
     schedule.scheduleJob("0 9,21 * * *", async () => {
       consola.info(`Querying ChatAnywhere key usage...`);
       const queryBalanceResp = await queryBalance();
@@ -17,9 +20,16 @@ Used: ${String(queryBalanceResp.used)} CA
 Remaining: ${String(queryBalanceResp.total - queryBalanceResp.used)} CA`;
 
         bot
-          .sendMessage(Number(process.env.TELEGRAM_CHAT_ID), content, {
-            parse_mode: "HTML",
-          })
+          .sendMessage(
+            Number(
+              process.env.TELEGRAM_CHAT_ID_CHATGPT_BALANCE ??
+                process.env.TELEGRAM_CHAT_ID_ADMIN,
+            ),
+            content,
+            {
+              parse_mode: "HTML",
+            },
+          )
           .then(() => {
             consola.success(
               `Bot \`send ChatAnywhere key usage\` to target chat success:\n${content}`,

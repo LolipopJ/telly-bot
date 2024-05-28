@@ -73,10 +73,11 @@ new Elysia()
   //#endregion
   //#region Send message to target chat using bot
   .post("/bot/send-message", async ({ body, error }) => {
-    const { content, chatId = Number(process.env.TELEGRAM_CHAT_ID) } = body as {
-      content: string;
-      chatId?: number;
-    };
+    const { content, chatId = Number(process.env.TELEGRAM_CHAT_ID_ADMIN) } =
+      body as {
+        content: string;
+        chatId?: number;
+      };
     if (!content)
       return error(402, "Payment Required: body['content'] is required.");
     if (!chatId)
