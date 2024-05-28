@@ -10,7 +10,7 @@ export default () => {
     !!process.env.TELEGRAM_CHAT_ID_ADMIN
   ) {
     schedule.scheduleJob("0 9,21 * * *", async () => {
-      consola.info(`Querying ChatAnywhere key usage...`);
+      consola.info(`Try to query ChatAnywhere key usage...`);
       const queryBalanceResp = await queryBalance();
 
       if (queryBalanceResp.success) {

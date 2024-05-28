@@ -9,7 +9,7 @@ import { PORT } from "constants/server";
 import connectMongoDB from "databases";
 import { Elysia } from "elysia";
 import type { IAListFileDetails } from "interfaces/alist";
-import "schedules";
+import initSchedules from "schedules";
 import { refreshAListSession } from "services/alist";
 import { getRandomFile } from "services/alist/fs";
 import validateChatAnywhereKey from "services/chatgpt";
@@ -155,3 +155,5 @@ new Elysia()
   .listen(PORT);
 
 consola.box(`Telly bot is running on \`http://127.0.0.1:${String(PORT)}\``);
+
+initSchedules();

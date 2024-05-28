@@ -6,7 +6,7 @@ export const connectMongoDB = async () => {
   if (!instance && !!process.env.MONGO_URI) {
     try {
       consola.info(
-        `Connecting to MongoDB with uri: \`${process.env.MONGO_URI}\`...`,
+        `Try to connect to MongoDB with uri: \`${process.env.MONGO_URI}\`...`,
       );
       instance = await mongoose.connect(process.env.MONGO_URI);
       consola.success("Connect to MongoDB successfully.");

@@ -6,7 +6,7 @@ let session: string | undefined;
 export const refreshAListSession = async () => {
   try {
     consola.info(
-      `Refreshing AList session with user: \`${String(process.env.ALIST_USERNAME)}:${String(process.env.ALIST_PASSWORD)}\`...`,
+      `Try to refresh AList session with user: \`${String(process.env.ALIST_USERNAME)}:${String(process.env.ALIST_PASSWORD)}\`...`,
     );
     const resp = await axios.post<IAListResponse<{ token: string }>>(
       `${String(process.env.ALIST_URL)}/api/auth/login`,

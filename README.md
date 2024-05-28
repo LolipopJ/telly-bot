@@ -109,6 +109,13 @@ Visit `http://127.0.0.1:3300/chatgpt/balance` to view key usage. If `TELEGRAM_CH
 GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
+### Minecraft
+
+```bash
+MINECRAFT_SERVER_HOST=mc.domain.com
+TELEGRAM_CHAT_ID_MINECRAFT_MONITOR=TARGET_CHAT_ID
+```
+
 ## API
 
 ### Telegram bot API

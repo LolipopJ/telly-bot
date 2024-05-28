@@ -1,0 +1,1 @@
+export const IS_MINECRAFT_ENABLED = !!process.env.MINECRAFT_SERVER_HOST;

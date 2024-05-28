@@ -12,7 +12,7 @@ export const connectGithub = async () => {
 
     try {
       consola.info(
-        `Connecting to Github with access token: \`${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}\`...`,
+        `Try to connect to Github with access token: \`${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}\`...`,
       );
       const {
         data: { login },
