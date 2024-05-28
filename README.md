@@ -16,16 +16,6 @@ To install dependencies:
 bun install
 ```
 
-## Build for production
-
-Bundling code can reduce startup times and improve running performance.
-
-To build:
-
-```bash
-bun run build
-```
-
 ## Start service
 
 To start bot service:
@@ -173,8 +163,6 @@ To develop:
 
 ```bash
 bun run start
-# Or in production mode
-bun run start:prod
 ```
 
 To lint files:
