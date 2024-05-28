@@ -14,6 +14,7 @@ export const queryBalance = async () => {
 
   return {
     success: resp.status === 200,
+    message: resp.statusText,
     total: resp.data.balanceTotal,
     used: resp.data.balanceUsed,
   };

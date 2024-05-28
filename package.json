@@ -20,8 +20,10 @@
     "axios": "^1.7.2",
     "consola": "^3.2.3",
     "elysia": "^1.0.22",
+    "mongoose": "^8.4.0",
     "node-schedule": "^2.1.1",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.66.0",
+    "octokit": "^4.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.3.0",

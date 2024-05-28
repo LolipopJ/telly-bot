@@ -1,4 +1,4 @@
-import { consola } from "consola/basic";
+import { consola } from "consola";
 import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import type { IAListFileDetails } from "interfaces/alist";
@@ -10,7 +10,7 @@ import { getUrlFromFilename } from "utils/image";
 
 if (!process.env.TELEGRAM_BOT_TOKEN) {
   throw new Error(
-    "process.env['TELEGRAM_BOT_TOKEN'] is required to connect Telegram bot.",
+    "process.env['TELEGRAM_BOT_TOKEN'] is required to connect to Telegram bot.",
   );
 }
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });

@@ -1,0 +1,1 @@
+export const IS_GITHUB_API_ENABLED = !!process.env.GITHUB_PERSONAL_ACCESS_TOKEN;

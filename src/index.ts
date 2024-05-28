@@ -1,21 +1,59 @@
 import { html } from "@elysiajs/html";
 import bot from "bot";
-import { consola } from "consola/basic";
+import { consola } from "consola";
 import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
+import { IS_GITHUB_API_ENABLED } from "constants/github";
+import { IS_MONGO_ENABLED } from "constants/mongodb";
 import { PORT } from "constants/server";
+import connectMongoDB from "databases";
 import { Elysia } from "elysia";
 import type { IAListFileDetails } from "interfaces/alist";
 import "scheduler";
+import { refreshAListSession } from "services/alist";
 import { getRandomFile } from "services/alist/fs";
+import validateChatAnywhereKey from "services/chatgpt";
 import queryBalance from "services/chatgpt/balance";
 import chat from "services/chatgpt/chat";
+import { connectGithub } from "services/github";
 import { getUrlFromFilename } from "utils/image";
+
+if (IS_MONGO_ENABLED) {
+  await connectMongoDB();
+}
+
+if (IS_ALIST_ENABLED) {
+  await refreshAListSession();
+}
+
+if (IS_CHATGPT_ENABLED) {
+  await validateChatAnywhereKey();
+}
+
+if (IS_GITHUB_API_ENABLED) {
+  await connectGithub();
+}
 
 new Elysia()
   .use(html())
   //#region Pre-check api token for POST methods
   .onBeforeHandle(({ request, headers, error }) => {
+    if (request.url.startsWith("/alist")) {
+      if (!IS_ALIST_ENABLED)
+        return error(
+          503,
+          "Service Unavailable: process.env['ALIST_URL'], process.env['ALIST_USERNAME'] and process.env['ALIST_PASSWORD'] are required.",
+        );
+    }
+
+    if (request.url.startsWith("/chatgpt")) {
+      if (!IS_CHATGPT_ENABLED)
+        return error(
+          503,
+          "Service Unavailable: process.env['CHATGPT_API_KEY'] is required.",
+        );
+    }
+
     if (
       request.method === "POST" &&
       !!process.env.API_SECRET_TOKEN &&
@@ -26,12 +64,12 @@ new Elysia()
   })
   //#endregion
   //#region Query current bot status
-  .get("/bot/status", () => {
-    if (bot.isPolling()) return "Telly bot is running!";
-    return "Telly bot is not running.";
-  })
   .get("/", ({ redirect }) => redirect("/bot/status", 301))
   .get("/bot", ({ redirect }) => redirect("/bot/status", 301))
+  .get("/bot/status", () => {
+    if (bot.isPolling()) return "Telly bot is polling!";
+    return "Telly bot is not polling.";
+  })
   //#endregion
   //#region Send message to target chat using bot
   .post("/bot/send-message", async ({ body, error }) => {
@@ -48,12 +86,6 @@ new Elysia()
   //#endregion
   //#region AList
   .get("/alist*", async ({ params, error }) => {
-    if (!IS_ALIST_ENABLED)
-      return error(
-        503,
-        "Service Unavailable: process.env['ALIST_ADDRESS'], process.env['ALIST_USERNAME'] and process.env['ALIST_PASSWORD'] are required.",
-      );
-
     const route: string = params["*"];
     const routeItem = ALIST_ROUTES.find(
       (availableAListRoute) => availableAListRoute.route === route,
@@ -104,24 +136,12 @@ new Elysia()
   })
   //#endregion
   //#region Query balance of ChatAnywhere key
-  .get("/chatgpt/balance", async ({ error }) => {
-    if (!IS_CHATGPT_ENABLED)
-      return error(
-        503,
-        "Service Unavailable: process.env['CHATGPT_API_KEY'] is required.",
-      );
-
+  .get("/chatgpt/balance", async () => {
     return await queryBalance();
   })
   //#endregion
   //#region Chat with cat girl
   .post("/chatgpt/chat", async ({ body, error }) => {
-    if (!IS_CHATGPT_ENABLED)
-      return error(
-        503,
-        "Service Unavailable: process.env['CHATGPT_API_KEY'] is required.",
-      );
-
     const { content } = body as { content: string };
     if (!content)
       return error(402, "Payment Required: body['content'] is required.");

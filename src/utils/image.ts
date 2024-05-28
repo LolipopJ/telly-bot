@@ -7,5 +7,5 @@ export const getUrlFromFilename = (filename: string) => {
     return `https://www.pixiv.net/artworks/${pixivArtworkId}`;
   }
 
-  return null;
+  return undefined;
 };

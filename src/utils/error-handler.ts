@@ -1,5 +1,5 @@
 import bot from "bot";
-import { consola } from "consola/basic";
+import { consola } from "consola";
 
 export const baseErrorHandler = (
   title = "Something went wrong :(",

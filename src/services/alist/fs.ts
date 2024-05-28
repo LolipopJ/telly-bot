@@ -3,7 +3,7 @@ import type {
   IAListFile,
   IAListFileDetails,
 } from "interfaces/alist";
-import { getAlistSession } from "utils/alist";
+import getAListSession from "services/alist";
 import axios from "utils/axios";
 import { genRandomNumber } from "utils/math";
 
@@ -23,8 +23,8 @@ export const listFiles = async (options: {
       write: boolean;
       provider: string;
     }>
-  >(`${String(process.env.ALIST_ADDRESS)}/api/fs/list`, options, {
-    headers: { Authorization: getAlistSession() },
+  >(`${String(process.env.ALIST_URL)}/api/fs/list`, options, {
+    headers: { Authorization: getAListSession() },
   });
 
   return resp.data;
@@ -36,10 +36,10 @@ export const getFileDetails = async (options: {
   refresh?: boolean;
 }) => {
   const resp = await axios.post<IAListResponse<IAListFileDetails>>(
-    `${String(process.env.ALIST_ADDRESS)}/api/fs/get`,
+    `${String(process.env.ALIST_URL)}/api/fs/get`,
     options,
     {
-      headers: { Authorization: getAlistSession() },
+      headers: { Authorization: getAListSession() },
     },
   );
 
