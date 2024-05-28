@@ -1,4 +1,5 @@
 import consola from "consola";
+import { USER_AGENT } from "constants/server";
 import { Octokit } from "octokit";
 
 let instance: Octokit | undefined;
@@ -6,6 +7,7 @@ export const connectGithub = async () => {
   if (!instance && !!process.env.GITHUB_PERSONAL_ACCESS_TOKEN) {
     const octokit = new Octokit({
       auth: process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
+      userAgent: USER_AGENT,
     });
 
     try {

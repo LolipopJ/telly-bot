@@ -1,6 +1,7 @@
 import { consola } from "consola";
 import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
+import { USER_AGENT } from "constants/server";
 import type { IAListFileDetails } from "interfaces/alist";
 import TelegramBot from "node-telegram-bot-api";
 import { getRandomFile } from "services/alist/fs";
@@ -13,7 +14,10 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
     "process.env['TELEGRAM_BOT_TOKEN'] is required to connect to Telegram bot.",
   );
 }
-const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, {
+  polling: true,
+  request: { uri: "", headers: { "User-Agent": USER_AGENT } },
+});
 
 bot.on("message", (msg) => {
   const { message_id, chat, from, text, date } = msg;
