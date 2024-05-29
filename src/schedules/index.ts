@@ -1,3 +1,4 @@
+import refreshRoutesPath from "./alist/refresh-routes-path";
 import refreshSession from "./alist/refresh-session";
 import queryBalance from "./chatgpt/query-balance";
 import monitorMinecraftServer from "./minecraft/monitor";
@@ -9,6 +10,7 @@ import { IS_MINECRAFT_ENABLED } from "constants/minecraft";
 export default () => {
   if (IS_ALIST_ENABLED) {
     refreshSession();
+    refreshRoutesPath();
   }
 
   if (IS_CHATGPT_ENABLED) {
