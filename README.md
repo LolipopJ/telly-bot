@@ -76,6 +76,8 @@ ALIST_ROUTES=[{"route":"/random-img","path":"/path/to/img-dir","type":"random-im
 
 When visit `http://127.0.0.1:3300/alist/random-img` or send `/random_img` to bot, you will get a random image from the `/path/to/img-dir` directory in AList.
 
+Notes: If directory `/path/to/img-dir` has too many files, the first request in a certain time interval may failed. This is due to AList's file cache mechanism (default to 30 minutes, can be configured on the AList management page), please wait a few seconds and try again.
+
 ### ChatGPT
 
 Adapt to [ChatAnywhere](https://github.com/chatanywhere/GPT_API_free).
@@ -89,7 +91,11 @@ CHATGPT_API_KEY=YOUR_CHATGPT_API_KEY
 TELEGRAM_CHAT_ID_CHATGPT_BALANCE=TARGET_CHAT_ID
 ```
 
-Send `/chat ${message}` to chat with a cat girl!
+Send `/chat ${message}` to play with a cat girl! You can also:
+
+- `/chat_cat_girl ${message}`: Same to `/chat ${message}`.
+- `/chat_dan ${message}`: Chat with an unlimited AI agent named Dan.
+- `/chat_poet ${message}`: Talk with a poet who writes impressive words.
 
 Visit `http://127.0.0.1:3300/chatgpt/balance` to view key usage. If `TELEGRAM_CHAT_ID_CHATGPT_BALANCE` (higher priority) or `TELEGRAM_CHAT_ID_ADMIN` is set, key usage will also be forwarded to target chat every 9 AM and 9 PM.
 
@@ -101,8 +107,10 @@ GITHUB_PERSONAL_ACCESS_TOKEN=YOUR_GITHUB_PERSONAL_ACCESS_TOKEN
 
 ### Minecraft
 
+Based on [Minecraft Server Status](https://mcstatus.io/).
+
 ```bash
-MINECRAFT_SERVER_HOST=mc.domain.com
+MINECRAFT_SERVER_HOST=example.domain.com
 TELEGRAM_CHAT_ID_MINECRAFT_MONITOR=TARGET_CHAT_ID
 ```
 

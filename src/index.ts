@@ -9,6 +9,7 @@ import { PORT } from "constants/server";
 import connectMongoDB from "databases";
 import { Elysia } from "elysia";
 import type { IAListFileDetails } from "interfaces/alist";
+import type { IChatType } from "interfaces/chatgpt";
 import initSchedules from "schedules";
 import { refreshAListSession } from "services/alist";
 import { getRandomFile } from "services/alist/fs";
@@ -141,12 +142,12 @@ new Elysia()
     return await queryBalance();
   })
   //#endregion
-  //#region Chat with cat girl
+  //#region Chat with a cat girl and more
   .post("/chatgpt/chat", async ({ body, error }) => {
-    const { content } = body as { content: string };
+    const { content, type } = body as { content: string; type?: IChatType };
     if (!content)
       return error(402, "Payment Required: body['content'] is required.");
-    return await chat(0, content);
+    return await chat(0, content, type);
   })
   //#endregion
   .onError(({ code }) => {

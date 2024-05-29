@@ -1,3 +1,9 @@
+export enum IChatType {
+  DEFAULT = "default",
+  CAT_GIRL = "cat-girl",
+  POET = "poet",
+}
+
 export interface IChatMessage {
   role: "system" | "user" | "assistant";
   content: string;

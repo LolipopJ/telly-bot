@@ -3,6 +3,7 @@ import { ALIST_ROUTES, IS_ALIST_ENABLED } from "constants/alist";
 import { IS_CHATGPT_ENABLED } from "constants/chatgpt";
 import { USER_AGENT } from "constants/server";
 import type { IAListFileDetails } from "interfaces/alist";
+import { IChatType } from "interfaces/chatgpt";
 import TelegramBot from "node-telegram-bot-api";
 import { getRandomFile } from "services/alist/fs";
 import chat from "services/chatgpt/chat";
@@ -180,18 +181,43 @@ ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
 }
 
 if (IS_CHATGPT_ENABLED) {
-  bot.onText(/\/chat(.*)/, (msg, match) => {
+  bot.onText(/\/chat(_.*)? (.*)/, (msg, match) => {
     const chatId = msg.chat.id;
     const { text, message_id } = msg;
-    const message = match?.[1].trim();
+    const chatType = (match?.[1] ?? "").toLowerCase();
+    const message = match?.[2].trim() ?? "";
 
-    chat(chatId, message ? message : "陪我随便聊聊吧")
+    let type: IChatType | undefined;
+    switch (chatType) {
+      case "_dan":
+      case "_default":
+        type = IChatType.DEFAULT;
+        break;
+      case "_poet":
+      case "_shiren":
+        type = IChatType.POET;
+        break;
+      case "_cat-girl":
+      case "_cat_girl":
+      case "_catgirl":
+      case "_maoniang":
+      case "_猫娘":
+      default:
+        type = IChatType.CAT_GIRL;
+    }
+
+    chat(chatId, message ? message : "Talk with me casually", type)
       .then((resp) => {
         bot
           .sendMessage(chatId, resp, { reply_to_message_id: message_id })
           .then(() => {
             consola.success(
-              `Bot \`chat\` with ${String(chatId)} successfully.`,
+              `Bot \`chat\` with ${String(chatId)} successfully.
+Sended Message:
+${message}
+
+Response (${type}):
+${resp}`,
             );
           })
           .catch((err: unknown) => {
