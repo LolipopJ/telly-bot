@@ -84,7 +84,7 @@ if (IS_ALIST_ENABLED) {
     const { route, type: routeType, path: routePath } = routeItem;
 
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    bot.onText(new RegExp(route.replaceAll("-", "_")), async (msg) => {
+    bot.onText(new RegExp(`^${route.replaceAll("-", "_")}$`), async (msg) => {
       const chatId = msg.chat.id;
       const { text, message_id } = msg;
 
@@ -124,6 +124,9 @@ if (IS_ALIST_ENABLED) {
 <b>File size: </b>${String(randomFileSize)} MB
 ${randomFileUrl ? `<a href="${randomFileUrl}">source</a>` : ""}`.trim();
 
+        consola.info(
+          `Bot try to \`send ${randomFilename}\` to ${String(chatId)}...`,
+        );
         if (randomFileSize <= 10) {
           // randomFileSize <= 10 MB, use `sendPhoto()`
           bot
