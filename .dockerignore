@@ -1,0 +1,12 @@
+node_modules
+.dockerignore
+.editorconfig
+.git
+.gitattributes
+.gitignore
+.prettierrc.json
+Dockerfile*
+docker-compose*
+eslint.config.js
+LICENSE
+README.md
