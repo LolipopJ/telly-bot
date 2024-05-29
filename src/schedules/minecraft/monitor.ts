@@ -25,9 +25,7 @@ export default () => {
         const respData = resp.data;
         const { list: currentPlayers, online, max } = respData.players;
 
-        const currentPlayersString = currentPlayers.length
-          ? `Current players (${String(online)} / ${String(max)}): ${currentPlayers.map((player) => player.name_clean).join(", ")}`
-          : "No player online. Tender green grass makes the rain fragrant.";
+        const currentPlayersString = `Current players (${String(online)} / ${String(max)}): \`${currentPlayers.map((player) => player.name_clean).join(", ")}\``;
 
         consola.success(
           `Query status of Minecraft server successfully. ${currentPlayersString}`,
@@ -45,14 +43,14 @@ export default () => {
 
         if (newPlayers.length || leavedPlayers.length) {
           const content =
-            `<strong>Minecraft monitoring: ${respData.host}</strong>\n\n` +
+            `<b>Minecraft monitoring: ${respData.host}</b>\n\n` +
             (newPlayers.length
               ? `${newPlayers.map((player) => player.name_clean).join(", ")} joined the server.\n\n`
               : "") +
             (leavedPlayers.length
               ? `${leavedPlayers.map((player) => player.name_clean).join(", ")} left the server.\n\n`
               : "") +
-            `<i>${currentPlayersString}</i>`;
+            `<i>${currentPlayers.length ? currentPlayersString : "No player online. Tender green grass makes the rain fragrant."}</i>`;
 
           bot
             .sendMessage(

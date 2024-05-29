@@ -33,13 +33,11 @@ bot.on("message", (msg) => {
   const dateTime = date * 1000;
 
   consola.info(
-    `Bot received a message:
-${String(text)}
-
+    `Bot received a message: \`${String(text)}\`
 From:
-  username: ${username} (${userFirstName} ${userLastName})
-  userId: ${String(userId)}
-  chatId: ${String(chatId)}
+  username: \`${username} (${userFirstName} ${userLastName})\`
+  userId: \`${String(userId)}\`
+  chatId: \`${String(chatId)}\`
   messageId: ${String(message_id)}
   isBot: ${String(is_bot)}
   date: ${new Date(dateTime).toLocaleString()}`,

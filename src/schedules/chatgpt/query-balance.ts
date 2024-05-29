@@ -14,10 +14,10 @@ export default () => {
       const queryBalanceResp = await queryBalance();
 
       if (queryBalanceResp.success) {
-        const content = `<strong>ChatAnywhere key Usage</strong>
+        const content = `<b>ChatAnywhere key Usage</b>
 Total: ${String(queryBalanceResp.total)} CA
 Used: ${String(queryBalanceResp.used)} CA
-Remaining: ${String(queryBalanceResp.total - queryBalanceResp.used)} CA`;
+Remaining: <b>${String(queryBalanceResp.total - queryBalanceResp.used)} CA</b>`;
 
         bot
           .sendMessage(

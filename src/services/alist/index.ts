@@ -18,7 +18,7 @@ export const refreshAListSession = async () => {
     session = resp.data.data?.token;
     consola.success(`Refresh AList session successfully.`);
   } catch (err: unknown) {
-    throw new Error(`Refresh AList session failed:\n${String(err)}`);
+    throw new Error(`Refresh AList session failed: ${String(err)}`);
   }
 };
 

@@ -10,7 +10,7 @@ export const validateChatAnywhereKey = async () => {
     throw new Error(`Connect to ChatAnywhere failed: ${resp.message}`);
   }
   consola.success(
-    `Connect to ChatAnywhere successfully. CA coin remaining: ${String(resp.total - resp.used)}`,
+    `Connect to ChatAnywhere successfully. CA coin remaining: \`${String(resp.total - resp.used)}\``,
   );
 };
 

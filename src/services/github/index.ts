@@ -18,9 +18,9 @@ export const connectGithub = async () => {
         data: { login },
       } = await octokit.rest.users.getAuthenticated();
       instance = octokit;
-      consola.success(`Connect to Github successfully. Hello, ${login}`);
+      consola.success(`Connect to Github successfully. Hello, \`${login}\``);
     } catch (err: unknown) {
-      throw new Error(`Connect to Github failed:\n${String(err)}`);
+      throw new Error(`Connect to Github failed: ${String(err)}`);
     }
   }
 
