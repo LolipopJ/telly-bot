@@ -13,7 +13,7 @@ export default () => {
       !!process.env.TELEGRAM_CHAT_ID_ADMIN) &&
     !!process.env.MINECRAFT_SERVER_HOST
   ) {
-    const job = schedule.scheduleJob("*/1 * * * *", async () => {
+    schedule.scheduleJob("*/1 * * * *", async () => {
       consola.info(
         `Try to query status of Minecraft server \`${String(process.env.MINECRAFT_SERVER_HOST)}\`...`,
       );
@@ -25,8 +25,12 @@ export default () => {
         const respData = resp.data;
         const { list: currentPlayers, online, max } = respData.players;
 
+        const currentPlayersString = currentPlayers.length
+          ? `Current players (${String(online)} / ${String(max)}): ${currentPlayers.map((player) => player.name_clean).join(", ")}`
+          : "No player online. Tender green grass makes the rain fragrant.";
+
         consola.success(
-          `Query status of Minecraft server successfully. Current players (${String(online)} / ${String(max)}): ${currentPlayers.map((player) => player.name_clean).join(", ")}`,
+          `Query status of Minecraft server successfully. ${currentPlayersString}`,
         );
 
         if (!prevPlayers) {
@@ -48,7 +52,7 @@ export default () => {
             (leavedPlayers.length
               ? `${leavedPlayers.map((player) => player.name_clean).join(", ")} left the server.\n\n`
               : "") +
-            `<i>Current players (${String(online)} / ${String(max)}): ${currentPlayers.map((player) => player.name_clean).join(", ")}</i>`;
+            `<i>${currentPlayersString}</i>`;
 
           bot
             .sendMessage(
@@ -79,7 +83,5 @@ export default () => {
         );
       }
     });
-
-    job.invoke();
   }
 };
