@@ -6,6 +6,7 @@ import schedule from "node-schedule";
 import queryMinecraftServerStatus from "services/minecraft/status";
 import { baseErrorHandler } from "utils/error-handler";
 
+let prevOnline: boolean | undefined;
 let prevPlayers: IMinecraftServerPlayer[] | undefined;
 export default () => {
   if (
@@ -13,7 +14,7 @@ export default () => {
       !!process.env.TELEGRAM_CHAT_ID_ADMIN) &&
     !!process.env.MINECRAFT_SERVER_HOST
   ) {
-    schedule.scheduleJob("*/1 * * * *", async () => {
+    const job = schedule.scheduleJob("*/1 * * * *", async () => {
       consola.info(
         `Try to query status of Minecraft server \`${String(process.env.MINECRAFT_SERVER_HOST)}\`...`,
       );
@@ -23,49 +24,68 @@ export default () => {
 
       if (resp.status === 200) {
         const respData = resp.data;
-        const { list: currentPlayers, online, max } = respData.players;
+        const { online: currentOnline, players } = respData;
+        const {
+          list: currentPlayers,
+          online: onlinePlayersNum,
+          max: maxPlayersNum,
+        } = players;
 
-        const currentPlayersString = `Current players (${String(online)} / ${String(max)}): \`${currentPlayers.map((player) => player.name_clean).join(", ")}\``;
+        const currentPlayersString = `Current players (${String(onlinePlayersNum)} / ${String(maxPlayersNum)}): \`${currentPlayers.map((player) => player.name_clean).join(", ")}\``;
 
         consola.success(
           `Query status of Minecraft server successfully. ${currentPlayersString}`,
         );
 
-        if (!prevPlayers) {
+        if (prevOnline === undefined || prevPlayers === undefined) {
+          prevOnline = currentOnline;
           prevPlayers = currentPlayers;
           return;
         }
 
+        const sendMessages: string[] = [];
+        const messageTitle = `<b>Minecraft monitoring: ${respData.host}</b>\n\n`;
+
+        const isOnlineStatusChanged = prevOnline !== currentOnline;
+        if (isOnlineStatusChanged) {
+          sendMessages.push(
+            messageTitle +
+              (currentOnline ? "Server is started." : "Server is shut down."),
+          );
+        }
+        prevOnline = currentOnline;
+
         const newPlayers = differenceBy(currentPlayers, prevPlayers, "uuid");
         const leavedPlayers = differenceBy(prevPlayers, currentPlayers, "uuid");
-
+        if (newPlayers.length || leavedPlayers.length) {
+          sendMessages.push(
+            messageTitle +
+              (newPlayers.length
+                ? `${newPlayers.map((player) => player.name_clean).join(", ")} joined the server.\n\n`
+                : "") +
+              (leavedPlayers.length
+                ? `${leavedPlayers.map((player) => player.name_clean).join(", ")} left the server.\n\n`
+                : "") +
+              `<i>${onlinePlayersNum ? currentPlayersString : "No player online. Tender green grass makes the rain fragrant."}</i>`,
+          );
+        }
         prevPlayers = currentPlayers;
 
-        if (newPlayers.length || leavedPlayers.length) {
-          const content =
-            `<b>Minecraft monitoring: ${respData.host}</b>\n\n` +
-            (newPlayers.length
-              ? `${newPlayers.map((player) => player.name_clean).join(", ")} joined the server.\n\n`
-              : "") +
-            (leavedPlayers.length
-              ? `${leavedPlayers.map((player) => player.name_clean).join(", ")} left the server.\n\n`
-              : "") +
-            `<i>${currentPlayers.length ? currentPlayersString : "No player online. Tender green grass makes the rain fragrant."}</i>`;
-
+        sendMessages.forEach((message) => {
           bot
             .sendMessage(
               Number(
                 process.env.TELEGRAM_CHAT_ID_MINECRAFT_MONITOR ??
                   process.env.TELEGRAM_CHAT_ID_ADMIN,
               ),
-              content,
+              message,
               {
                 parse_mode: "HTML",
               },
             )
             .then(() => {
               consola.success(
-                `Bot \`send Minecraft server monitoring\` to target chat success:\n${content}`,
+                `Bot \`send Minecraft server monitoring\` to target chat success:\n${message}`,
               );
             })
             .catch((error: unknown) => {
@@ -74,12 +94,14 @@ export default () => {
                 error,
               );
             });
-        }
+        });
       } else {
         consola.warn(
           `Query status of Minecraft server failed: ${resp.statusText}`,
         );
       }
     });
+
+    job.invoke();
   }
 };
