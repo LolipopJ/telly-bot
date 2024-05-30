@@ -1,6 +1,6 @@
 # telly-bot
 
-## Requirements
+## Start service
 
 This project based on [Bun](https://bun.sh), which needs to be installed globally:
 
@@ -8,20 +8,30 @@ This project based on [Bun](https://bun.sh), which needs to be installed globall
 npm install -g bun
 ```
 
-## Install dependencies
-
 To install dependencies:
 
 ```bash
 bun install
 ```
 
-## Start service
-
 To start bot service:
 
 ```bash
 bun run server
+```
+
+## Start service with Docker
+
+Build Docker image:
+
+```bash
+docker build --pull -t telly-bot:latest .
+```
+
+Use the image to spin up a container:
+
+```bash
+docker run -d -p 3300:3300 --name telly-bot telly-bot:latest
 ```
 
 ## Configurations
