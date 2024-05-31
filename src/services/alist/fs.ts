@@ -50,52 +50,57 @@ export const getRandomFile = async (options: {
   path: string;
   password?: string;
 }) => {
-  const listFilesResp = await listFiles({
-    ...options,
-    page: 1,
-    per_page: 1,
-    refresh: false,
-  });
-
-  if (listFilesResp.code === 200 && !!listFilesResp.data) {
-    const total = listFilesResp.data.total;
-    const randomNumber = genRandomNumber(1, total);
-
-    const listRandomFileResp = await listFiles({
+  try {
+    const listFilesResp = await listFiles({
       ...options,
-      page: randomNumber,
+      page: 1,
       per_page: 1,
       refresh: false,
     });
+    if (listFilesResp.code === 200 && !!listFilesResp.data) {
+      const total = listFilesResp.data.total;
+      const randomNumber = genRandomNumber(1, total);
 
-    if (listRandomFileResp.code === 200 && !!listRandomFileResp.data) {
-      const filename = listRandomFileResp.data.content[0].name;
-      const filePath = `${options.path}/${filename}`;
+      try {
+        const listRandomFileResp = await listFiles({
+          ...options,
+          page: randomNumber,
+          per_page: 1,
+          refresh: false,
+        });
 
-      const getFileDetailsResp = await getFileDetails({
-        ...options,
-        path: filePath,
-        refresh: false,
-      });
+        if (listRandomFileResp.code === 200 && !!listRandomFileResp.data) {
+          const filename = listRandomFileResp.data.content[0].name;
+          const filePath = `${options.path}/${filename}`;
 
-      if (getFileDetailsResp.code === 200 && !!getFileDetailsResp.data) {
-        return getFileDetailsResp.data;
-      } else {
+          try {
+            const getFileDetailsResp = await getFileDetails({
+              ...options,
+              path: filePath,
+              refresh: false,
+            });
+
+            if (getFileDetailsResp.code === 200 && !!getFileDetailsResp.data) {
+              return getFileDetailsResp.data;
+            }
+          } catch (error: unknown) {
+            throw new Error(
+              "Get random file from AList failed:" +
+                `Get file \`${filePath}\` details failed.\n${String(error)}`,
+            );
+          }
+        }
+      } catch (error: unknown) {
         throw new Error(
           "Get random file from AList failed:" +
-            `Get file \`${filePath}\` details failed.\n${JSON.stringify(getFileDetailsResp)}`,
+            `Get basic info of random file \`${options.path}[#${String(randomNumber)}]\` failed.\n${String(error)}`,
         );
       }
-    } else {
-      throw new Error(
-        "Get random file from AList failed:" +
-          `Get basic info of random file \`${options.path}[#${String(randomNumber)}]\` failed.\n${JSON.stringify(listRandomFileResp)}`,
-      );
     }
-  } else {
+  } catch (error: unknown) {
     throw new Error(
       "Get random file from AList failed:" +
-        `List file list in \`${options.path}\` failed.\n${JSON.stringify(listFilesResp)}`,
+        `List file list in \`${options.path}\` failed.\n${String(error)}`,
     );
   }
 };

@@ -108,7 +108,9 @@ new Elysia()
           !(randomFile && ["jpg", "jpeg", "png"].includes(randomFileType))
         ) {
           randomFile = await getRandomFile({ path: routePath });
-          randomFileType = randomFile.name.split(".").pop() ?? "";
+          if (randomFile) {
+            randomFileType = randomFile.name.split(".").pop() ?? "";
+          }
         }
       } catch (err: unknown) {
         return error(500, `Internal Server Error: ${String(err)}`);

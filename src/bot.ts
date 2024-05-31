@@ -101,10 +101,12 @@ if (IS_ALIST_ENABLED) {
             )
           ) {
             randomFile = await getRandomFile({ path: routePath });
-            randomFileType = randomFile.name.split(".").pop() ?? "";
-            randomFileSize = Number(
-              (randomFile.size / 1024 / 1024).toFixed(2), // Bytes to MB
-            );
+            if (randomFile) {
+              randomFileType = randomFile.name.split(".").pop() ?? "";
+              randomFileSize = Number(
+                (randomFile.size / 1024 / 1024).toFixed(2), // Bytes to MB
+              );
+            }
           }
         } catch (err: unknown) {
           replyMessageErrorHandler(chatId, message_id, text, err);
