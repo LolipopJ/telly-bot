@@ -6,7 +6,7 @@ import schedule from "node-schedule";
 import queryMinecraftServerStatus from "services/minecraft/status";
 import { baseErrorHandler } from "utils/error-handler";
 
-let prevOnline: boolean | undefined;
+let prevIsOnline: boolean | undefined;
 let prevPlayers: IMinecraftServerPlayer[] | undefined;
 export default () => {
   if (
@@ -25,12 +25,9 @@ export default () => {
 
         if (resp.status === 200) {
           const respData = resp.data;
-          const { online: currentOnline, players } = respData;
-          const {
-            list: currentPlayers,
-            online: onlinePlayersNum,
-            max: maxPlayersNum,
-          } = players;
+          const { online: currentIsOnline, players } = respData;
+          const { list: currentPlayers, max: maxPlayersNum } = players;
+          const onlinePlayersNum = currentPlayers.length;
 
           const currentPlayersString = `Current players (${String(onlinePlayersNum)} / ${String(maxPlayersNum)}): \`${currentPlayers.map((player) => player.name_clean).join(", ")}\``;
 
@@ -38,8 +35,8 @@ export default () => {
             `Query status of Minecraft server successfully. ${currentPlayersString}`,
           );
 
-          if (prevOnline === undefined || prevPlayers === undefined) {
-            prevOnline = currentOnline;
+          if (prevIsOnline === undefined || prevPlayers === undefined) {
+            prevIsOnline = currentIsOnline;
             prevPlayers = currentPlayers;
             return;
           }
@@ -47,14 +44,16 @@ export default () => {
           const sendMessages: string[] = [];
           const messageTitle = `<b>Minecraft monitoring: ${respData.host}</b>\n\n`;
 
-          const isOnlineStatusChanged = prevOnline !== currentOnline;
+          const isOnlineStatusChanged = prevIsOnline !== currentIsOnline;
           if (isOnlineStatusChanged) {
             sendMessages.push(
               messageTitle +
-                (currentOnline ? "Server is started." : "Server is shut down."),
+                (currentIsOnline
+                  ? "Server is started."
+                  : "Server is shut down."),
             );
           }
-          prevOnline = currentOnline;
+          prevIsOnline = currentIsOnline;
 
           const newPlayers = differenceBy(currentPlayers, prevPlayers, "uuid");
           const leavedPlayers = differenceBy(

@@ -1,4 +1,5 @@
 export interface IMinecraftServerStatus {
+  /** Server online status */
   online: boolean;
   host: string;
   port: number;
@@ -14,6 +15,7 @@ export interface IMinecraftServerStatus {
     protocol: number;
   };
   players: {
+    /** Number of online players */
     online: number;
     max: number;
     list: IMinecraftServerPlayer[];
