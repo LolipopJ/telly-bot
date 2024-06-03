@@ -64,12 +64,16 @@ new Elysia()
     }
   })
   //#endregion
-  //#region Query current bot status
-  .get("/", ({ redirect }) => redirect("/bot/status", 301))
-  .get("/bot", ({ redirect }) => redirect("/bot/status", 301))
-  .get("/bot/status", () => {
-    if (bot.isPolling()) return "Telly bot is polling!";
-    return "Telly bot is not polling.";
+  //#region Query current service status
+  .get("/", ({ redirect }) => redirect("/status", 301))
+  .get("/status", () => {
+    return "online";
+  })
+  //#endregion
+  //#region Get current service status badge
+  .get("/badge", ({ redirect }) => redirect("/badge/status", 301))
+  .get("/badge/status", () => {
+    return "https://img.shields.io/badge/service-online-0F766E.svg";
   })
   //#endregion
   //#region Send message to target chat using bot
