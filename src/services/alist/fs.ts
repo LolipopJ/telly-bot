@@ -55,7 +55,6 @@ export const getRandomFile = async (options: {
       ...options,
       page: 1,
       per_page: 1,
-      refresh: false,
     });
     if (listFilesResp.code === 200 && !!listFilesResp.data) {
       const total = listFilesResp.data.total;
@@ -66,7 +65,6 @@ export const getRandomFile = async (options: {
           ...options,
           page: randomNumber,
           per_page: 1,
-          refresh: false,
         });
 
         if (listRandomFileResp.code === 200 && !!listRandomFileResp.data) {
@@ -77,7 +75,6 @@ export const getRandomFile = async (options: {
             const getFileDetailsResp = await getFileDetails({
               ...options,
               path: filePath,
-              refresh: false,
             });
 
             if (getFileDetailsResp.code === 200 && !!getFileDetailsResp.data) {

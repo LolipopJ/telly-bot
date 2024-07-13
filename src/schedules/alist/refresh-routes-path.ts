@@ -9,7 +9,8 @@ export default () => {
       (path) => !!path,
     );
     alistRoutePaths.forEach((path) => {
-      listFiles({ path, page: 1, per_page: 1, refresh: true })
+      consola.info(`Start to refresh AList path \`${path}\``);
+      listFiles({ path, page: 1, per_page: 1 })
         .then(() => {
           consola.success(`Refresh AList path \`${path}\` successfully.`);
         })
@@ -19,7 +20,6 @@ export default () => {
 This may be caused by a service exception or the path contains too many files.`,
           );
         });
-      consola.info(`Start to refresh AList path \`${path}\``);
     });
   });
 
