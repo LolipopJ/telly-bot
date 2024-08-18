@@ -183,15 +183,11 @@ To develop:
 bun run start
 ```
 
-To lint files:
+To lint files and fix code syntax:
 
 ```bash
 # Require a Node.js >=20.11.0 to get typing check
-bun run eslint
-```
-
-To fix code syntax:
-
-```bash
-bun run prettier
+bun run lint
+# Auto fix
+bun run lint:fix
 ```
