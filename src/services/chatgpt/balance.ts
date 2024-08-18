@@ -4,7 +4,7 @@ import axios from "utils/axios";
 export const queryBalance = async () => {
   try {
     const resp = await axios.post<ICAKeyBalance>(
-      "https://api.chatanywhere.org/v1/query/balance",
+      "https://api.chatanywhere.tech/v1/query/balance",
       null,
       {
         headers: {
