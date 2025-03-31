@@ -1,7 +1,16 @@
 export enum IChatType {
   DEFAULT = "default",
   CAT_GIRL = "cat-girl",
+  NEKO = "neko",
+  SUCCUBUS = "succubus",
+  LUNA = "luna",
+  SEXY_GIRLFRIEND = "sexy-girlfriend",
   POET = "poet",
+  TRANSLATOR_TO_ZH = "translator-to-zh",
+  INTIMATE_SISTER = "intimate-sister",
+  PSYCHOLOGIST = "psychologist",
+  PROMPT_GENERATOR = "prompt-generator",
+  MADMAN = "madman",
 }
 
 export interface IChatMessage {

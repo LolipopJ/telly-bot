@@ -15,7 +15,7 @@ const tempMessages: Record<number, Record<IChatType, IChatMessage[]>> = {};
 export const chat = async (
   chatId: number,
   content: string,
-  type = IChatType.CAT_GIRL,
+  type = IChatType.DEFAULT,
 ) => {
   if (typeof tempMessages[chatId] !== "object") {
     // @ts-expect-error: initialize temp messages with empty object

@@ -192,21 +192,77 @@ if (IS_CHATGPT_ENABLED) {
 
     let type: IChatType | undefined;
     switch (chatType) {
-      case "_dan":
-      case "_default":
-        type = IChatType.DEFAULT;
-        break;
-      case "_poet":
-      case "_shiren":
-        type = IChatType.POET;
-        break;
       case "_cat-girl":
       case "_cat_girl":
       case "_catgirl":
       case "_maoniang":
       case "_猫娘":
-      default:
+      case "_猫娘1":
         type = IChatType.CAT_GIRL;
+        break;
+      case "_neko":
+      case "_nekopara":
+      case "_猫猫":
+      case "_猫娘2":
+        type = IChatType.NEKO;
+        break;
+      case "_succubus":
+      case "_魅魔":
+        type = IChatType.SUCCUBUS;
+        break;
+      case "_luna":
+      case "_露娜":
+      case "_红颜":
+      case "_红颜知己":
+      case "_红尘知己":
+        type = IChatType.LUNA;
+        break;
+      case "_sexy_girlfriend":
+      case "_sexy_girl_friend":
+      case "_girlfriend":
+      case "_girl_friend":
+      case "_女友":
+      case "_女朋友":
+        type = IChatType.SEXY_GIRLFRIEND;
+        break;
+      case "_poet":
+      case "_shiren":
+      case "_诗人":
+        type = IChatType.POET;
+        break;
+      case "_translator_to_zh":
+      case "_translator":
+      case "_翻译":
+      case "_中文翻译":
+        type = IChatType.TRANSLATOR_TO_ZH;
+        break;
+      case "_intimate_sister":
+      case "_sister":
+      case "_姐姐":
+      case "_大姐姐":
+      case "_知心姐姐":
+      case "_邻家姐姐":
+        type = IChatType.INTIMATE_SISTER;
+        break;
+      case "_psychologist":
+      case "_心理医生":
+        type = IChatType.PSYCHOLOGIST;
+        break;
+      case "_prompt_generator":
+      case "_prompt":
+      case "_提示词":
+      case "_提示词生成器":
+        type = IChatType.PROMPT_GENERATOR;
+        break;
+      case "_madman":
+      case "_mad":
+      case "_疯子":
+        type = IChatType.MADMAN;
+        break;
+      case "_dan":
+      case "_default":
+      default:
+        type = IChatType.DEFAULT;
     }
 
     chat(chatId, message ? message : "Talk with me casually", type)
