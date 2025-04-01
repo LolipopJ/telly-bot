@@ -1,5 +1,6 @@
 export enum IChatType {
   DEFAULT = "default",
+  DAN = "dan",
   CAT_GIRL = "cat-girl",
   NEKO = "neko",
   SUCCUBUS = "succubus",
@@ -11,6 +12,10 @@ export enum IChatType {
   PSYCHOLOGIST = "psychologist",
   PROMPT_GENERATOR = "prompt-generator",
   MADMAN = "madman",
+  DRUNK = "drunk",
+  SOCRATES = "socrates",
+  RED_BOOK = "red-book",
+  SELFISH = "selfish",
 }
 
 export interface IChatMessage {

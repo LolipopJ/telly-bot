@@ -195,14 +195,12 @@ if (IS_CHATGPT_ENABLED) {
       case "_cat-girl":
       case "_cat_girl":
       case "_catgirl":
-      case "_maoniang":
       case "_猫娘":
       case "_猫娘1":
         type = IChatType.CAT_GIRL;
         break;
       case "_neko":
       case "_nekopara":
-      case "_猫猫":
       case "_猫娘2":
         type = IChatType.NEKO;
         break;
@@ -221,12 +219,12 @@ if (IS_CHATGPT_ENABLED) {
       case "_sexy_girl_friend":
       case "_girlfriend":
       case "_girl_friend":
+      case "_gf":
       case "_女友":
       case "_女朋友":
         type = IChatType.SEXY_GIRLFRIEND;
         break;
       case "_poet":
-      case "_shiren":
       case "_诗人":
         type = IChatType.POET;
         break;
@@ -256,10 +254,33 @@ if (IS_CHATGPT_ENABLED) {
         break;
       case "_madman":
       case "_mad":
+      case "_crazy":
       case "_疯子":
         type = IChatType.MADMAN;
         break;
+      case "_drunk":
+      case "_醉汉":
+      case "_醉鬼":
+        type = IChatType.DRUNK;
+        break;
+      case "_socrates":
+      case "_苏格拉底":
+        type = IChatType.SOCRATES;
+        break;
+      case "_redbook":
+      case "_red_book":
+      case "_小红书":
+        type = IChatType.RED_BOOK;
+        break;
+      case "_selfish":
+      case "_自私":
+      case "_自私鬼":
+      case "_自私基因":
+        type = IChatType.SELFISH;
+        break;
       case "_dan":
+        type = IChatType.DAN;
+        break;
       case "_default":
       default:
         type = IChatType.DEFAULT;
