@@ -15,8 +15,13 @@ export const refreshAListSession = async () => {
         password: String(process.env.ALIST_PASSWORD),
       },
     );
-    session = resp.data.data?.token;
-    consola.success(`Refresh AList session successfully.`);
+    const token = resp.data.data?.token;
+    if (!token) throw new Error(resp.data.message);
+
+    session = token;
+    consola.success(
+      `Refresh AList session successfully. Session token: ${token}`,
+    );
   } catch (err: unknown) {
     throw new Error(`Refresh AList session failed: ${String(err)}`);
   }
