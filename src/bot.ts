@@ -192,6 +192,9 @@ if (IS_CHATGPT_ENABLED) {
 
     let type: IChatType | undefined;
     switch (chatType) {
+      case "_dan":
+        type = IChatType.DAN;
+        break;
       case "_cat-girl":
       case "_cat_girl":
       case "_catgirl":
@@ -278,8 +281,14 @@ if (IS_CHATGPT_ENABLED) {
       case "_自私基因":
         type = IChatType.SELFISH;
         break;
-      case "_dan":
-        type = IChatType.DAN;
+      case "_mesugaki":
+      case "_雌小鬼":
+        type = IChatType.MESUGAKI;
+        break;
+      case "_mesugaki_2":
+      case "_mesugaki2":
+      case "_雌小鬼2":
+        type = IChatType.MESUGAKI_2;
         break;
       case "_default":
       default:

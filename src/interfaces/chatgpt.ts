@@ -16,6 +16,8 @@ export enum IChatType {
   SOCRATES = "socrates",
   RED_BOOK = "red-book",
   SELFISH = "selfish",
+  MESUGAKI = "mesugaki",
+  MESUGAKI_2 = "mesugaki-2",
 }
 
 export interface IChatMessage {
