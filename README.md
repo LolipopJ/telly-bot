@@ -31,7 +31,7 @@ docker build --pull -t telly-bot:latest .
 Use the image to spin up a container:
 
 ```bash
-docker run -d -p 3300:3300 --name telly-bot telly-bot:latest
+docker run -d -p 3300:3300 --restart unless-stopped --name telly-bot telly-bot:latest
 ```
 
 ## Configurations

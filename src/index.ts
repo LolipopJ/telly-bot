@@ -129,10 +129,12 @@ new Elysia()
     <meta charset="UTF-8">
     <title>${randomFilename}</title>
   </head>
-  <body style="margin: 5vh; text-align: center; background: #242424;">
-    <a href="${randomFileUrl}" target="${randomFileUrl ? "_blank" : "_self"}">
-      <img src="${randomFileRawUrl}" alt="${randomFilename}" style="height: 90vh; border-radius: 1%;">
-    </a>
+  <body style="margin: 0; background: #242424;">
+    <div style="position: absolute; inset: 0px; overflow: auto; display: flex; min-height: 100%;">
+      <a href="${randomFileUrl}" target="${randomFileUrl ? "_blank" : "_self"}" style="display: flex; margin: auto;">
+        <img src="${randomFileRawUrl}" alt="${randomFilename}" style="max-height: 200vh; border-radius: 4px;">
+      </a>
+    </div>
   </body>
 </html>`;
     } else {
